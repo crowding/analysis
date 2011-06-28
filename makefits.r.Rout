@@ -1,0 +1,54 @@
+
+R version 2.8.1 (2008-12-22)
+Copyright (C) 2008 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> #!/usr/bin/r CMD BATCH
+> 
+> require(R.matlab)
+Loading required package: R.matlab
+Loading required package: R.oo
+Loading required package: R.methodsS3
+R.methodsS3 v1.0.3 (2008-07-02) successfully loaded. See ?R.methodsS3 for help.
+R.oo v1.4.6 (2008-08-11) successfully loaded. See ?R.oo for help.
+R.matlab v1.2.4 (2008-10-29) successfully loaded. See ?R.matlab for help.
+> 
+> args = commandArgs()
+> 
+> args
+[1] "/Library/Frameworks/R.framework/Resources/bin/exec/i386/R"
+[2] "-f"                                                       
+[3] "makefits.r"                                               
+[4] "--restore"                                                
+[5] "--save"                                                   
+[6] "--no-readline"                                            
+> 
+> #readMat(args[[1]])
+> 
+> print(args)
+[1] "/Library/Frameworks/R.framework/Resources/bin/exec/i386/R"
+[2] "-f"                                                       
+[3] "makefits.r"                                               
+[4] "--restore"                                                
+[5] "--save"                                                   
+[6] "--no-readline"                                            
+> 
+> proc.time()
+   user  system elapsed 
+  1.058   0.050   1.150 
