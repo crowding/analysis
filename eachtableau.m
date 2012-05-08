@@ -41,14 +41,14 @@ end
 %now let's render a picture. We render it for an extent of 2*pi*r in the
 %X-direction, and only at 0 in the y-direction.
 if isfield(trial, 'x')
-    x = trial.x;
-    y = trial.y;
-    t = trial.t;
+    x = trial.x{1};
+    y = trial.y{1};
+    t = trial.t{1};
 else
     [x, y, t] = extent(stim);
-    trial.x = x;
-    trial.y = y;
-    trial.t = t;
+    trial.x = {x};
+    trial.y = {y};
+    trial.t = {t};
 end
 
 if (~exist('render', 'var')) || render

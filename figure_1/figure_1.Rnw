@@ -61,7 +61,7 @@ radii[length(radii)) <- paste("and ", radii[length(radii)])
 @
 
 We presented stimuli at eccentricities of
-\unit[\Sexpr{paste.comma(sapply(radii, latex.format, digits=2, nsmall=1),collapse=TRUE)}]{degrees}, using the parameters described above for \autoref{movie:wheels} but scaling all spatial parameters ($\Deltax$, $w$, and $\nicefrac{1}{f}$) of the elements along with the eccentricity; i.e. at eccentricity of 6.67 degrees, ${\Delta}x$ and $w$ decreased to \nicefrac{2}{3} the value used at 10 degrees and $f$ increased to \nicefrac{3}{2} its previous value. The global apparent motion was shown over 4 stations at intervals of ${\Delta}t=\unit[ms]{100}$.
+\unit[\Sexpr{paste.comma(sapply(radii, latex.format, digits=2, nsmall=1),collapse=TRUE)}]{degrees}, using the parameters described above for \autoref{movie:wheels} but scaling all spatial parameters ($\Deltax$, $w$, and $\nicefrac{1}{f}$) of the elements along with the eccentricity; i.e. at eccentricity of 6.67 degrees, ${\Delta}x$ and $w$ decreased to \nicefrac{2}{3} the value used at 10 degrees and $f$ increased to \nicefrac{3}{2} its previous value. The global apparent motion was shown over 4 stations at intervals of ${\Delta}t=\unit[ms]{100}$.	
 
 At each eccentricity, we varied the number of elements in the circle (and consequently the inter-element spacing) in the circle using the method of constant stimuli, using values chosen for each subject based on preliminary sessions.
 

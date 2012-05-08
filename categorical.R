@@ -18,7 +18,7 @@ psych.fits <- function(...) {
     trials <-
       within(trials,
              target.spacing <- 2 * pi * trial.motion.process.radius / trial.extra.nTargets)
-    trials <- subset(trials, trial.version...function == "ConcentricTrial")
+    trials <- subset(trials, trial.version__.function == "ConcentricTrial")
 
     #we could work with log(target.spacing) as an expression, but this
     #is easier to pull out slope and intercept per condition.

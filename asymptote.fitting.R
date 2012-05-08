@@ -1,3 +1,4 @@
+library(arm)
   ## at this point, let's learn about constructing our own link
   ## function. All we need is a version of logit.2asym that varies per
   ## subject...  it seems that in order to do that, we have to mirror

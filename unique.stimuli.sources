@@ -1,4 +1,2 @@
-pools/All_constant.Rdata
-pools/SF.Rdata
-pools/TF.Rdata
-pools/DX.Rdata
+pools/Segment.RData
+pools/Titrate.RData

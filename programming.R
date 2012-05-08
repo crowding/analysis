@@ -1,10 +1,134 @@
 ###Useful R functions for programming, (encouraging terseness.) "Ptools"
+library(arm)
 
+index.data.frame <- function(df, row = 1:nrow(df), col=NULL, value) {
+  ##A replacement for the inadequate
+  ix <- index.data.frame.core(df, row, col)
+
+  length(value) <- max(0, vapply(ix$indices, max, 0))
+  mapply(function(i, c) {
+    value[i] <<- df[i, c]
+  }, indices, columns)
+  output
+}
+
+index.data.frame.core <- function(df, row, col){
+  if (is.null(col) && length(dim(row)) >= 2) {
+    col <- row[,nrow(row)]
+    row[,length(row)] <- NULL
+  }
+
+  row <- mkmatch(row, rownames(df))
+  col <- mkmatch(col, colnames(df))
+  indices <- tapply(1:length(col), row, identity)
+  columns <- vapply(indices, function(i) col[i[1]], 0)
+  list(indices=indices, columns=columns)
+}
+
+mkmatch <- function(index, names) {
+ if (is.character(index) || is.factor(index)) {
+   matched <- pmatch(index, names, duplicates.ok = TRUE)
+   if (any(is.na(matched) & !is.na(index))) {
+     stop("Unknown indices")
+   }
+ } else {
+   matched <- index
+ }
+   matched
+}
+
+pad.missing.cells <- function(data, factors) {
+  ##add a row containing NA for each combination of factors that is not represented.
+  ##This is a workaround for a bug in current reshape / ggplot.
+  chain( factors
+       , combinations <- llply(., function(x)unique(data[,x,drop=FALSE]))
+       , llply(nrow)
+       , llply(seq)
+       , do.call(expand.grid, .)
+       , mapply(function(x, y) x[y,,drop=FALSE], combinations, .)
+       , do.call(cbind,.)
+       , merge(data, all.x=TRUE)
+       )
+}
+
+mutate.where <- function(x, subset, ...) {
+  ##a combination of mutate and subset.
+  ##mutate those rows where subset evaluates to true, returning the entire modified data frame.
+  e <- substitute(subset)
+  r <- eval(e, x, parent.frame())
+  if (!is.logical(r))
+    stop("'subset' must evaluate to logical")
+  r <- r & !is.na(r)
+  cols <- as.list(substitute(list(...)))[-1]
+  cols <- cols[names(cols) != ""]
+  .data <- x[r,]
+  for (col in names(cols)) {
+    .data[[col]] <- eval(cols[[col]], .data, parent.frame())
+  }
+  for (col in names(cols)) {
+    x[r,col] <- .data[,col]
+  }
+  x
+}
+
+keep.if <- function(x, expr, enclos=parent.frame()) {
+  ##keep a subset if the expression evaluates to true. Use with ddply.
+  if (eval(substitute(expr),x, enclos))
+    x
+  else
+    x[c(),, drop=FALSE]
+}
+
+#fake out command line scripts for debugging...
+run.command <- function(command) {
+  blargs <- strsplit(command, ' ')[[1]]
+  trace(commandArgs, at=3, tracer=substitute(args <-  c("--slave","--args", blargs[-1]), list(blargs=blargs)))
+  on.exit(untrace(commandArgs))
+  source(blargs[[1]])
+}
+
+#`subset<-(test,symbol=`.`)
 ##A shortcut for various assignments of the form:
 ##complicated.subset[with.long,names=TRUE] <- some.function.of(complicated.subset[with.long,names=TRUE],with.other.options=TRUE)
 `%<-%` <- function(target, val) {
   val <- eval(substitute(substitute(val, list(.=quote(target)))))
   eval.parent(substitute(target <- val))
+}
+
+prefixing.assign <- function(prefix='', l=list(), env=parent.frame()) {
+  for (n in names(l)) {
+    assign(paste(prefix,n,sep=""),eval(substitute(l$n,list(n=n))),envir=env)
+  }
+}
+
+almost.unique <- function(values, thresh = 0.0001) {
+  values <- sort(values, na.last=TRUE)
+  index <- pipe(values, diff, . > thresh, cumsum, c(0,.))
+  tapply(values, index, mean)
+}
+
+cluster.to.unique <- function(values, thresh=0.0001) {
+  pipe(values,
+       .[ord <- order(.)],
+       diff, .>thresh, cumsum, c(0,.),
+       tapply(values[ord], ., function(x) {x[] <- mean(x); x}),
+       unlist,
+       .[inverse.permutation(ord)])
+}
+
+ammoc <- function(...) {
+  ##evaluate all arguments in order, then return the first argument.
+  ##Named because it is the left-to-right inverse of C's comma operator.
+  ## the main use case for this is to remove a temp variable while keeping its value
+  ## i.e. ammoc(.tmp, rm(.tmp))
+  list(...)[[1]]
+}
+
+inverse.permutation <- function(perm) {
+  ##if X is a vector expressing a permutation, for example the output
+  ##of ORDER(), returns the inverse of that permutation.
+  perm[perm] <- 1:length(perm)
+  return(perm)
 }
 
 #this doesn't really handle "dots" arguments...?
@@ -126,7 +250,7 @@ substitute.nq <- function(expr,...) {
 }
 
 ## safer "data-like" version of pipe
-pipe <- function(...,dwim=TRUE) {
+chain <- function(...,dwim=TRUE) {
    arg.list <- as.list(match.call())
    arg.list[1] <- NULL
    if(dwim) arg.list[-1] <- pipe.dwim(arg.list[-1])
@@ -139,12 +263,36 @@ pipe <- function(...,dwim=TRUE) {
    eval.parent(pipe.call)
 }
 
+pipe <- chain
+
+## a version that creates a function to be called later. useful in ddply etc.
+mkchain <- function(..., dwim=TRUE) {
+  arg.list <- as.list(match.call())
+  arg.list[1] <- NULL
+  if(dwim) arg.list <- pipe.dwim(arg.list)
+  arg.list <- lapply(arg.list, substitute.nq, list(.=quote(..DATA)))
+  arg.list <- lapply(arg.list, fn(substitute(a<-b, list(a=quote(..DATA),b=.))))
+  pipe.call <- do.call(call, c(list("{"), lapply(arg.list, enquote), quote(quote(..DATA))))
+  pipe.fn <- substitute(function(..DATA) ., list(.=pipe.call))
+  out <- eval.parent(pipe.fn)
+  attr(out, "source") <- NULL
+  out
+}
+
+mkpipe <- mkchain
+
 ##this slightly ugly hack is required by the current way that pipe works.
 remove.returning <- function(sym) {
   q <- substitute(sym)
   val <- force(sym)
   rm(list=as.character(q), envir=parent.frame())
   val
+}
+
+load.as.list <- function(...) {
+  a = environment()
+  load(envir=a, ...)
+  as.list(a)
 }
 
 ## a "macro-like" version of pipe. Note that in principle I could do
@@ -166,7 +314,7 @@ pipe.dwim <- function(arg.list) {
          } else {
            switch(mode(expr),
                   name=call(as.character(expr),quote(.)), 
-                  call=do.call(call, c(as.character(expr[1]), quote(quote(.)), as.list(expr[-1]))), 
+                  call=as.call(c(expr[[1]], quote(.), as.list(expr[-1]))),
                   stop("don't know how to pipe into a '", mode(expr), "'"))
          })
 }
@@ -176,6 +324,8 @@ pipe.dwim <- function(arg.list) {
 ## function(.) .+1 we have fn(.+1) and otherwise the same.
 fn <- function(expr) {
   ff <- eval.parent(substitute(function(.) e, list(e = substitute(expr))))
+  attr(ff, "source") <- NULL
+  ff
   ##need to do something with printing and use.source?
   ##mm <- match.call()
   ##mm$expr <- NULL

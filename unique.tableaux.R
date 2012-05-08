@@ -1,10 +1,10 @@
 #!/usr/bin/Rscript
 
-my.args <- strsplit("pools/All_constant.Rdata pools/DX.Rdata pools/SF.Rdata pools/TF.Rdata pools/occlusion.Rdata unique_stimuli.mat", " ")[[1]]
-
-source("common.manipulations.r")
-library(plyr)
-library(R.matlab)
+suppressPackageStartupMessages({
+  source("common.manipulations.r")
+  library(plyr)
+  library(R.matlab)
+})
 
 stimulus.pool <- function(...) {
   # basically we want a list of all the unique stimuli used in the experiment.
@@ -24,7 +24,7 @@ extract.stimuli <- function(filename) {
   common.manipulations(environment())
   
   #and just extract the data from trials that you need.
-  unique(stimulus.description(subset(trials, trial.version...function == "ConcentricTrial")))
+  unique(stimulus.description(subset(trials, trial.version__.function == "ConcentricTrial")))
 }
 
 stimulus.description <- function(trials) {

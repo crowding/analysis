@@ -1,0 +1,215 @@
+include toolkit.make
+
+SHELL = /bin/bash
+
+#default to making all
+.PHONY: all .ALWAYS
+
+.SECONDARY:
+
+.DEFAULT_GOAL = all
+
+CURRENT_URL = $(shell svn info | grep ^URL | cut -f 2 -d ' ')
+DATA_URL = svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data
+LOG_DIR = datafiles
+
+#rather than spending endless gigs on storing my data on hand, check data out from svn on demand.
+DATA_FILES := $(shell svn ls '$(DATA_URL)' | sed 's/^/datafiles\//')
+INTERMEDIATES += $(DATA_FILES)
+.INTERMEDIATE: $(DATA_FILES)
+
+#hahaha I thought I would have had all this done in 2010
+#ALL_TARGETS := $(call grep-string,201,$(call grep-string,ConcentricDirection,$(DATA_FILES)))
+ALL_TARGETS := $(call grep-string,ConcentricDirection,$(DATA_FILES))
+ALL_TARGETS := $(call grep-string,ConcentricAdjustment,$(DATA_FILES))
+
+datafiles/%:
+	mkdir -p $(LOG_DIR)
+	svn export "svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data/$(notdir $@)" $@
+
+#convert each data file into R format
+$(call TRANSFORM_EACH_WILDCARD,$(LOG_DIR)/%.log.gz,unpacked/%.RData,R,translator.R)
+
+unpacked: $(filter unpacked/%.RData, $(ALL_TARGETS))
+
+#don't continue with some files (broken or incomplete sessions)
+$(call EXCLUDE_LISTED, exclusions.txt)
+
+#downsample and compute eye movements for each session.
+$(call TRANSFORM_EACH_WILDCARD,unpacked/%Segment.RData,eyemovements/%Segment.RData,R,eyemovements.R)
+
+#strip eye movements for faster iterations on things that don't use eye movements
+$(call TRANSFORM_EACH_WILDCARD,unpacked/ConcentricDirection%.RData,stripped/ConcentricDirection%.RData,R,strip.R)
+
+stripped: $(filter stripped/%.RData, $(ALL_TARGETS))
+
+.PHONY: stripped
+
+#normalize the stripped data to fix some things.
+$(call TRANSFORM_EACH_WILDCARD,stripped/%.RData,common/%.RData,R,common.R)
+
+#shove it all in a database
+database.sqlite: $(filter common/%.RData,$(ALL_TARGETS))
+	/usr/bin/env RScript dbshove.R $@ $?
+
+ALL_TARGETS += database.sqlite
+
+common: $(filter common/%.RData, $(ALL_TARGETS))
+
+.PHONY: common
+
+
+# Rather than mess around any more than necessary with makefile macros, I'm going to 
+# generate a bunch of makefile using an external script.
+
+#aggregate the individual sessions into specified blocks. Each
+#.sources file in the pools directory gives the source files for a
+#pool. Also pool all constant data into a big file.
+
+ifdef aggregation 
+ALL_TARGETS += pools/DX.sources
+pools/DX.sources: pools/DX.exclude $(filter unpacked/%DX.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+ALL_TARGETS += pools/TF.sources
+pools/TF.sources: pools/TF.exclude $(filter unpacked/%TF.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+ALL_TARGETS += pools/SF.sources
+pools/SF.sources: pools/SF.exclude $(filter unpacked/%SF.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+ALL_TARGETS += pools/Timing.sources
+pools/Timing.sources: pools/Timing.exclude $(filter unpacked/%Timing.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+ALL_TARGETS += pools/Dt_N.sources
+pools/Dt_N.sources: pools/Dt_N.exclude $(filter unpacked/%Dt_N.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+ALL_TARGETS += pools/Constant.sources
+pools/Constant.sources: pools/Constant.exclude $(filter unpacked/%Constant.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+ALL_TARGETS += pools/Occlusion.sources
+pools/Occlusion.sources: pools/Occlusion.exclude $(filter unpacked/%Occlusion.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+ALL_TARGETS += pools/Segment.sources
+pools/Segment.sources: pools/Segment.exclude $(filter common/%Segment.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+$(call TRANSFORM_ALL_LISTED,pools/Segment.sources,pools/Segment.RData,R,aggregate.R)
+
+ALL_TARGETS += pools/Discriminability.sources
+pools/Discriminability.sources: pools/Discriminability.exclude $(filter unpacked/%Discriminability.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+ALL_TARGETS += pools/Titrate.sources
+pools/Titrate.sources: pools/Titrate.exclude $(filter common/%Titrate.RData,$(ALL_TARGETS)) $(filter common/%Discriminability.RData,$(ALL_TARGETS)) $(filter common/%CritDistance.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+$(call TRANSFORM_ALL_LISTED,pools/Titrate.sources,pools/Titrate.RData,R,aggregate.R)
+
+ALL_TARGETS += pools/Strokes.sources
+pools/Strokes.sources: pools/Strokes.exclude $(filter common/%Strokes.RData,$(ALL_TARGETS))
+	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
+
+$(call TRANSFORM_ALL_LISTED,pools/Strokes.sources,pools/Strokes.RData,R,aggregate.R)
+
+#$(call AGGREGATE_EACH_WILDCARD_LISTED,pools/%.sources,pools/%.RData,R,aggregate.R)
+
+
+#aggregate all the eye movements from Segments sessions.
+ALL_TARGETS += Segment.eyemovements.sources
+Segment.eyemovements.sources: pools/Segment.sources
+	sed -e 's/common/eyemovements/' <$< >$@
+
+ALL_TARGETS += Segment.eyemovements.RData
+$(call TRANSFORM_ALL_LISTED,Segment.eyemovements.sources,Segment.eyemovements.RData,R,aggregate.eyemovements.R)
+
+endif #aggregation
+
+writing/x_t_stimuli.eps figure_1/B.eps: $(call MATLAB_DEPS, illustrated_stimuli.m)
+	$(call MATLAB, illustrated_stimuli $@)
+
+ALL_TARGETS += figure_1/B.eps writing/x_t_stimuli.eps
+
+ALL_TARGETS += unique.stimuli.sources
+
+$(call TRANSFORM_ALL_LISTED,unique.stimuli.sources,unique_stimuli.mat,R,unique.stimuli.R)
+
+ALL_TARGETS += motion_energy.mat
+motion_energy.mat: unique.stimuli.mat $(call MATLAB_DEPS,motion_energy)
+	$(call MATLAB, motion_energy $< $@)
+
+#$(call TRANSFORM_ALL_LISTED,unique.stimuli.sources,unique_tableaux.mat,R,unique.tableaux.R)
+#
+#ALL_TARGETS += tableaux.mat
+#tableaux.mat: unique_tableaux.mat $(call MATLAB_DEPS,tableaux)
+#	$(call MATLAB, tableaux $< $@)
+#
+#ALL_TARGETS += grid_figure.eps
+#grid_figure.eps: tableaux.mat $(call MATLAB_DEPS,grid_figure)
+#	$(call MATLAB, grid_figure $< $@)
+
+### EYE MOVEMENT ANALYSIS
+
+#patch together a sample eye trace...
+sample_trace.mat: mat/dt-2009-05-21__10-37-15-ConcentricDirectionQuestTF.mat $(call MATLAB_DEPS,findEyeTrace)
+	$(call MATLAB, findEyeTrace $< $@)
+
+ALL_TARGETS += sample_trace.mat
+
+#Rules to render intermediate AVIs and convert AVIs to MOV.  Note that
+#sometimes the conversion fails with "an invalid track was found in
+#the movie."  in that case, perform the conversion manually, touch the
+#file (as its POSIX date doesn't get set right by Quicktime Player?)
+#and remove the intermediate avi.
+
+%.mov: %.avi %.settings #animation.scpt
+	osascript animation.scpt $(abspath $<) $(abspath $@) $(abspath $(basename $<).settings) 
+	sleep 2
+	touch $@
+
+#also, sometimes just running osascript changes the modification date on animation.scpt. >_<
+
+%.avi: %.m #should work out as an intermediate target?!
+	$(call MATLAB, $(basename $<) $@)
+
+animation.settings:
+	echo noop
+
+%.settings: animation.settings
+	cp $< $@
+
+.PRECIOUS: %.dep %.settings
+
+INTERMEDIATES += demo_counter.avi demo_single.avi demo_stimuli.avi demo_segment.avi demo_eyemovements.avi
+
+$(shell ./makegen.py \
+	--rule 'common/(.*).RData' 'eachplots/\1.out' performance.R \
+	--rule 'common/(.*Segment.*).RData' 'eachplots/\1.out' segment.R \
+	--rule 'common/(.*CritDistance.*).RData' 'eachplots/\1.out' criticalDistance.R \
+	--rule 'common/(.*Strokes.*).RData' 'eachplots/\1.out' strokes.R \
+	--rule 'pools/Segment.RData' 'poolplots/Segment.out' segment.R \
+	--rule 'pools/Strokes.RData' 'poolplots/Strokes.out' strokes.R \
+	--rule 'pools/Titrate.RData' 'poolplots/Titrate.out' criticalDistance.R \
+	--rule 'unpacked/(.*Adjustment.*).RData' 'adjustment/\1.out' adjustment_raster.R \
+	$(ALL_TARGETS) > Makefile.pygen || echo 'missing separator...')
+
+include Makefile.pygen
+
+#list of movies to make.
+ALL_TARGETS += demo_counter.mov demo_single.mov demo_stimuli.mov demo_segment.mov demo_eyemovements.mov
+#ALL_TARGETS += demo_fixational.mov demo_kitaoka.mov
+
+.INTERMEDIATE: $(INTERMEDIATES)
+
+.PHONY: all
+
+force_look:
+	true
+
+all: $(filter %.pdf,$(ALL_TARGETS)) Segment.eyemovements.RData database.sqlite
+all: $(filter-out $(INTERMEDIATES),$(ALL_TARGETS))

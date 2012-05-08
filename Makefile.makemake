@@ -1,0 +1,98 @@
+##This file describes most of my processing toolchain. It i written in
+##a tiny domain-secific language for generating Makefiles, implemented
+##over in makemake.py. makemake.py will use these rules to generate a
+##larger makefile.
+
+#we pull only direction or adjustment files for now.
+--command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*) 
+                                svn export 
+                                'svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data/{0}' 
+--output --mkdir --intermediate datafiles/{0}
+
+##The translator script
+--command               Rscript 
+                        translator.R #--input...
+--match --input         'datafiles/(.*)\.log(\.gz)?'
+--output                unpacked/{0}.RData
+--invisible --phony     unpacked
+
+--command           Rscript 
+--input             eyemovements.R
+--match --input     unpacked/(.*Segment\.RData)
+--output --mkdir    eyemovements/{0}
+--invisible --phony eyemovements
+
+--command           Rscript 
+--input             strip.R
+--match --input     unpacked/(.*\.RData)
+--output --mkdir    stripped/{0}
+--invisible --phony eyemovements
+
+#the common script is specific to direction experiments
+--command           RScript
+--input             common.R
+--match --input     'stripped/(.*ConcentricDirection.*\.RData)'
+--output --mkdir    common/{0}
+--invisible --phony common
+
+#And here's the common script for adjustment experiments.
+--command           	RScript
+--input             	adjustment_common.R
+--match     --input 	'unpacked/(.*Adjustment.*)\.RData'
+--output    --mkdir 	'common_adj/{0}'.RData
+--invisible --phony 	common
+
+#and we shove those into a database.
+--command --once             RScript 
+--once                       dbshove.R #--input...
+--once                       database.sqlite 
+--input --match --invisible  common/(.*\.RData) 
+--once                       '$?' 
+--once                       &&
+--once                       touch
+--output --once              discrimination.sqlite.DONE
+
+#and we shove adjustment trials into a second database.
+--command --once             RScript 
+--once                       dbshove.R #--input...
+--once                       adjustment.sqlite 
+--input --match --invisible  common_adj/(.*Adjustment.*\.RData) 
+--once                       '$?' 
+--once                       &&
+--once                       touch
+--output --once              adjustment.sqlite.DONE
+
+#these rules mainly create graphs. Note later rules stack onto earlier ones.
+--command --once          Rscript
+--input --once            graphs.R
+--match --input --once    common/(.*).RData
+--output --listing --once eachplots/{0}.out
+--invisible --phony       graphs
+
+--command --once          Rscript
+--input --once            graphs.R
+--match --input --once    common_adj/(.*Adjustment.*).RData
+--output --listing --once eachplots/{0}.out
+--invisible --phony       graphs
+
+--command
+--output --match   eachplots/.*Segment.*.out
+--input --once     performance.R
+
+--command
+--output --match   eachplots/.*CritDistance.*.out
+--input --once     criticalDistance.R
+--invisible --phony criticalDistance
+
+--command
+--output --match    eachplots/.*Adjustment.*.out
+--input --once      hysteresis.R
+--invisible --phony hysteresis
+
+--command
+--output --match    eachplots/.*Adjustment.*.out
+--input --once      adjustment_squares.R
+--invisible --phony squares
+
+#and a target that targets everything...?
+#--command --invisible --phony everything --match --invisible --input .*

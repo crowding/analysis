@@ -1,7 +1,7 @@
-function illustrated_stimuli()
+function illustrated_stimuli(outfile)
 
-figure();
-set(5, 'Position', [100 768 384 384])
+f = figure();
+set(f, 'Position', [100 768 384 384])
 
 %calculate some example stimuli in the 'congruent', 'incongruent', and
 %'counterphase' conditions.
@@ -58,9 +58,7 @@ line([x(1) x(1)], [y(end)-0.15 y(end) - 0.25]);
 text(x(1)+0.3, y(end) - 0.2, '100 ms', 'HorizontalAlignment', 'Left', 'VerticalAlignment', 'Middle');
 %
 
-set(gcf, 'Position', 1);
-
-print -depsc figure_1/B.eps
+print('-depsc',outfile)
 
     function [im, xs, ts] = mkstim(trial)
         r = trial.trial_extra_r;
@@ -77,7 +75,7 @@ print -depsc figure_1/B.eps
             ( 'primitive', CP ...
             , 'dx', trial.trial_extra_globalVScalar * trial.trial_extra_dt * r ...
             , 'dt', trial.trial_extra_dt ...
-            , 'n', trial.trial_motion_process_n ...
+            , 'n', trial.trial_motion_process_n + 1 ...
             );
         
         %then replicate the apparent motion around the circle...

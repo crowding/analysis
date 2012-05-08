@@ -34,17 +34,21 @@ clearfile <- function(filename, what) {
   })
 }
 
+mean.and.sd <- function(x)data.frame(  mean=numcolwise(mean)(x)
+                                     , sd=numcolwise(sd)(x)
+                                     , n=numcolwise(length)(x))
+
 what.varies <- function(runs) {
   zip <- function(l) { ##like python zip
     lapply(apply(do.call(rbind, l), 2, list), unlist, recursive=FALSE)
   }
 
   whatChanges <- function(randomizer) {
-    whichQuestParamsChange <- which(lapply(lapply(
-      zip(randomizer[["values",1,1]]),
+    whichParamsChange <- which(lapply(lapply(
+      zip(randomizer$values),
          unique), length) > 1)
     changingFields <- sapply(lapply(
-      randomizer[["subs",1,1]][whichQuestParamsChange],
+                                    randomizer$subs[whichQuestParamsChange],
                                     unlist), function(x) do.call(paste, as.list(c("trial", x, sep=""))))
   }
   
@@ -72,39 +76,47 @@ what.varies <- function(runs) {
   conditions <- setdiff(conditions, c("trial..extra.r", "trial.extra.r"))
 }
 
-common.manipulations <- function(env) {
-  with(env, {
-    ##we need some special handling for the conditions in the occluder
-    ##experiments. (left/right/none)
+common.manipulations <- function(envir=parent.env(environment())) {
+  ##do some basic calculations we always need and
+  ##fix up some changes in the trial data structures.
+  ##Note that this does it by destructively modifying your workspace!
+  ##There is a way around that, though, by enclosing this in a local() block.
+  with(envir, {
+    library(plyr)
+    ##Define the visibility condition for occluder experiments, or
+    ##leave as "full" elsewhere.
     if (!is.null(trials$trial.occluders)) {
-      trials <- transform(trials, visibilityCondition=
-                          factor(mapply(function(occluder, useOccluder) {
-                            if(is.na(useOccluder))
-                              "full"
-                            else if (useOccluder) {
-                              if (occluder[[1]][["startAngle",1,1]] > pi) "left" else "right"
-                            } else "full"
-                          }, trials$trial.occluders, trials$trial.useOccluders),
-                                 levels=c("left", "right", "full"))
-                          )
+      mutate(trials, 
+             trial.extra.visibilityCondition =
+               factor(ifelse(is.na(trial.useOccluders)
+                             , "full"
+                             , ifelse(trial.useOccluders
+                                      , ifelse(sapply(trial.occluders,function(x)if(is.list(x))x$startAngle else NA) > pi
+                                               , "left"
+                                               , "right")
+                                      , "full"
+                                      )
+                             ),  levels=c("left", "right", "full"))
+             ) -> trials
     } else {
       trials$visibilityCondition <- factor("full", levels=c("left", "right", "full"))
     }
     
-    ##determine for each trial if the "correct" response was given
-    trials <- transform(trials,
-                        correct=(result.response
-                                 ==( - trial.extra.globalDirection
-                                     - trial.extra.localDirection * !trial.extra.globalDirection)))
+    ##determine for each trial if the "correct" response was
+    ##given. Somewhat irrelevant when we know about hte induced motion effect
+    mutate(trials,
+           correct=(result.response
+                    ==( - trial.extra.globalDirection
+                       - trial.extra.localDirection * !trial.extra.globalDirection))) -> trials
     ##mark the motion condition in each trial based on whether local and
     ##global run the same direction.
     trials <- transform(trials,
                         motionCondition=
-                        factor(array(c("congruent","ambivalent","incongruent",
+                        factor(array(c("congruent","counterphase","incongruent",
                                        "local",NA,"local",
-                                       "incongruent","ambivalent","congruent"),c(3,3))
+                                       "incongruent","counterphase","congruent"),c(3,3))
                                [cbind(trial.extra.localDirection+2,trial.extra.globalDirection+2)],
-                               levels=c("local","ambivalent","congruent","incongruent")))
+                               levels=c("local","counterphase","congruent","incongruent")))
 
     ##compute the response time as follows.
 
@@ -113,10 +125,13 @@ common.manipulations <- function(env) {
     colnames(t.responseTimestamp) <- c("i", "responseTimestamp")
     trials <- merge(trials, t.responseTimestamp, all.x=TRUE)
 
+    ##idk wth this happens?
+    colnames(triggers)[colnames(triggers) == "next"] <- "next."
+    
     ##find the timestamp of motion onset (this is before the actual first
     ##element, as given by motionFirstElementDelay)
     t.motionBegun <- triggers[triggers$name == "ConcentricTrial/run/startMotion",
-                              c("trials.i", "next")]
+                              c("trials.i", "next.")]
     colnames(t.motionBegun) <- c("i", "motionBegun")
     trials <- merge(trials, t.motionBegun, all.x=TRUE)
 
@@ -130,14 +145,75 @@ common.manipulations <- function(env) {
                                   Inf, trial.maxResponseLatency)
                         + minResponseTime)
     trials <- transform(trials, responseInWindow = (responseTime<maxResponseTime) & (responseTime > minResponseTime))
+    if ("trial.occluders" %in% colnames(trials)) {
+      trials <- transform(trials, n.occluders = sapply(trial.occluders,
+                          function(x) if(is.null(x) || identical(x, NA)) 0 else length(x)))
+    }
 
-    ##pull out the subject ID into each trial.
-    runs$subject <- unlist(lapply(runs$afterRun.params,
-                                  function(x) ifelse(length(dim(x))==3, x[['subject',1,1]], NA)),
-                           recursive=FALSE)
-    trials <- merge(trials, runs[,c("i" ,"subject")],
+    ##assign a "direction contrast" to trials that were done before
+    ##direction contrast was a real parameter Express contrast, displacement and response in
+    ##common absolute directions (positive=CCW, negative=CW)
+    if (is.null(trials$trial.extra.directionContrast)) {
+      trials$trial.extra.directionContrast <- NA
+    }
+    if (any(is.na(trials$trial.extra.directionContrast))) {
+      trials <-
+        mutate( trials
+               , trial.extra.directionContrast=
+                 ifelse(  is.na(trial.extra.directionContrast)
+                        , ifelse(trial.extra.localDirection == 0, 0, 1)
+                        , trial.extra.directionContrast))
+    }
+
+    ##compute absolute direction contrasts and displacements.
+    trials <-
+      mutate(  trials
+             , abs.localDirectionContrast =
+                   sign(trial.extra.localDirection) * trial.extra.directionContrast,
+             , abs.displacement =
+                 sign(trial.extra.globalDirection) * trial.extra.globalVScalar
+                 * trial.extra.r * trial.motion.process.dt
+             , abs.response = -result.response
+             , folded.localDirectionContrast = abs(abs.localDirectionContrast),
+             , folded.displacement =
+                 ifelse(abs.localDirectionContrast != 0,
+                        abs.displacement * sign(abs.localDirectionContrast),
+                        abs.displacement * sign(abs.displacement)),
+             , folded.response =
+                 ifelse(abs.localDirectionContrast != 0,
+                        abs.response * sign(abs.localDirectionContrast),
+                        abs.response * sign(abs.displacement))
+             )
+
+    ##pull out the subject ID into each trial, as well as the actual experiment file name.
+    if (!"subject" %in% colnames(runs)) {
+      if ("beforeRun.params" %in% colnames(runs)) {
+        runs$subject <- unlist(lapply(runs$beforeRun.params,
+                                      function(x) ifelse(length(dim(x))==3, x[['subject',1,1]], NA)), recursive=FALSE)
+      } else {
+        runs$subject = runs$beforeRun.params.subject
+      }
+    }
+    if (! "source.file" %in% colnames(runs)) {
+      if ("beforeRun.params" %in% colnames(runs)) {
+        runs$source.file <- sapply(runs$beforeRun.params, function(x)x[['logfile',1,1]][[1]])
+      } else {
+        runs$source.file <- runs$beforeRun.params.logfile
+      }
+    }
+    trials <- merge(trials, runs[,c("i" ,"subject", "source.file")],
                     by.x='runs.i', by.y='i',
                     all.x=TRUE)
+
+    trials <-
+      within(trials,
+             target.spacing <- 2 * pi * trial.motion.process.radius / trial.extra.nTargets)
+    trials <- subset(trials, trial.version__.function == "ConcentricTrial" & !is.nan(responseTime))
+    trials <- transform(trials, log.target.spacing=log(target.spacing))
+    
+    rm(t.responseTimestamp)
+    rm(t.motionBegun)
+    if ("frame.skips" %in% ls()) rm(frame.skips)
   })
 }
 
@@ -155,7 +231,7 @@ common.manipulations.variations <- function(env) {
     trials <-
       within(trials,
              target.spacing <- 2 * pi * trial.motion.process.radius / trial.extra.nTargets)
-    trials <- subset(trials, trial.version...function == "ConcentricTrial")
+    trials <- subset(trials, trial.version__.function == "ConcentricTrial")
     trials <- transform(trials, log.target.spacing=log(target.spacing), target.spacing=NULL)
 
     ##strip away data/columns we aren't planning on using, for the time being.
@@ -164,8 +240,33 @@ common.manipulations.variations <- function(env) {
                                'log.target.spacing', 'motionCondition', 'subject',
                                'responseInWindow', 'responseTime', 'minResponseTime',
                                'maxResponseTime', 'correct', 'runs.i', 'trial.extra.nTargets'))
-    rm(triggers)
     rm(runs)
-    rm(frame.skips)
   })
 }
+
+common.manipulations.displacement <- function(env=parent.env(environment())) {
+  library(plyr)
+  with(env, {
+      mutate(trials,
+             abs.localDirectionContrast =
+             sign(trial.extra.localDirection) * trial.extra.directionContrast,
+             abs.displacement =
+             sign(trial.extra.globalDirection) * trial.extra.globalVScalar
+             * trial.extra.r * trial.motion.process.dt,
+             abs.response = -result.response
+             ) -> trials
+
+      mutate(trials,
+             folded.localDirectionContrast = abs(abs.localDirectionContrast),
+             folded.displacement =
+             ifelse(abs.localDirectionContrast != 0,
+                    abs.displacement * sign(abs.localDirectionContrast),
+                    abs.displacement * sign(abs.displacement)),
+             folded.response =
+             ifelse(abs.localDirectionContrast != 0,
+                    abs.response * sign(abs.localDirectionContrast),
+                    abs.response * sign(abs.displacement))
+             ) -> trials
+  })
+}
+

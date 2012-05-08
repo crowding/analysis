@@ -1,10 +1,9 @@
 ##
 
-my.args <- strsplit("pools/All_constant.Rdata pools/DX.Rdata pools/SF.Rdata pools/TF.Rdata pools/occlusion.Rdata unique_stimuli.mat", " ")[[1]]
-
-source("common.manipulations.r")
-library(plyr)
-library(R.matlab)
+suppressPackageStartupMessages({
+  library(plyr)
+  library(R.matlab)
+})
 
 stimulus.pool <- function(...) {
   # basically we want a list of all the unique stimuli used in the experiment.
@@ -21,10 +20,9 @@ stimulus.pool <- function(...) {
 extract.stimuli <- function(filename) {
   print(filename)
   load(filename)
-  common.manipulations(environment())
   
   #and just extract the data from trials that you need.
-  unique(stimulus.description(subset(trials, trial.version...function == "ConcentricTrial")))
+  unique(stimulus.description(subset(trials, trial.version__.function == "ConcentricTrial")))
 }
 
 stimulus.description <- function(trials) {
@@ -34,30 +32,40 @@ stimulus.description <- function(trials) {
   ##Fix the phase. Make sure it's in the same direction as the motion direction......argh.
   ##Luckily, since I used vertically symmetric occluders, 'left' and 'right' should be sufficient.
   ##We alraedy know that globalDirection is the same sign as
-  ##dphase... so phase moves in the same direction as globalDirection
-  trials$trial.extra.phase = trials$trial.extra.phase * trials$trial.extra.globalDirection
-  trials$trial.extra.phase[trials$visibilityCondition == 'full'] <- 0
+  ##dphase... so phase moves in the same direction as globalDirection.
+
+  ##Ima stab someone if phase of the 120 Hz screen refresh is
+  ##important, so I'll leave that out. Even though I have that
+  ##information (in principle.)
   
-  stimuli <- subset(trials, select=c(
-                   "trial.extra.r",
-                   "trial.extra.globalVScalar",
-                   "trial.extra.tf",
-                   "trial.extra.wavelengthScalar",
-                   "trial.extra.dt",
-                   "trial.extra.phase",
-                   "trial.extra.widthScalar",
-                   "trial.extra.durationScalar",
-                   #"trial.extra.globalDirection", #motionCondition takes care of folding OTHER THAN FOR PHASE... we will calculate the motion energy in terms of "along global" and "against global"
-                   #"trial.extra.localDirection",
-                   "trial.extra.nTargets",
-                   ## "trial.extra.phase", ##this makes stimuli
-                   ## constantly unique which doesn't make things
-                   ## easy, but may be required to analyze occlusion
-                   ## trials?
-                   "trial.motion.process.order",
-                   "trial.motion.process.n",
-                   "motionCondition",
-                   "visibilityCondition"))
+  trials$trial.extra.phase = trials$trial.extra.phase * trials$trial.extra.globalDirection
+
+  #phase 
+  trials$trial.extra.phase[trials$visibilityCondition == 'full'] <- 0
+
+  #as far as I know, all of these fully determine the stimulus appearance.
+  #Select the ones that are present on out dataset.
+  columns <- c("trial.motion.process.radius",
+               "trial.extra.side",
+               "trial.extra.nVisibleTargets",
+               "trial.extra.flankerPhase",
+               "abs.displacement",
+               "abs.localDirectionContrast",
+               "trial.extra.tf",
+               "trial.extra.wavelengthScalar",
+               "trial.extra.dt",
+               "trial.extra.phase",
+               "trial.extra.widthScalar",
+               "trial.extra.durationScalar",
+               "trial.extra.nTargets",
+               "trial.motion.process.order",
+               "trial.motion.process.n",
+               "visibilityCondition")
+
+  trials[,columns[! (columns %in% colnames(trials))]] <- NA
+  
+  stimuli <- subset(trials
+                    , select=columns)
 }
 
 if ("--slave" %in% commandArgs()) { #Rscript...

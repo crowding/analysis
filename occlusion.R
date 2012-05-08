@@ -126,7 +126,7 @@ occlusion.analysis <- function(...) {
     trials <-
       within(trials,
              target.spacing <- 2 * pi * trial.motion.process.radius / trial.extra.nTargets)
-    trials <- subset(trials, trial.version...function == "ConcentricTrial")
+    trials <- subset(trials, trial.version__.function == "ConcentricTrial")
     trials <- transform(trials, log.target.spacing=log(target.spacing), target.spacing=NULL)
 
     #fix a goof

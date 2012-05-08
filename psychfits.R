@@ -21,7 +21,7 @@ psych.fits <- function(...) {
     common.manipulations(environment())
 
     trials <- within(trials, target.spacing <- 2 * pi * trial.motion.process.radius / trial.extra.nTargets)
-    trials <- subset(trials, trial.version...function == "ConcentricTrial")
+    trials <- subset(trials, trial.version__.function == "ConcentricTrial")
 
     ##perform some psychometric fits! we would like to fit a logistic to
     ##the data from EACH condition.  Then we would like to fit a
@@ -31,7 +31,7 @@ psych.fits <- function(...) {
     ##radius. Perhaps I ought to do this the nested regression way, with binary
     ##dummy variables one per condition.
     individual.condition.fits <- ddply(trials,
-                            c("trial.motion.process.radius", "trial.version...function", conditions),
+                            c("trial.motion.process.radius", "trial.version__.function", conditions),
                             function(group) {
                               data.frame(
                                 fit=I(list(glm(correct ~ target.spacing,
@@ -46,7 +46,7 @@ psych.fits <- function(...) {
     ##each set of radii. Perhaps this, too would be better with dummy
     ##predictors.
     scaling.fit <- ddply(trials,
-                         c("trial.version...function", conditions),
+                         c("trial.version__.function", conditions),
                          function(group) {
                            data.frame(
                              scaling.fit=I(list(glm(

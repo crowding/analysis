@@ -1,0 +1,50 @@
+
+--command 
+--once Rscript
+--once --in graphs.R
+--match --in 'common/(.*).RData' 
+--out --listing --once 'eachplots/\1.out'
+--in --once performance.R
+
+--command
+--once Rscript
+--once --in graphs.R
+--match --in 'common/(.*Segment.*).RData'
+--out --listing --once 'eachplots/\1.out'
+--in --once segment.R
+
+--command
+--once Rscript
+--once --in graphs.R
+--match --in 'common/(.*CritDistance.*).RData'
+--out --listing --once 'eachplots/\1.out'
+--in --once criticalDistance.R
+
+--command
+--once Rscript
+--once --in graphs.R
+--match --in 'common/(.*Strokes.*).RData'
+--in --once graphs.R
+--out --listing --once 'eachplots/\1.out'
+--in --once strokes.R
+
+--command
+--word --once RScript
+--word --once --in graphs.R
+--word --match --in 'pools/(Segment).RData'
+--word --out --listing --once 'poolplots/\1.out'
+--word --in --once 'segment.R'
+
+--command
+--word --once RScript
+--word --once --in graphs.R
+--word --match --in 'pools/(Strokes).RData'
+--word --out --listing --once 'poolplots/\1.out'
+--word --in --once 'strokes.R'
+
+--command
+--word --once Rscript
+--word --once --in graphs.R
+--word --match --in 'pools/(Titrate).RData'
+--word --out --listing --once 'poolplots/\1.out'
+--word --in --once 'criticalDistance.R'

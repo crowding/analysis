@@ -1,12 +1,22 @@
 #!/usr/bin/env Rscript
+suppressPackageStartupMessages({
+  source("programming.R")
+  library(gtools)
+})
 
 aggregate <- function(...) {
-  library(gtools)
   ###aggregate several unpacked data files, and save to the named
   ###output file.
-  infiles <- list(...)
+  infiles <- unlist(list(...))
+  if ("--drop.triggers" %in% infiles) {
+    drop.triggers <- TRUE
+    infiles <- infiles[-which(infiles=="--drop.triggers")]
+  } else {
+    drop.triggers <- FALSE
+  }
+  
   outfile <- infiles[[length(infiles)]]
-  infiles[[length(infiles)]] = NULL
+  infiles <- infiles[-length(infiles)]
 
   envs <- lapply(infiles, load.discarding.eye.position)
 
@@ -20,7 +30,13 @@ aggregate <- function(...) {
     e$trials$runs.i <- e$trials$runs.i + run.offset
     e$trials$i <- e$trials$i + trial.offset
     e$triggers$trials.i <- e$triggers$trials.i + trial.offset
-    e$frame.skips$trials.i <- e$frame.skips$trials.i + trial.offset
+
+    #While old data percolate through the system.... with the new logfile
+    #parser this will become irrelevant as frame skips are now listed
+    #in the trigers table.
+    if ("frame.skips" %in% ls(e)) rm("frame.skips", envir=e)
+
+    if (drop.triggers) rm("triggers", envir=e)
 
     run.offset <<- max(e$runs$i, run.offset)
     trial.offset <<- max(e$trials$i, trial.offset)
@@ -32,19 +48,54 @@ aggregate <- function(...) {
   for (i in Reduce(union, sapply(envs, ls))) {
     collection <- lapply(envs, `[[`, i)
     collection <- collection[sapply(collection, function(x) length(x[[1]])) > 0]
-    env.out[[i]] <- do.call(mysmartbind, collection)
+    env.out[[i]] <- do.call("mysmartbind", collection)
   }
   save(list=ls(env.out), file=outfile, envir=env.out)
   env.out
+}
+
+kill.list.cols <- function(df) {
+  pipe(  df
+       , lapply(mode)
+       , .[.=="list"]
+       , names
+       , setdiff(colnames(df),.)
+       , df[,.]
+       )
 }
 
 load.discarding.eye.position <- function(infile) {
   ###Load a file, discard the eye position data, and return as an
   ###environment object.
   e <- new.env()
+  print(infile)
   load(infile, e)
   e$trials$eyeData <- NULL
-  e$trials$eyeData <- NULL
+  e$trials$trial.eyeData <- NULL
+
+  if (!"subject" %in% colnames(e$runs)) {
+    e$runs$subject <- unlist(lapply(e$runs$beforeRun.params,
+                                    function(x)
+                                    ifelse(length(dim(x))==3, x[['subject',1,1]], NA)),
+                             recursive=FALSE)
+  }
+  if (! "source.file" %in% colnames(e$runs)) {
+    e$runs$source.file <- sapply(e$runs$beforeRun.params, function(x)x[['logfile',1,1]][[1]])
+  }
+
+  ##fukka any column that's still in list mode.  
+  e$runs <- kill.list.cols(e$runs)
+  e$trials <- kill.list.cols(e$trials)
+  e$triggers <- kill.list.cols(e$triggers)
+
+  if (!"subject" %in% colnames(e$runs)) {
+    stop("dammit!")
+  }
+
+  if (!"source.file" %in% colnames(e$runs)) {
+    stop("what the hell!")
+  }
+
   e
 }
 
@@ -77,7 +128,7 @@ mysmartbind <- function(...)
                     col, "\n", sep = "")
                 if (class(block[, col]) == "factor") 
                   newclass <- "character"
-                else newclass <- class(block[, col])
+                else newclass <- mode(block[, col])
                 retval[[col]] <- as.vector(rep(NA, nrows), mode = newclass)
             }
 ##            retval[[col]][start:end] <- as.vector(block[, col], 
@@ -93,5 +144,5 @@ mysmartbind <- function(...)
 
 if ("--slave" %in% commandArgs()) { #Rscript...
   my.args <- commandArgs(trailingOnly=TRUE)
-  do.call(aggregate, as.list(my.args))
+  do.call("aggregate", as.list(my.args))
 }
