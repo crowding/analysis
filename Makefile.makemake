@@ -1,10 +1,14 @@
-##This file describes most of my processing toolchain. It i written in
+##This file describes most of my processing toolchain. It is written in
 ##a tiny domain-secific language for generating Makefiles, implemented
 ##over in makemake.py. makemake.py will use these rules to generate a
 ##larger makefile.
 
+#To begin with, all R scripts depend on having had R packages installed.
+--command --input --once --invisible Rlibs/install.packages.DONE
+--output --match --invisible --once '.*\.[Rr]' 
+
 #we pull only direction or adjustment files for now.
---command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*) 
+--command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*)
                                 svn export 
                                 'svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data/{0}' 
 --output --mkdir --intermediate datafiles/{0}
@@ -119,11 +123,3 @@
 --output --mkdir 'eachplots/_bysubj/{0}-{1}-{2}.pdf'
 --invisible --phony links
 
-#All R scripts depend on installing their R packages.
---command --input --once --invisible Rlibs/install.packages.DONE
---output --match --invisible --once '.*\.[Rr]' 
-
-#--command --match --input .*\.[Rr] --invisible --input tickets/Rlibs.check
-
-
-#--command echo --match .* >> --output file.list; 

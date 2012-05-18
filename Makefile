@@ -1,23 +1,26 @@
 .DEFAULT_GOAL = all
 SHELL = /bin/bash
 
-#Set the environment variable for local package installation.
-R_LIBS_USER := $(realpath Rlibs):$(R_LIBS_USER)
+#We depend on some R packages, so we set the library path in an environment vairable
+R_LIBS_USER := $(realpath .)/Rlibs:$(R_LIBS_USER)
 
-Rlibs/install.packages.DONE: install_packages.R
+Rlibs/install.packages.DONE:
+	echo ${R_LIBS_USER}
 	mkdir -p Rlibs
 	Rscript install_packages.R $@
+	touch -t 197001010000 $@
 
 #R scripts depend on having the packages installed, but don't rebuild
 #everything in account of installing R packages.
 .OLD: Rlibs/install.package.DONE
 
-#start by listing all of our data files.
-filelist.txt:
+#start by listing all of our data files out of SVN. Twiddle the modification times so that it doesn't check more than once a half hour.
+filelist.txt: datafiles/filelist.txt.NEXT
 	svn ls 'svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
 
-#always check the data and R installation before making.
-.ALWAYS: filelist.txt # install.packages.R
+#backdate this to a half hour ago. That way filelist.txt only gets refreshed every half hour...
+datafiles/filelist.txt.NEXT:
+	touch -t $$(date -v-30M +%C%y%m%d%H%M.%S) $@
 
 #If you can't connect to the network, proceed anyway.
 .IGNORE: filelist.txt

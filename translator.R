@@ -25,7 +25,7 @@ loadData <- function(infile, outfile) {
     
     current.length <- env$.nrow
     if (any(index > current.length)) {
-      cat("Expanding\n");
+      #cat("Expanding\n");
       current.length <- 2^ceiling(log2(max(index)))
       for (n in ls(env)) {
         length(env[[n]]) <- current.length
@@ -56,7 +56,7 @@ loadData <- function(infile, outfile) {
     run.index <<- run.index + 1
     beforeRun <<- list(...)
     afterRun <<- list(...)
-    cat(sprintf("Run %d\n", run.index))
+    cat(sprintf("%s: Run %d\n", infile, run.index))
   }
 
   beginTrial <- function(...) {
@@ -68,7 +68,9 @@ loadData <- function(infile, outfile) {
     trial <<- list(i = trial.index, runs.i = run.index, ...)
     params <<- list(i = trial.index, runs.i = run.index, ...)
     result = list(i = trial.index, runs.i = run.index, ...);
-    cat(sprintf("Trial %d\n", trial.index))    
+    if (trial.index %% 10 == 0) {
+      cat(sprintf("%s: Trial %d\n", infile, trial.index))
+    }
   }
 
   beginStimulus <- function(...) {
@@ -80,7 +82,7 @@ loadData <- function(infile, outfile) {
     ##mark it also in the triggers, so that we can more easily align the events
     storeTrigger(name="BEGIN STIMULUS", stimuli.i = stimulus.index)
     stimulus <<- list(i = stimulus.index, trials.i = trial.index, ...)
-    cat(sprintf("Stimulus %d\n", stimulus.index))
+    cat(sprintf("%s: Stim %d\n", infile, stimulus.index))
   }
 
   storeTrigger <- function(...) {
@@ -100,9 +102,15 @@ loadData <- function(infile, outfile) {
   zeros <- function(...) array(0, dim=c(...));
 
   eyeData <- function(x) {
-    i <- eye.index + 1:dim(x)[2]
-    eye.index <<- eye.index + dim(x)[2]
+    if (length(x) > 0) {
+      i <- eye.index + 1:dim(x)[2]
+      eye.index <<- eye.index + dim(x)[2]
+    } else {
+      dim(x) <- c(3,0)
+    }
     trial$eyeData <<- x;
+    ##for now we aren't stowing eye data in a separate table, but it might be interesting.
+    ##to store the time series as a huge table...
     ##stowRow(eye, i, list(i = i, trial.index = trial.index, x = x[1,], y = x[2,], t = x[3,]))
   }
 
@@ -117,9 +125,9 @@ loadData <- function(infile, outfile) {
 
   ##we rely on an external parser to translate text into evaluable R expressions.
   if (grepl("\\.gz$", infile)) {
-    pip <- pipe(sprintf('gzcat "%s" | ./yakshave/logfile', infile), 'r')
+    pip <- base::pipe(sprintf('gzcat "%s" | ./yakshave/logfile', infile), 'r')
   } else {
-    pip <- pipe(sprintf('./yakshave/logfile < "%s"', infile), 'r')
+    pip <- base::pipe(sprintf('./yakshave/logfile < "%s"', infile), 'r')
   }
   on.exit(close(pip))
 
@@ -128,6 +136,7 @@ loadData <- function(infile, outfile) {
     eval(chunk);
   }
 
+  #then finish any runs/trials/stimuli that are still open.
   capture.output({
     beginRun();
     beginTrial();
