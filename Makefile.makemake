@@ -75,13 +75,16 @@
 --output --listing --once eachplots/{0}.out
 --invisible --phony       graphs
 
+#note that "listing" does not need to be said more than once (and is
+#only said at the beginning anyway) Maybe I want to give a warning on
+#incompatible flags for combined words though?
 --command
 --output --match   eachplots/.*Segment.*.out
 --input --once     performance.R
 
 --command
---output --match   eachplots/.*CritDistance.*.out
---input --once     criticalDistance.R
+--output --match    eachplots/.*CritDistance.*.out
+--input --once      criticalDistance.R
 --invisible --phony criticalDistance
 
 --command
@@ -96,3 +99,31 @@
 
 #and a target that targets everything...?
 #--command --invisible --phony everything --match --invisible --input .*
+
+#For convenience, let's munge the filenames so as to sort differently.
+--command ln %-s 
+--input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
+'../{0}-{1}-{2}.pdf'
+--output --mkdir 'eachplots/_bydate/{1}-{2}-{0}.pdf'
+--invisible --phony links
+
+--command ln %-s 
+--input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
+'../{0}-{1}-{2}.pdf'
+--output --mkdir 'eachplots/_byexp/{2}-{0}-{1}.pdf'
+--invisible --phony links
+
+--command ln %-s 
+--input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
+'../{0}-{1}-{2}.pdf'
+--output --mkdir 'eachplots/_bysubj/{0}-{1}-{2}.pdf'
+--invisible --phony links
+
+#All R scripts depend on installing their R packages.
+--command --input --once --invisible Rlibs/install.packages.DONE
+--output --match --invisible --once '.*\.[Rr]' 
+
+#--command --match --input .*\.[Rr] --invisible --input tickets/Rlibs.check
+
+
+#--command echo --match .* >> --output file.list; 

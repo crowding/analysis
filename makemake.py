@@ -86,6 +86,8 @@ while the other rules are unchanged.
 Use --help to see a list of all applicable arguments and flags.
 """
 
+verbose = False
+
 class _AttributeHolder(object):
     """Abstract base class that provides __repr__.
 
@@ -239,8 +241,8 @@ class MatchedCommand(Command):
             "{listing_rule}"
             "{update_targets}"
             ).format(**
-                { 'products'          : " ".join(self.products())
-                , 'dependencies'      : " ".join(self.dependencies())
+                { 'products'          : " ".join(set(self.products()))
+                , 'dependencies'      : " ".join(set(self.dependencies()))
                 , 'command_indent'    : "\t" if False in [bool(i.invisible) for i in self.words] else ""
                 , 'command'           : self.commandLine()
                 , 'phony_rule'        : self.phonyRule()
@@ -555,10 +557,18 @@ if __name__ == "__main__":
 
 
 ##TODO
-    ##1. Think about reqorking to have multimatching rules
-    ## (zero match args; just make a command.
-    ## Two match args, make a partal match at one argument which is another (self-removing) rule;
-    ## and finish at another. Will have to do something clever with the formatting strings.
     
-    ##2. Intelligent escaping of command words that must go back through Make and shell script
-    ## (that can be bypassed if you want to use a Make special variable...)
+    ##1. Think about reworking to have multimatching rules as follows:
+    ##(zero match args; just make a command.  Two match args, make a
+    ##partal match at one argument which is another (self-removing)
+    ##rule; and finish at another. Will have to do something clever
+    ##with the formatting strings.
+    
+    ##2. Intelligent escaping of command words that must go back
+    ##through Make and shell script (that can be bypassed if you want
+    ##to use a Make special variable...)
+
+    ##3. Give a warning when combining words with --once if any of the
+    ##flags differ.
+
+    ##4. Maybe more warnings/errors for nonsensical flags or combinations of flags.

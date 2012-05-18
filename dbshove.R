@@ -140,6 +140,8 @@ offset.indices <- function(conn, env) {
   ##offset our data frame indices to avoid collisions.
   offset <- c()
   for (name in intersect(tables, make.db.names(conn, ls(env)))) {
+    if (! "i" %in% colnames(env[[name]])) next
+    
     the.max <- dbGetQuery( conn, sprintf("SELECT max(i) from %s", name))[[1]]
     if (length(the.max) > 0 && all(!is.na(the.max))) {
       offset[[name]] <-
