@@ -5,7 +5,6 @@ SHELL = /bin/bash
 R_LIBS_USER := $(realpath .)/Rlibs:$(R_LIBS_USER)
 
 Rlibs/install.packages.DONE:
-	echo ${R_LIBS_USER}
 	mkdir -p Rlibs
 	Rscript install_packages.R $@
 	touch -t 197001010000 $@

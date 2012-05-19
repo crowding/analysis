@@ -34,7 +34,9 @@ importFile <- function(filename, conn) {
   load(filename, envir=env)
   for (n in ls(env)) {
     env[[n]] <- kill.list.cols(env[[n]])
-    env[[n]]$loaded.from <- filename
+    if (nrow(env[[n]]) > 0) {
+      env[[n]]$loaded.from <- filename
+    }
   }
 
   with.db.transaction(conn, function() {
@@ -191,12 +193,12 @@ get.dataset.structure <- function(conn, env) {
   
   chain(  data.frame(frame=ls(env), stringsAsFactors=FALSE)
         , mutate( table = make.db.names(conn, frame) )
-        , adply( 1, function(row)
+        , adply(1, function(row)
                 cbind(  column=colnames(env[[row$frame]])
                       , mode=vapply(env[[row$frame]]
                           , function(x) if (is.factor(x)) "character" else mode(x)
                           , "")
-                      , row)
+                      , row[rep(1,length(env[[row$frame]])),])
                 )
         , mutate(  is.primary.key = (column == "i")
                  , is.external.key = grepl(".*\\.i$", column)
@@ -317,6 +319,7 @@ add.missing.fields <- function(conn, structure) {
 }
 
 do.insert <- function (conn, name, frame) {
+  if (nrow(frame) < 1) return()
   table <- make.db.names(conn, name)
   fields <- make.db.names(conn, colnames(frame))
   colnames(frame) <- fields

@@ -28,3 +28,5 @@ virtualdatafiles/ns-2012-03-07__11-10-46-ConcentricDirectionSegment.log.gz
 virtualdatafiles/nj-2012-03-06__12-59-32-ConcentricDirectionDiscriminabilityCritDistance.log.gz
 virtualdatafiles/nj-2012-03-27__09-33-53-ConcentricAdjustmentPeriodic.log.gz
 virtualdatafiles/nj-2012-04-25__11-00-15-ConcentricDirectionDiscriminabilityCritDistance.log.gz
+virtualdatafiles/jb-2012-04-20__16-08-16-ConcentricAdjustmentPeriodic.log.gz
+virtualdatafiles/jb-2012-04-18__14-36-07-ConcentricAdjustmentPeriodic.log.gz
