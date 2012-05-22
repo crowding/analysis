@@ -13,16 +13,13 @@ Rlibs/install.packages.DONE:
 #everything in account of installing R packages.
 .OLD: Rlibs/install.package.DONE
 
-#start by listing all of our data files out of SVN. Twiddle the modification times so that it doesn't check more than once a half hour.
-filelist.txt: datafiles/filelist.txt.NEXT
+#start by listing all of our data files out of SVN. I don't want it to
+#keep checking if I'm rapidly iterating, so only update it if it's a
+#half hour old...
+$(shell touch -t $$(date -v-30M +%C%y%m%d%H%M.%S) filelist.txt.NOW)
+
+filelist.txt: filelist.txt.NOW
 	svn ls 'svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
-
-#backdate this to a half hour ago. That way filelist.txt only gets refreshed every half hour...
-datafiles/filelist.txt.NEXT:
-	touch -t $$(date -v-30M +%C%y%m%d%H%M.%S) $@
-
-#If you can't connect to the network, proceed anyway.
-.IGNORE: filelist.txt
 
 #some data files get excluded (because they were empty or malformed, usually)
 unexcluded.txt: exclusions.txt filelist.txt
@@ -36,6 +33,6 @@ include Makefile.makemake.gen
 
 .PRECIOUS: database.sqlite
 
-all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs
+all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links
 
 

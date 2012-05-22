@@ -44,8 +44,9 @@ process <- function(trials, output, ...) {
                    )
        ) -> folded.rates
 
+  #note that sometimes the sense of the direction is wrong, as in MC
   chain(trials
-       , subset(responseInWindow & folded.displacement < 0.4 & folded.localDirectionContrast != 0, select=relevant.cols)
+       , subset(responseInWindow & folded.localDirectionContrast != 0, select=relevant.cols)
        , ddply( relevant.cols[-1:-3]
                , summarize
                , p = sum(folded.response==1)

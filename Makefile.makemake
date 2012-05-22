@@ -87,6 +87,15 @@
 --input --once     performance.R
 
 --command
+--output --match   eachplots/.*CritDistance.*.out
+--input --once     performance.R
+
+--command
+--output --match    eachplots/.*Segment.*.out
+--input --once      segment.R
+--invisible --phony segment
+
+--command
 --output --match    eachplots/.*CritDistance.*.out
 --input --once      criticalDistance.R
 --invisible --phony criticalDistance
