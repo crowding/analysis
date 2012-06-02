@@ -1,6 +1,8 @@
 #!/usr/bin/env RScript
 loadData <- function(infile, outfile) {
-  require(plyr)
+  suppressPackageStartupMessages({
+    require(plyr)
+  })
   trial = list();
   result = list();
   stimulus = list();
@@ -37,7 +39,7 @@ loadData <- function(infile, outfile) {
       ##cat("new column(s)", paste(new.names, collapse=', '), '\n')
     }
     for (n in new.names) {
-      env[[n]] <- numeric(current.length)
+      env[[n]] <- rep(as.numeric(NA),current.length)
     }
 
     for (n in names(l)) {
@@ -82,7 +84,9 @@ loadData <- function(infile, outfile) {
     ##mark it also in the triggers, so that we can more easily align the events
     storeTrigger(name="BEGIN STIMULUS", stimuli.i = stimulus.index)
     stimulus <<- list(i = stimulus.index, trials.i = trial.index, ...)
-    cat(sprintf("%s: Stim %d\n", infile, stimulus.index))
+    if (stimulus.index %% 50 == 0) {
+       cat(sprintf("%s: Stim %d\n", infile, stimulus.index))
+    }
   }
 
   storeTrigger <- function(...) {

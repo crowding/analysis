@@ -66,6 +66,14 @@
 --once                       touch
 --output --once              adjustment.sqlite.DONE
 
+#We also try describing the trial structure of the files, for the sake of my poor memory.
+#May also come in useful later...
+--command Rscript --input describe.R
+--match --input 'common.*/(.*)\.[Rr][Dd]ata'
+--output --mkdir 'descriptions/{0}.txt'
+--invisible --phony descriptions
+
+
 #these rules mainly create graphs. Note later rules stack onto earlier ones.
 --command --once          Rscript
 --input --once            graphs.R

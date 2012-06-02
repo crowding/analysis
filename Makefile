@@ -16,13 +16,15 @@ Rlibs/install.packages.DONE:
 #start by listing all of our data files out of SVN. I don't want it to
 #keep checking if I'm rapidly iterating, so only update it if it's a
 #half hour old...
-$(shell touch -t $$(date -v-30M +%C%y%m%d%H%M.%S) filelist.txt.NOW)
+$(shell mkdir -p datafiles)
+$(shell touch -t $$(date -v-30M +%C%y%m%d%H%M.%S) datafiles/filelist.txt.DONE)
 
-filelist.txt: filelist.txt.NOW
+datafiles/filelist.txt: datafiles/filelist.txt.DONE
+	mkdir -p datafiles
 	svn ls 'svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
 
 #some data files get excluded (because they were empty or malformed, usually)
-unexcluded.txt: exclusions.txt filelist.txt
+unexcluded.txt: exclusions.txt datafiles/filelist.txt
 	comm -2 -3 <(sort $(word 2,$^)) <(sort $<) > $@
 
 
@@ -33,6 +35,6 @@ include Makefile.makemake.gen
 
 .PRECIOUS: database.sqlite
 
-all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links
+all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions
 
 
