@@ -68,10 +68,10 @@
 
 #We also try describing the trial structure of the files, for the sake of my poor memory.
 #May also come in useful later...
---command Rscript --input describe.R
---match --input 'common.*/(.*)\.[Rr][Dd]ata'
---output --mkdir 'descriptions/{0}.txt'
---invisible --phony descriptions
+#--command Rscript --input describe.R
+#--match --input 'common.*/(.*)\.[Rr][Dd]ata'
+#--output --mkdir 'descriptions/{0}.txt'
+#--invisible --phony descriptions
 
 
 #these rules mainly create graphs. Note later rules stack onto earlier ones.
@@ -140,3 +140,24 @@
 --output --mkdir 'eachplots/_bysubj/{0}-{1}-{2}.pdf'
 --invisible --phony links
 
+#Compute all file descriptions, shoving them into a database.
+#Rscript describe.R [descriptions.RData] [descriptions.list] [input-file] ...
+--command rm
+--output --match --mkdir descriptions/descriptions.RData
+--input --invisible describe.R
+--output descriptions/descriptions.RData
+
+--command --once             RScript 
+--once                       describe.R #--input...
+--once --input               descriptions/descriptions.RData
+--input --match --invisible  common/(.*\.RData) 
+--once                       '$?'
+--once                       &&
+--once                       touch
+--output --once --mkdir      descriptions/descriptions.DONE
+--invisible --phony --once descriptions
+
+--command Rscript  --input writeDescriptions.R
+--input --match    descriptions/descriptions.RData
+--output --listing descriptions/descriptions.txt
+           --phony descriptions

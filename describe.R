@@ -6,9 +6,19 @@ suppressPackageStartupMessages({
   library(stringr)
 })
 
-do.describe <- function(infile, outfile) {
-  table <- describe.file(infile)
-  capture.output(file=outfile, print(table, width=Inf))
+do.describe <- function(datafile, ...) {
+  infiles <- setdiff(c(...), datafile)
+  descriptions <- new.env(parent=globalenv())
+  if (file.exists(datafile)) load(datafile, envir=descriptions)
+  on.exit(save(list = ls(descriptions), file=datafile, envir=descriptions))
+  if (!"descriptions" %in% ls(descriptions)) descriptions$descriptions <- list()
+
+  for (i in infiles) {
+    cat("describing ", i, "\n")
+    description <- describe.file(i)
+    descriptions$descriptions[[i]] <- description
+  }
+#  capture.output(file=outfile, print(table, width=Inf))
 }
 
 describe.file <- function(infile) {
