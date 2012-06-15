@@ -20,11 +20,11 @@
 --output                unpacked/{0}.RData
 --invisible --phony     unpacked
 
---command           Rscript 
---input             eyemovements.R
---match --input     unpacked/(.*Segment\.RData)
---output --mkdir    eyemovements/{0}
---invisible --phony eyemovements
+--command               Rscript 
+--input                 eyemovements.R
+--match --input         unpacked/(.*Segment\.RData)
+--output --mkdir        eyemovements/{0}
+--invisible --phony     xseyemovements
 
 --command           Rscript 
 --input             strip.R
@@ -35,6 +35,7 @@
 #the common script is specific to direction experiments
 --command           RScript
 --input             common.R
+--input --invisible common.manipulations.R
 --match --input     'stripped/(.*ConcentricDirection.*\.RData)'
 --output --mkdir    common/{0}
 --invisible --phony common
@@ -46,15 +47,23 @@
 --output    --mkdir 	'common_adj/{0}'.RData
 --invisible --phony 	common
 
-#and we shove those into a database.
+# Create a database, and shove each file into it:
+--command                    "##" sqlite3 discrimination.sqlite
+--input                      discrimination_init.sql & touch
+--output --mkdir --match     discrimination.sqlite.INIT
+
 --command --once             RScript 
---once                       dbshove.R #--input...
---once                       database.sqlite 
---input --match --invisible  common/(.*\.RData) 
---once                       '$?' 
+--once --input               dbshove.R
+--invisible --input          discrimination.sqlite.INIT
+--once                       discrimination.sqlite 
+--input --match              common/(.*\.RData) 
 --once                       &&
 --once                       touch
+--output --once --mkdir      dbtickets/{0}.DONE
+
+--command --once             touch
 --output --once              discrimination.sqlite.DONE
+--input --match --invisible  'dbtickets/.*\.DONE'
 
 #and we shove adjustment trials into a second database.
 --command --once             RScript 
@@ -66,15 +75,8 @@
 --once                       touch
 --output --once              adjustment.sqlite.DONE
 
-#We also try describing the trial structure of the files, for the sake of my poor memory.
-#May also come in useful later...
-#--command Rscript --input describe.R
-#--match --input 'common.*/(.*)\.[Rr][Dd]ata'
-#--output --mkdir 'descriptions/{0}.txt'
-#--invisible --phony descriptions
-
-
 #these rules mainly create graphs. Note later rules stack onto earlier ones.
+#TODO: Makefiles need 
 --command --once          Rscript
 --input --once            graphs.R
 --match --input --once    common/(.*).RData
@@ -142,22 +144,48 @@
 
 #Compute all file descriptions, shoving them into a database.
 #Rscript describe.R [descriptions.RData] [descriptions.list] [input-file] ...
---command rm
---output --match --mkdir descriptions/descriptions.RData
---input --invisible describe.R
---output descriptions/descriptions.RData
+--command                            rm descriptions/descriptions.RData && touch
+--output --mkdir                     descriptions/descriptions.Rdata.INIT
+--input --match --invisible          describe.R
 
---command --once             RScript 
---once                       describe.R #--input...
---once --input               descriptions/descriptions.RData
---input --match --invisible  common/(.*\.RData) 
---once                       '$?'
---once                       &&
---once                       touch
---output --once --mkdir      descriptions/descriptions.DONE
---invisible --phony --once descriptions
+--command                            Rscript
+--input                              describe.R 
+--input --invisible                  descriptions/descriptions.Rdata.INIT
+                                     descriptions/descriptions.RData
+--input --match                      common/(.*\.RData)
+                                     && touch 
+--output --mkdir                     descriptions/DONE/{0}.DONE
 
+--command
+--invisible --output                 descriptions/descriptions.RData
+--invisible --match --input          descriptions/DONE/.*.DONE
+
+#write individual descriptions out as text files.
 --command Rscript  --input writeDescriptions.R
---input --match    descriptions/descriptions.RData
---output --listing descriptions/descriptions.txt
-           --phony descriptions
+--input --match    'descriptions/descriptions\.RData'
+#TODO: this should say --output --listing but makemake isn't handling
+#multiple outputs correctly, generating a command for each output.
+#(should use a non-existing intermediate target?)
+--output           descriptions/descriptions.txt
+--phony            descriptions
+
+### Now, looking at the experiment descriptions, we can do things like
+### look through experiment sessions and pull some that are useful.
+### For example, let's pull all the sessions in which we varied the
+### spacing, otherwise leaving contrast constant.
+
+###TODO: after redoing the descriptions, i need to make a second time
+###before this runs. the Makefiles need to depend on files that are input "listing"
+--command Rscript 
+--input spacing_series.R 
+--input --match 'descriptions/descriptions\.RData'
+--output --mkdir collections/spacing_series.list
+--phony --invisible series
+
+#Then we can nominate those files to be pulled from the database.
+--command                  Rscript spacing_series_bias_threshold.R
+--input --match --listing  collections/spacing_series.list
+                           discrmination.sqlite 
+--input --invisible        discrimination.sqlite.DONE
+--output --mkdir           collections/spacing_series_bias_threshold.pdf
+

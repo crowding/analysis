@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 suppressPackageStartupMessages({
-  library("RSQLite")
-  source("programming.R")
+  source("db_functions.R")
+  library(ptools)
   library("plyr")
 })
 
@@ -20,11 +20,6 @@ do.process <- function(dbfile, ...) {
   with.db.connection(drv, dbfile, fn=function(conn) {
     l_ply(infiles, importFile, conn)
   })  
-}
-
-with.db.connection <- function(fn, ...) {
-  conn <- dbConnect(...)
-  tryCatch(fn(conn), finally = (dbDisconnect(conn) || stop(dbGetException(conn))))
 }
 
 importFile <- function(filename, conn) {
@@ -286,15 +281,14 @@ create.missing.tables <- function(conn, structure) {
           with(tab, paste("\"", field, "\" "
                           , type, " ", constraint
                           , sep="", collapse = ",\n")) -> fields
-          with(tab, paste("CREATE TABLE \""
-                            , unique(table)
-                            , "\" ("
-                            , fields, "); "
-                          , "\n\nCREATE INDEX IF NOT EXISTS \""
-                          , unique(table), "_loaded_from\" on \"", unique(table), "\" (loaded_from)"  
-                          , sep="", collapse = ""))
-        })) -> statements
-  for (s in statements){
+          with(tab, c(  paste("CREATE TABLE \"" , unique(table) , "\" (" , fields, "); "
+                              , sep="", collapse = "")
+                      , paste("CREATE INDEX IF NOT EXISTS \""
+                              , unique(table), "_loaded_from\" on \""
+                              , unique(table), "\" (loaded_from)"  
+                              , sep="", collapse = "")))
+        })) -> maketables
+  for (s in c(maketables)){
     cat(substr(s, 1, 75), "\n")
     send.command(conn, s)
   }
@@ -318,19 +312,6 @@ add.missing.fields <- function(conn, structure) {
   }
 }
 
-do.insert <- function (conn, name, frame) {
-  if (nrow(frame) < 1) return()
-  table <- make.db.names(conn, name)
-  fields <- make.db.names(conn, colnames(frame))
-  colnames(frame) <- fields
-  into <- paste("\"", fields, "\"", sep="", collapse = ", \n")
-  values <- paste(":", fields,  sep="", collapse = ", \n")
-  statement <- sprintf("INSERT INTO %s (%s) VALUES ( %s );", table, into, values)
-  #cat(substr(statement, 1, 75), "\n")
-  res <- dbSendPreparedQuery(conn, statement, frame)
-  #print(c(completed=dbHasCompleted(res), rowsAffected=dbGetRowsAffected(res)))
-  dbClearResult(res)
-}
 
 if ("--slave" %in% commandArgs()) {
   args <- commandArgs(trailingOnly=TRUE)

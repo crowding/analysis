@@ -16,7 +16,7 @@ do.describe <- function(datafile, ...) {
   for (i in infiles) {
     cat("describing ", i, "\n")
     description <- describe.file(i)
-    descriptions$descriptions[[i]] <- description
+    descriptions$descriptions[i] <- description
   }
 #  capture.output(file=outfile, print(table, width=Inf))
 }
@@ -26,7 +26,7 @@ describe.file <- function(infile) {
   load(infile, envir=data.env)
   table <- do.call(describe, as.list(data.env))
   rownames(table) <- NULL
-  table
+  structure(list(table), names=infile)
 }
 
 describe <- function(trials, runs, ...) {
@@ -42,9 +42,9 @@ describe <- function(trials, runs, ...) {
                , "trial.extra.flankerPhase", "trial.motion.process.phase"
                , "trial.motion.process.dphase", "trial.motion.process.angle"
                , "trial.extra.max_extent", "trial.extra.min_extent", "trial.extra.color"
-               , "trial.awaitInput"
+               , "trial.awaitInput", "trial.desiredResponse", "trial.run.i", "trial.extra.phase"
                )
-  valued <- c(  "motionCondition", "trial.extra.visibilityCondition"
+  valued <- c(  "trial.extra.r", "motionCondition", "trial.extra.visibilityCondition"
               , "n.occluders", "folded.localDirectionContrast")
   
   required <- chain(c(  "subject"

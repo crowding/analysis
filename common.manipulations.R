@@ -85,6 +85,11 @@ common.manipulations <- function(envir=parent.env(environment())) {
     library(plyr)
     ##Define the visibility condition for occluder experiments, or
     ##leave as "full" elsewhere.
+
+    ##Ugh, drop any trials columns that begin with "params."
+    ##We can look in "runs" for those if we ever need them
+    trials <- trials[grep("^params", colnames(trials), invert=TRUE)]
+    
     if (!is.null(trials$trial.occluders)) {
       mutate(trials, 
              trial.extra.visibilityCondition =

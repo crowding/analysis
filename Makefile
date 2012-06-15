@@ -27,14 +27,17 @@ datafiles/filelist.txt: datafiles/filelist.txt.DONE
 unexcluded.txt: exclusions.txt datafiles/filelist.txt
 	comm -2 -3 <(sort $(word 2,$^)) <(sort $<) > $@
 
-
 Makefile.makemake.gen: makemake.py Makefile.makemake unexcluded.txt
 	./makemake.py @Makefile.makemake --files @unexcluded.txt > $@
 
 include Makefile.makemake.gen
 
-.PRECIOUS: database.sqlite
+.PRECIOUS: discrimination.sqlite adjustment.sqlite
 
-all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions
+discrimination.sqlite: discrimination.sqlite.DONE
+
+adjustment.sqlite: adjustment.sqlite.DONE
+
+all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series
 
 

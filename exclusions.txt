@@ -34,3 +34,7 @@ virtualdatafiles/ml-2012-05-14__13-01-51-ConcentricDirectionSegment.log.gz
 virtualdatafiles/je-2012-05-24__09-29-09-ConcentricDirectionDiscriminabilityCritDistance.log.gz
 virtualdatafiles/ml-2012-05-23__11-05-27-ConcentricAdjustmentPeriodic.log.gz
 virtualdatafiles/ml-2012-05-30__11-06-41-ConcentricDirectionDiscriminabilityCritDistance.log.gz
+virtualdatafiles/nj-2012-06-01__15-59-53-ConcentricDirectionSegment.log.gz
+virtualdatafiles/tl-2012-06-01__14-34-32-ConcentricDirectionSegment.log.gz
+virtualdatafiles/ml-2012-06-05__14-10-18-ConcentricDirectionDiscriminabilityCritDistance.log.gz
+virtualdatafiles/tl-2012-06-07__09-34-44-ConcentricDirectionSegment.log.gz
