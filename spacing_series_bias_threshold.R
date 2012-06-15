@@ -74,7 +74,6 @@ psychometric.function <- function(data) {
                                    , sims=500
                                    )
 
-  browser()
   with(  X
        , c(  bias = intercept[[1]]
            , c(bias = quantile(sim[[1]], c(0.1,0.25,0.50,0.75,0.9)))
