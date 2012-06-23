@@ -49,12 +49,12 @@ find.intercept.glm <- function(model, cases, varname, response=0.5,
 
     # arrange the coefficient matrix so that we can get the intercepts
     # with a big matrix multiplication.
-    tt <- terms(fit)
+    tt <- terms(model)
     Terms <- delete.response(tt)
-    m1 <- model.frame(Terms, case1, na.action=na.pass, xlev=fit$xlevels)
-    m2 <- model.frame(Terms, case2, na.action=na.pass, xlev=fit$xlevels)
-    X1 <- model.matrix(Terms, m1, contrasts.arg = fit$contrasts)
-    X2 <- model.matrix(Terms, m2, contrasts.arg = fit$contrasts)        
+    m1 <- model.frame(Terms, case1, na.action=na.pass, xlev=model$xlevels)
+    m2 <- model.frame(Terms, case2, na.action=na.pass, xlev=model$xlevels)
+    X1 <- model.matrix(Terms, m1, contrasts.arg = model$contrasts)
+    X2 <- model.matrix(Terms, m2, contrasts.arg = model$contrasts)        
 
     link1 <- X1 %*% t(simulations@coef)
     link2 <- X2 %*% t(simulations@coef)

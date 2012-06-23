@@ -38,3 +38,4 @@ virtualdatafiles/nj-2012-06-01__15-59-53-ConcentricDirectionSegment.log.gz
 virtualdatafiles/tl-2012-06-01__14-34-32-ConcentricDirectionSegment.log.gz
 virtualdatafiles/ml-2012-06-05__14-10-18-ConcentricDirectionDiscriminabilityCritDistance.log.gz
 virtualdatafiles/tl-2012-06-07__09-34-44-ConcentricDirectionSegment.log.gz
+virtualdatafiles/nj-2012-06-12__14-32-22-ConcentricDirectionDiscriminabilityCritDistance.log.gz

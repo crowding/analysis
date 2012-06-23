@@ -35,7 +35,7 @@ columns.to.pull <- c("trial.motion.process.radius",
                      "subject"
                      )
 
-#main(flist = "collections/spacing_series.list", dbfile = "discrimination.sqlite", outfile = "collections/spacing_series_bias_threshold.out")
+#main(flist = "collections/spacing_series.list", dbfile = "discrimination.sqlite", outfile = "collections/spacing_series_calculations.out")
 #trials <- pull.from.db(conn, data.frame(loaded.from=str_trim(readLines("collections/spacing_series.list"))))
 main <- function(flist, dbfile, outfile) {
   

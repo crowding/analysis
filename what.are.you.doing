@@ -1,0 +1,85 @@
+----------------------------------------------------------------------
+Mon Jun 18 15:32:59 PDT 2012
+
+Went to John Palmer's class.
+
+Played with plotting threhsolds and biases as a function of target
+spacing.
+
+It appears that the most comprehensible graphs are made not by
+plotting thresholds and x-intercepts, but by plotting slopes and
+y-intercepts. This way of looking at it is much less sensitive to
+wwhat happens when the psychometric function flattens out, and shows
+the trends better. It's also much more straightforward to compute error
+bars on slope and y-intercept vs. error bars on threshold and bias.
+
+Currently I'm only looking at data where a single carrier direction
+was run for the whole session.
+
+Now I need to look at how I'm combining data in cases where I'm
+combining data from multiple sources.
+
+Ran NJ on varying eccentricities, I had been running her on varying
+sizes at constant eccentricity.
+
+Still have to hear back form Maria about getting R on the cluster. In
+the meantime I looked again at glibc documentation to see if I can
+configure it to build the 32 bit libraries (required for building gcc,
+which is in turn required for building gfortran, which is in turn
+required for building R)
+
+Found this:
+
+http://stackoverflow.com/questions/8004241/how-to-compile-glibc-32bit-on-an-x86-64-machine
+
+Various things therein didn't really help.
+
+Tried compiling GCC w/o multilib support:
+
+    ../gcc-4.4.7/configure --prefix=$HOME --enable-languages=fortran --disable-multilib
+
+so far so good? the test is whether R compiles under those conditions.
+
+Looking for software to nudge me to take journal entries.
+
+Reading 1st chapter of Davida Teller's book.
+
+GCC compiled and installed so I tried compiling R. Configured like this:
+
+    ./configure --prefix=$HOME --with-readline=no --with-x=no
+
+Seems to compile and run.
+
+Actually I compiled Readline and redid R.
+
+Going back to Teller book.
+
+Threw showers' pass jacket in envelope. Need to stop at post office to send it off.
+
+Going home.
+
+Mon Jun 18 20:24:02 PDT 2012
+----------------------------------------------------------------------
+
+Mon Jun 18 21:41:55 PDT 2012
+
+at home
+
+read a little of Teller chapter, went home
+
+----------------------------------------------------------------------
+
+Tue Jun 19 13:16:55 PDT 2012
+
+Finished Teller chapter.
+
+VisCog group meeting. Maria presented on pupillary reflex to lightness
+illusions.
+
+Maria M says she can install R, in some time frame. 
+
+
+
+
+
+
