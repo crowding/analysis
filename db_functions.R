@@ -53,6 +53,40 @@ do.insert <- function (conn, name, frame
   dbClearResult(res)
 }
 
+columns.to.pull <- c("trial.motion.process.radius",
+                     "trial.extra.side",
+                     "trial.extra.nVisibleTargets",
+                     "abs.displacement",
+                     "abs.localDirectionContrast",
+                     "trial.extra.tf",
+                     "trial.extra.wavelengthScalar",
+                     "trial.extra.dt",
+                     "trial.extra.widthScalar",
+                     "trial.extra.durationScalar",
+                     "trial.extra.nTargets",
+                     "trial.motion.process.order",
+                     "trial.motion.process.n",
+                     "visibilityCondition",
+                     "folded.localDirectionContrast",
+                     "folded.displacement",
+                     "folded.response",
+                     "abs.response",
+                     "target.spacing",
+                     "responseInWindow",
+                     "responseTime",
+                     "maxResponseTime",
+                     "loaded.from",
+                     "runs.i",
+                     "subject"
+                     )
+
+pull.from.sqlite <- function(dbfile, ...) {
+  drv <- SQLite()
+  trials <- with.db.connection(drv, dbfile, fn=function(conn) {
+    pull.from.db(conn, data.frame(loaded.from=files))
+  })
+}
+
 pull.from.db <- function(conn, condition, columns=columns.to.pull, table="trials") {
   #construct a query for pulling the trials nominated by an inner join
   #with the privided data frame.

@@ -38,6 +38,6 @@ discrimination.sqlite: discrimination.sqlite.DONE
 
 adjustment.sqlite: adjustment.sqlite.DONE
 
-all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series
+all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections
 
 

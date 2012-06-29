@@ -154,3 +154,29 @@ Ping everyone based on meeting times.
 
 Get figure with captions working.
 
+Send figure (bias/sensitivity) to advs. Hope it makes sense despite
+some ugliness.
+
+----------------------------------------------------------------------
+Wed Jun 27 23:49:05 PDT 2012
+
+Okay, it lqooks like I was working on a contrast series.
+
+I should do that, then work up a number/density summary
+
+then refine figures into more publication worthy graphs
+
+then then
+
+----------------------------------------------------------------------
+Thu Jun 28 15:06:09 PDT 2012
+
+finish up/tone down email to mike
+
+need to check how often "monster effect" really happens
+
+
+
+
+
+

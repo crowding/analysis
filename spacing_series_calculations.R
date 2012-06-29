@@ -5,46 +5,16 @@ suppressPackageStartupMessages({
         library(stringr)
         library(psyphy)
         source("db_functions.R")
-        source("modeling.manipulations.R")
+        source("graphics_functions.R")
+        source("data_functions.R")
 })
 
-columns.to.pull <- c("trial.motion.process.radius",
-                     "trial.extra.side",
-                     "trial.extra.nVisibleTargets",
-                     "abs.displacement",
-                     "abs.localDirectionContrast",
-                     "trial.extra.tf",
-                     "trial.extra.wavelengthScalar",
-                     "trial.extra.dt",
-                     "trial.extra.widthScalar",
-                     "trial.extra.durationScalar",
-                     "trial.extra.nTargets",
-                     "trial.motion.process.order",
-                     "trial.motion.process.n",
-                     "visibilityCondition",
-                     "folded.localDirectionContrast",
-                     "folded.displacement",
-                     "folded.response",
-                     "abs.response",
-                     "target.spacing",
-                     "responseInWindow",
-                     "responseTime",
-                     "maxResponseTime",
-                     "loaded.from",
-                     "runs.i",
-                     "subject"
-                     )
-
-#main(flist = "collections/spacing_series.list", dbfile = "discrimination.sqlite", outfile = "collections/spacing_series_calculations.out")
-#trials <- pull.from.db(conn, data.frame(loaded.from=str_trim(readLines("collections/spacing_series.list"))))
 main <- function(flist, dbfile, outfile) {
-  
-  drv <- SQLite()
-  files <- str_trim(readLines(flist))
-  trials <- with.db.connection(drv, dbfile, fn=function(conn) {
-    pull.from.db(conn, data.frame(loaded.from=files))
-  })
 
+  files <- str_trim(readLines(flist))
+  
+  trials <- pull.from.sqlite(dbfile, data.frame(loaded.from=files))
+ 
   threshes <- measure_thresholds(trials, per_session=FALSE)
   session <- measure_thresholds(trials, per_session=TRUE)
 
@@ -64,57 +34,6 @@ main <- function(flist, dbfile, outfile) {
   writeLines(data_file, fout)
   save(threshes, session, file=data_file)
 }
-
-replace_extension <- function(filename, new_extension) {
-  sub(  "((.)\\.[^.]*|)$"
-      , paste("\\2.", new_extension, sep="")
-      , filename)
-}
-
-measure_thresholds <- function(trials,per_session=FALSE) {
-
-  split <- c(  "subject"
-             , "target_spacing"
-             , "trial_motion_process_radius"
-             , "folded_localDirectionContrast"
-             )
-  if (per_session) split <- union(split, "loaded_from")
-  used <- c("folded_displacement", "folded_response", "responseInWindow")
-  ddply(trials[union(split, used)], split, psychometric_function, .progress="text")
-}
-
-psychometric_function <- function(data) {
-  #return slope, threshold, and quantiles of each from simulation
-  data <- mutate(data, response.cw = folded_response > 0)
-  fit <- glm(  response.cw ~ folded_displacement
-             , binomial(link=logit.2asym(0.05, 0.05))
-             , subset(data, as.logical(responseInWindow))
-             )
-
-  ##note this will find a bunch of intercepts (arg 2) if you want...
-  cases <- data[1,,drop=FALSE]
-  X <- find.intercept.glm(  fit, cases
-                                   , 'folded_displacement'
-                                   , response = c(.5, .75)
-                                   , result.type="list"
-                                   , sims=500
-                                   )
-
-  with(  X
-       , c(  bias = intercept[[1]]
-           , c(bias = quantile(sim[[1]], c(0.1,0.25,0.50,0.75,0.9)))
-           , threshold = intercept[[2]] - intercept[[1]]
-           , c(threshold = quantile(sim[[2]] - sim[[1]], c(0.1,0.25,0.50,0.75,0.9)))
-           , yint = fit$coefficients[[1]]
-           , yint.sd = sqrt(vcov(fit)[[1,1]])
-           , slope = fit$coefficients[[2]]
-           , slope.sd = sqrt(vcov(fit)[[2,2]])
-           , slope.positive <- mean(sign(X$sim[[2]]))
-           )
-       )
-
-}
-
 
 #make a "list of quoted items"
 qlist <- function(...) {
@@ -179,15 +98,6 @@ make_figure <- function(threshes, pdf_file) {
   grid.draw(fr2)
 
   #We can also do fitting per session.
-}
-  
-with.caption <- function(plot, caption, gp=gpar(fontsize=8)) {
-  wrap <- paste(strwrap(caption, width=80), collapse="\n")
-  text <- textGrob(wrap, just="left", x=0)
-  fr <- frameGrob(name="fr")
-  fr <- packGrob(fr, text, side="bottom")
-  fr <- packGrob(fr, ggplotGrob(plot), side="top")
-  fr
 }
 
 if ("--slave" %in% commandArgs()) {

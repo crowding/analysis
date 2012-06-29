@@ -200,7 +200,7 @@
 --output --mkdir collections/contrast_series.list
 --phony --invisible series
 
-# --command                  Rscript contrast_series_measurements.R
+# --command                  Rscript contrast_series_calculations.R
 # --input --match --listing  collections/contrast_series.list
 #                            discrimination.sqlite 
 # --input --invisible        discrimination.sqlite.DONE
