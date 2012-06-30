@@ -2,6 +2,11 @@
 
 ##Manipulations done to normalize my data.
 
+suppressPackageStartupMessages({
+  library(ptools)
+  library(plyr)
+})
+
 common <- function(infile, outfile) {
   env <- new.env(parent=.GlobalEnv)
   suppressPackageStartupMessages({

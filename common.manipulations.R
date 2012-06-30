@@ -89,6 +89,9 @@ common.manipulations <- function(envir=parent.env(environment())) {
     ##Ugh, drop any trials columns that begin with "params."
     ##We can look in "runs" for those if we ever need them
     trials <- trials[grep("^params", colnames(trials), invert=TRUE)]
+
+    ##We only look at the concentric trials.
+    trials <- subset(trials, trial.version__.function == "ConcentricTrial")
     
     if (!is.null(trials$trial.occluders)) {
       mutate(trials, 
@@ -113,6 +116,7 @@ common.manipulations <- function(envir=parent.env(environment())) {
            correct=(result.response
                     ==( - trial.extra.globalDirection
                        - trial.extra.localDirection * !trial.extra.globalDirection))) -> trials
+    
     ##mark the motion condition in each trial based on whether local and
     ##global run the same direction.
     trials <- transform(trials,
@@ -158,22 +162,21 @@ common.manipulations <- function(envir=parent.env(environment())) {
     ##extract the "directioncal content" from the trials. some trials
     ##have all targets all same direciton, other trials have targets
     ##in opposite directions overlaid in pairs.
-    has.counterphase <- with(  trials
-                             , laply(  trial.motion.process.velocity
-                                      , mkchain(range, diff, .>0)))
-    
     direction.content <- with(trials,
-                              mapply(  has.counterphase
-                                     , trial.motion.process.velocity
+                              mapply(  trial.motion.process.velocity
                                      , trial.motion.process.color 
-                                     , FUN=function(cp, vel, col) {
-                                       if (cp) {
-                                         if (sign(vel[1]) > 0) {
-                                           c(col[1,1], col[1,2])
-                                         } else {
-                                           c(col[1,2], col[1,1])
+                                     , FUN=function(vel, col) {
+                                       if ( diff(range(vel)) > 0 ) { #mixture of CW and CCW
+                                         if (dim(col)[2] < 2) { #pure counterphase
+                                           c(col[1,1], col[1,1])
+                                         } else { #direcitonal content
+                                           if (sign(vel[1]) > 0) {
+                                             c(col[1,1], col[1,2])
+                                           } else {
+                                             c(col[1,2], col[1,1])
+                                           }
                                          }
-                                       } else {
+                                       } else { #pure cw/ccw
                                          if (sign(vel) > 0) {
                                            c(col[1,1], 0)
                                          } else {
@@ -233,6 +236,12 @@ common.manipulations <- function(envir=parent.env(environment())) {
                         abs.response * sign(abs.displacement))
              )
 
+    trials <-
+      within(trials,
+             target.spacing <- 2 * pi * trial.motion.process.radius / trial.extra.nTargets)
+    trials <- subset(trials, !is.nan(responseTime))
+    trials <- transform(trials, log.target.spacing=log(target.spacing))
+
     ##pull out the subject ID into each trial, as well as the actual experiment file name.
     if (!"subject" %in% colnames(runs)) {
       if ("beforeRun.params" %in% colnames(runs)) {
@@ -252,12 +261,6 @@ common.manipulations <- function(envir=parent.env(environment())) {
     trials <- merge(trials, runs[,c("i" ,"subject", "source.file")],
                     by.x='runs.i', by.y='i',
                     all.x=TRUE)
-
-    trials <-
-      within(trials,
-             target.spacing <- 2 * pi * trial.motion.process.radius / trial.extra.nTargets)
-    trials <- subset(trials, trial.version__.function == "ConcentricTrial" & !is.nan(responseTime))
-    trials <- transform(trials, log.target.spacing=log(target.spacing))
     
     rm(t.responseTimestamp)
     rm(t.motionBegun)
