@@ -261,9 +261,12 @@ common.manipulations <- function(envir=parent.env(environment())) {
     trials <- merge(trials, runs[,c("i" ,"subject", "source.file")],
                     by.x='runs.i', by.y='i',
                     all.x=TRUE)
-    
+
+    #we have to remove any var we used that we aren't going to save....
     rm(t.responseTimestamp)
     rm(t.motionBegun)
+    rm(direction.content)
+    
     if ("frame.skips" %in% ls()) rm(frame.skips)
   })
 }

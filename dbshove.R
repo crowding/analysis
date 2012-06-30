@@ -16,15 +16,20 @@ do.process <- function(dbfile, ...) {
   ##open a database connection
   drv <- SQLite()
   infiles <- as.character(list(...))
+  if (length(infiles) > 1) {
+    print.filename <- TRUE
+  } else {
+    print.filename <- FALSE
+  }
 
   with.db.connection(drv, dbfile, fn=function(conn) {
-    l_ply(infiles, importFile, conn)
+    l_ply(infiles, importFile, conn, print.filename)
   })  
 }
 
-importFile <- function(filename, conn) {
+importFile <- function(filename, conn, print.filename) {
   #load the file into an env...
-  print(filename)
+  if (print.filename) print(filename)
   env = new.env()
   load(filename, envir=env)
   for (n in ls(env)) {
