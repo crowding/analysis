@@ -155,6 +155,40 @@ common.manipulations <- function(envir=parent.env(environment())) {
                           function(x) if(is.null(x) || identical(x, NA)) 0 else length(x)))
     }
 
+    ##extract the "directioncal content" from the trials. some trials
+    ##have all targets all same direciton, other trials have targets
+    ##in opposite directions overlaid in pairs.
+    has.counterphase <- with(  trials
+                             , laply(  trial.motion.process.velocity
+                                      , mkchain(range, diff, .>0)))
+    
+    direction.content <- with(trials,
+                              mapply(  has.counterphase
+                                     , trial.motion.process.velocity
+                                     , trial.motion.process.color 
+                                     , FUN=function(cp, vel, col) {
+                                       if (cp) {
+                                         if (sign(vel[1]) > 0) {
+                                           c(col[1,1], col[1,2])
+                                         } else {
+                                           c(col[1,2], col[1,1])
+                                         }
+                                       } else {
+                                         if (sign(vel) > 0) {
+                                           c(col[1,1], 0)
+                                         } else {
+                                           c(0, col[1,1])
+                                         }
+                                       }
+                                     }
+                                     )
+                              )
+
+    trials <- mutate(  trials
+                     , trial.extra.content.cw = direction.content[1,]
+                     , trial.extra.content.ccw = direction.content[2,]
+                     )
+                         
     ##assign a "direction contrast" to trials that were done before
     ##direction contrast was a real parameter Express contrast, displacement and response in
     ##common absolute directions (positive=CCW, negative=CW)
@@ -165,9 +199,11 @@ common.manipulations <- function(envir=parent.env(environment())) {
       trials <-
         mutate( trials
                , trial.extra.directionContrast=
-                 ifelse(  is.na(trial.extra.directionContrast)
-                        , ifelse(trial.extra.localDirection == 0, 0, 1)
-                        , trial.extra.directionContrast))
+                  ( (trial.extra.content.cw - trial.extra.content.ccw)
+                    / (trial.extra.content.cw + trial.extra.content.ccw)
+                    * sign(trial.extra.localDirection)
+                   )
+               )
     }
 
     ##compute absolute direction contrasts and displacements.
@@ -179,7 +215,14 @@ common.manipulations <- function(envir=parent.env(environment())) {
                  sign(trial.extra.globalDirection) * trial.extra.globalVScalar
                  * trial.extra.r * trial.motion.process.dt
              , abs.response = -result.response
-             , folded.localDirectionContrast = abs(abs.localDirectionContrast),
+             , folded.content.with =
+                 ifelse(  abs.localDirectionContrast > 0
+                        , trial.extra.content.cw, trial.extra.content.ccw)
+             , folded.content.against =
+                 ifelse(  abs.localDirectionContrast > 0
+                        , trial.extra.content.ccw, trial.extra.content.cw)             
+             , folded.localDirectionContrast = ((folded.content.with - folded.content.against)
+                                                / (folded.content.with + folded.content.against))
              , folded.displacement =
                  ifelse(abs.localDirectionContrast != 0,
                         abs.displacement * sign(abs.localDirectionContrast),

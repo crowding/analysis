@@ -54,7 +54,8 @@ plot.form <- function(  dataset
                       , ...
                       ) {
   
-  expr <- quote(ggplot(dataset)
+  expr <- quote(
+                ggplot(dataset)
                 + theme_bw()
                 + aes(  x = target_spacing , y = yvar
                       , ymin = ymin , ymax = ymax
