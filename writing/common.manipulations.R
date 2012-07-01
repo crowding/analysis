@@ -162,10 +162,29 @@ common.manipulations <- function(envir=parent.env(environment())) {
     ##extract the "directioncal content" from the trials. some trials
     ##have all targets all same direciton, other trials have targets
     ##in opposite directions overlaid in pairs.
+
+    if (!"trial.extra.useFlankers" %in% colnames(trials)) {
+      trials$trial.extra.useFlankers <- NA
+      trials$trial.extra.flankerAngle <- list(c())
+    }
+    
     direction.content <- with(trials,
                               mapply(  trial.motion.process.velocity
-                                     , trial.motion.process.color 
-                                     , FUN=function(vel, col) {
+                                     , trial.motion.process.color
+                                     , trial.extra.useFlankers
+                                     , trial.extra.flankerAngle
+                                     , FUN=function(vel, col, fl, fa) {
+                                       
+                                       ##Note that if the trials had
+                                       ##flankers then the flankers
+                                       ##were listed first...
+                                       if ( fl && (length(fa) > 0)) {
+                                         if (dim(col)[2] > 1) {
+                                           col <- col[,-(1:4)]
+                                         }
+                                         cel <- vel[-(1:4)]
+                                       }
+                                       ##
                                        if ( diff(range(vel)) > 0 ) { #mixture of CW and CCW
                                          if (dim(col)[2] < 2) { #pure counterphase
                                            c(col[1,1], col[1,1])
