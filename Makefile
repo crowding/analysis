@@ -27,8 +27,12 @@ datafiles/filelist.txt: datafiles/filelist.txt.DONE
 unexcluded.txt: exclusions.txt datafiles/filelist.txt
 	comm -2 -3 <(sort $(word 2,$^)) <(sort $<) > $@
 
-Makefile.makemake.gen: makemake.py Makefile.makemake unexcluded.txt
-	./makemake.py @Makefile.makemake --files @unexcluded.txt > $@
+#We also match against script files...
+scripts.txt: 
+	echo $(wildcard *.R) > $@
+
+Makefile.makemake.gen: makemake.py Makefile.makemake unexcluded.txt scripts.txt
+	./makemake.py @Makefile.makemake --files @unexcluded.txt @scripts.txt > $@
 
 include Makefile.makemake.gen
 

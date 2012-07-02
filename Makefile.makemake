@@ -174,55 +174,26 @@
 ### For example, let's pull all the sessions in which we varied the
 ### spacing, otherwise leaving contrast constant.
 
-###TODO: after redoing the descriptions, i need to make a second time
-###before this runs. the Makefiles need to depend on files that are input "listing"
+## TODO: after redoing the descriptions, i need to make a second time
+## before this runs. the Makefiles need to depend on files that are input "listing"
+
+# For various purposes, select from the descriptions files.
 --command Rscript 
---input select_from_descriptions.R
---input spacing_series.R
---input --match 'descriptions/descriptions\.RData'
---output --mkdir collections/spacing_series.list
+--input select_from_descriptions.R 
+--input --match (.*)_series.R
+--input 'descriptions/descriptions.RData'
+--output --mkdir collections/{0}_series.list
 --phony --invisible series
 
-#Then we can nominate those files to be pulled from the database.
---command                  Rscript spacing_series_calculations.R
---input --match --listing  collections/spacing_series.list
+## Then run calculations using those selections.  
+##
+## TODO: this runs things twice because of the multiple output files
+## generated. Need to fix that in makemake
+--command                  Rscript 
+--input --match            (.*)_series_calculations.R$
+--input --listing          collections/{0}_series.list
                            discrimination.sqlite 
 --input --invisible        discrimination.sqlite.DONE
---output --mkdir --listing collections/spacing_series_calculations.out
+--output --mkdir --listing collections/{0}_series_calculations.out
 --invisible --phony collections
-
-
-#Similarly, pull all the sessions that varied contrast....
---command Rscript 
---input select_from_descriptions.R 
---input contrast_series.R
---input --match 'descriptions/descriptions\.RData'
---output --mkdir collections/contrast_series.list
---phony --invisible series
-
---command                  Rscript contrast_series_calculations.R
---input --match --listing  collections/contrast_series.list
-                           discrimination.sqlite 
---input --invisible        discrimination.sqlite.DONE
---output --mkdir --listing collections/contrast_series_calculations.out
---invisible --phony collections
-
-# and the sessions with varied bicontrast...
---command Rscript 
---input select_from_descriptions.R 
---input bicontrast_series.R
---input --match 'descriptions/descriptions\.RData'
---output --mkdir collections/bicontrast_series.list
---phony --invisible series
-
-
-# and the sessions with varied number/density...
---command Rscript 
---input select_from_descriptions.R 
---input numdensity_series.R
---input --match 'descriptions/descriptions\.RData'
---output --mkdir collections/numdensity_series.list
---phony --invisible series
-
-#golly, there needs to be a multiple-matching facility...
 

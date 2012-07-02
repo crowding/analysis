@@ -36,7 +36,7 @@ make_figure <- function(threshes) {
  Bias as a function of directional content. Bias is as defined in the previosu figure. Colors code different values for element spacing.
 "
 
-  plot.form()
+  plot.form(data=threshes)
 
 }
 
