@@ -46,7 +46,7 @@ describe <- function(trials, runs, ...) {
                , "trial.extra.content.cw", "trial.extra.content.ccw"
                )
   valued <- c(  "trial.extra.r", "motionCondition", "trial.extra.visibilityCondition"
-              , "n.occluders", "folded.localDirectionContrast")
+              , "n.occluders", "folded.localDirectionContrast", "folded.content.with", "folded.content.against")
   
   required <- chain(c(  "subject"
                         , "trial.extra.r"

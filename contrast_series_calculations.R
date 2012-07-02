@@ -29,7 +29,6 @@ main <- function(flist, dbfile, outfile) {
   writeLines(data_file, fout)
   save(threshes, session, file=data_file)
 
-  
 }
 
 make_figure <- function(threshes) {

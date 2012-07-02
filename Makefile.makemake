@@ -200,9 +200,29 @@
 --output --mkdir collections/contrast_series.list
 --phony --invisible series
 
-# --command                  Rscript contrast_series_calculations.R
-# --input --match --listing  collections/contrast_series.list
-#                            discrimination.sqlite 
-# --input --invisible        discrimination.sqlite.DONE
-# --output --mkdir --listing collections/contrast_series_calculations.out
-# --invisible --phony collections
+--command                  Rscript contrast_series_calculations.R
+--input --match --listing  collections/contrast_series.list
+                           discrimination.sqlite 
+--input --invisible        discrimination.sqlite.DONE
+--output --mkdir --listing collections/contrast_series_calculations.out
+--invisible --phony collections
+
+# and the sessions with varied bicontrast...
+--command Rscript 
+--input select_from_descriptions.R 
+--input bicontrast_series.R
+--input --match 'descriptions/descriptions\.RData'
+--output --mkdir collections/bicontrast_series.list
+--phony --invisible series
+
+
+# and the sessions with varied number/density...
+--command Rscript 
+--input select_from_descriptions.R 
+--input numdensity_series.R
+--input --match 'descriptions/descriptions\.RData'
+--output --mkdir collections/numdensity_series.list
+--phony --invisible series
+
+#golly, there needs to be a multiple-matching facility...
+
