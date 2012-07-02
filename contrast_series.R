@@ -15,4 +15,6 @@ is.good.session <- function(desc) {
   chain(desc, sapply(nrow), (contrast & .>2) | spacing | .==1, all)
 
   #except for the session where I had both leftward and rightward contrasts...
+  # common/ml-2012-05-30__11-08-10-ConcentricDirectionDiscriminabilityCritDistance.RData
+  
 }

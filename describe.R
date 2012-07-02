@@ -43,6 +43,7 @@ describe <- function(trials, runs, ...) {
                , "trial.motion.process.dphase", "trial.motion.process.angle"
                , "trial.extra.max_extent", "trial.extra.min_extent", "trial.extra.color"
                , "trial.awaitInput", "trial.desiredResponse", "trial.run.i", "trial.extra.phase"
+               , "trial.extra.content.cw", "trial.extra.content.ccw"
                )
   valued <- c(  "trial.extra.r", "motionCondition", "trial.extra.visibilityCondition"
               , "n.occluders", "folded.localDirectionContrast")

@@ -195,7 +195,7 @@
 #Similarly, pull all the sessions that varied contrast....
 --command Rscript 
 --input select_from_descriptions.R 
---input spacing_series.R
+--input contrast_series.R
 --input --match 'descriptions/descriptions\.RData'
 --output --mkdir collections/contrast_series.list
 --phony --invisible series

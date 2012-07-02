@@ -182,7 +182,7 @@ common.manipulations <- function(envir=parent.env(environment())) {
                                          if (dim(col)[2] > 1) {
                                            col <- col[,-(1:4)]
                                          }
-                                         cel <- vel[-(1:4)]
+                                         vel <- vel[-(1:4)]
                                        }
                                        ##
                                        if ( diff(range(vel)) > 0 ) { #mixture of CW and CCW
@@ -196,7 +196,7 @@ common.manipulations <- function(envir=parent.env(environment())) {
                                            }
                                          }
                                        } else { #pure cw/ccw
-                                         if (sign(vel) > 0) {
+                                         if (sign(vel[1]) > 0) {
                                            c(col[1,1], 0)
                                          } else {
                                            c(0, col[1,1])

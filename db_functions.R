@@ -83,7 +83,7 @@ columns.to.pull <- c("trial.motion.process.radius",
 pull.from.sqlite <- function(dbfile, ...) {
   drv <- SQLite()
   trials <- with.db.connection(drv, dbfile, fn=function(conn) {
-    pull.from.db(conn, data.frame(loaded.from=files))
+    pull.from.db(conn, ...)
   })
 }
 
