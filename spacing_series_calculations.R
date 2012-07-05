@@ -15,8 +15,8 @@ main <- function(flist, dbfile, outfile) {
   
   trials <- pull.from.sqlite(dbfile, data.frame(loaded.from=files))
  
-  threshes <- measure_thresholds(trials, per_session=FALSE)
-  session <- measure_thresholds(trials, per_session=TRUE)
+  threshes <- measure_thresholds(trials, per_session=FALSE,  sims=0)
+# session <- measure_thresholds(trials, per_session=TRUE, sims=0)
 
   ##we'll put out an Rdata file and a .pdf file and a .csv file for Ione.
   fout <- file(outfile, 'w')
@@ -32,7 +32,7 @@ main <- function(flist, dbfile, outfile) {
 
   data_file <- replace_extension(outfile, "RData")
   writeLines(data_file, fout)
-  save(threshes, session, file=data_file)
+  save(threshes, file=data_file)
 }
 
 #make a "list of quoted items"

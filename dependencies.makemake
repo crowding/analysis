@@ -1,0 +1,33 @@
+#Each R file depends on its dependencies and on having the right packages installed.
+#TODO make it so that changes to "listing" files cause the makefile to be rebuilt?
+#need to think more about this case of dependency discovery.
+--command
+--input --invisible --once            Rlibs/install.packages.DONE
+--input --invisible --once --listing 'dependencies/{0}.dep'
+--output --match --invisible --once  '(.*\.[Rr])$'
+--invisible --phony                  dependencies
+
+##here's how to compute dependencies for R script files
+##TODO this ought to be re-computed when the script file changes??? 
+##How to do that without circularity??
+--command                Rscript 
+                         locate_deps.R
+                         {0}
+--output --mkdir         dependencies/{0}.pkg
+--output --mkdir --match 'dependencies/(.*\.[rR]).dep'
+--invisible --phony dependencies
+
+##And here's how to install requisite packages.
+##TODO make it so that does doesn't run every time?
+##maybe by backdating the pkg files in the previous step?
+--command --once                            Rscript
+          --once                            install_packages.R
+          --once                            Rlibs
+--input --match                             'dependencies/.*\.pkg'
+--output --invisible --intermediate --once  Rlibs/install.packages.INTERMEDIATE
+--invisible --phony --once                  dependencies
+
+##This marker needs to be backdated so as not to re-run everything on account of packages
+--command            touch %-t 197001010000
+--input --invisible  --match Rlibs/install\.packages\.INTERMEDIATE
+--output --mkdir     Rlibs/install.packages.DONE

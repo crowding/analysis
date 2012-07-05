@@ -4,14 +4,15 @@ SHELL = /bin/bash
 #We depend on some R packages, so we set the library path in an environment vairable
 R_LIBS_USER := $(realpath .)/Rlibs:$(R_LIBS_USER)
 
-Rlibs/install.packages.DONE:
-	mkdir -p Rlibs
-	Rscript install_packages.R $@
-	touch -t 197001010000 $@
+#There will be dependencies added on to this target. Backdate the damn thing though...
+#Rlibs/install.packages.DONE:
+#	mkdir -p Rlibs
+#	Rscript install_packages.R $@
+#	touch -t 197001010000 $@
 
 #R scripts depend on having the packages installed, but don't rebuild
 #everything in account of installing R packages.
-.OLD: Rlibs/install.package.DONE
+.OLD: Rlibs/install.package.DONE Rlibs/install.package.INTERMEDIATE
 
 #start by listing all of our data files out of SVN. I don't want it to
 #keep checking if I'm rapidly iterating, so only update it if it's a
@@ -27,11 +28,11 @@ datafiles/filelist.txt: datafiles/filelist.txt.DONE
 unexcluded.txt: exclusions.txt datafiles/filelist.txt
 	comm -2 -3 <(sort $(word 2,$^)) <(sort $<) > $@
 
-#We also match against script files...
-scripts.txt: 
+#We also match against script files.
+scripts.txt: $(wildcard *.R)
 	echo $(wildcard *.R) > $@
 
-Makefile.makemake.gen: makemake.py Makefile.makemake unexcluded.txt scripts.txt
+Makefile.makemake.gen: makemake.py Makefile.makemake unexcluded.txt scripts.txt dependencies.makemake
 	./makemake.py @Makefile.makemake --files @unexcluded.txt @scripts.txt > $@
 
 include Makefile.makemake.gen

@@ -599,7 +599,6 @@ ggplot(subset(pCorrect, subject != 'gb'),
   savefile <- sub('\\..*?$', ".calcs.Rdata", my.args[[2]])
   save(list=ls(), file=savefile)
   writeLines(savefile, prodfile)
-})
 }
 
 ######

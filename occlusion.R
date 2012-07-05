@@ -187,7 +187,7 @@ occlusion.analysis <- function(...) {
 
     ##only take seriously sessions where we collected 800 before stopping...
     long.runs <- with(session.occluders, runs.i > 800)
-    trials <- trials[trials$runs.i %in$ long.runs,]
+    trials <- trials[trials$runs.i %in% long.runs,]
     
     ##let's fit a simple model ala constant.
     

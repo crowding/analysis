@@ -1,30 +1,30 @@
 #!/usr/bin/env Rscript
-##if these packages are not installed, install them in this directory
+##Download and install necessary packages.
 
-#the argument
-name = commandArgs(trailingOnly=TRUE)[[1]]
+main <- function(install.dir, ...) {
+  packages.i.need <- do.call(Reduce, list(union, lapply(c(...), getLines)))
+  packages.i.compile <- c("ptools")
+  packages.i.have <- .packages(all.available=TRUE)
 
-#install.dir <- file.path(getwd(), "Rlibs")
-install.dir = dirname(name)
+  if (length(setdiff(packages.i.need, packages.i.have)) > 0) {
+    install.packages(setdiff(packages.i.need, packages.i.have),
+                     repos="http://cran.r-project.org/",
+                     lib=install.dir)
+  }
 
-packages.i.compile <- c("ptools")
-
-packages.i.need <- c("plyr", "ggplot2", "stringr", "arm", "numDeriv", "Matrix"
-                     , "psyphy", "boot", "utils", "lmtest", "RSQLite", "signal"
-                     , "reshape", "gmodels", "ellipse", "gridExtra", "testthat"
-                     , "binom", "R.matlab", "gtools", "abind")
-
-packages.i.have <- .packages(all.available=TRUE)
-
-if (length(setdiff(packages.i.need, packages.i.have)) > 0)
-  install.packages(setdiff(packages.i.need, packages.i.have),
-                   repos="http://cran.r-project.org/",
-                   lib=install.dir)
-
-for (i in setdiff(packages.i.compile, packages.i.have)) {
-  check(i)
-  install(i, lib=install.dir)
+  for (i in setdiff(packages.i.compile, packages.i.have)) {
+    check(i)
+    install(i, lib=install.dir)
+  }
+  
 }
 
-#if an output file is given, touch that file.
-close(file(name, "a"))
+getLines <- function(file) {
+  lines <- readLines(file)
+  gsub("^\\s+|\\s+$", "", lines)
+}
+
+if ("--slave" %in% commandArgs()) {
+  args <- commandArgs(trailingOnly=TRUE)
+  do.call("main", as.list(args))
+}
