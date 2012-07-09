@@ -130,9 +130,6 @@ $(call TRANSFORM_ALL_LISTED,Segment.eyemovements.sources,Segment.eyemovements.RD
 
 endif #aggregation
 
-writing/x_t_stimuli.eps figure_1/B.eps: $(call MATLAB_DEPS, illustrated_stimuli.m)
-	$(call MATLAB, illustrated_stimuli $@)
-
 ALL_TARGETS += figure_1/B.eps writing/x_t_stimuli.eps
 
 ALL_TARGETS += unique.stimuli.sources

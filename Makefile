@@ -29,9 +29,10 @@ unexcluded.txt: exclusions.txt datafiles/filelist.txt
 	comm -2 -3 <(sort $(word 2,$^)) <(sort $<) > $@
 
 #We also match against script files.
-scripts.txt: $(wildcard *.R)
-	echo $(wildcard *.R) > $@
+scripts.txt: $(wildcard *.R) $(wildcard *.m)
+	echo *.R *.m > $@
 
+##why the hell is this not getting regenerated on changes?
 Makefile.makemake.gen: makemake.py Makefile.makemake unexcluded.txt scripts.txt dependencies.makemake
 	./makemake.py @Makefile.makemake --files @unexcluded.txt @scripts.txt > $@
 
@@ -43,6 +44,4 @@ discrimination.sqlite: discrimination.sqlite.DONE
 
 adjustment.sqlite: adjustment.sqlite.DONE
 
-all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections
-
-
+all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections illustrations

@@ -17,6 +17,17 @@
 --output --mkdir --match 'dependencies/(.*\.[rR]).dep'
 --invisible --phony dependencies
 
+##and here's how to dependencies for matlab files.
+--command ./runmatlab dependencies
+{0}
+--output --mkdir --match 'dependencies/(.*\.m).dep'
+--invisible --phony dependencies
+
+--command
+--input --invisible --once --listing 'dependencies/{0}.dep'
+--output --match --invisible --once '([^/]*\.m)$'
+--invisible --phony dependencies
+
 ##And here's how to install requisite packages.
 ##TODO make it so that does doesn't run every time?
 ##maybe by backdating the pkg files in the previous step?

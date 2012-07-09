@@ -1,5 +1,7 @@
 function illustrated_stimuli(outfile)
 
+fh = fopen(outfile, 'w');
+
 f = figure();
 set(f, 'Position', [100 768 384 384])
 
@@ -58,7 +60,11 @@ line([x(1) x(1)], [y(end)-0.15 y(end) - 0.25]);
 text(x(1)+0.3, y(end) - 0.2, '100 ms', 'HorizontalAlignment', 'Left', 'VerticalAlignment', 'Middle');
 %
 
-print('-depsc',outfile)
+[path, name, ext] = fileparts(outfile);
+fig1_file = fullfile(path,[name '.eps']);
+fprintf(fh, '%s\n', fig1_file);
+
+print('-depsc',fig1_file)
 
     function [im, xs, ts] = mkstim(trial)
         r = trial.trial_extra_r;
