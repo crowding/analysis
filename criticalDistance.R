@@ -5,6 +5,19 @@ suppressPackageStartupMessages({
   source("programming.R")
 })
 
+labels <- c(  contrast = "Direction content"
+            , spacing="Spacing"
+            , instruction="Instruction"
+            , radius="Eccentricity(deg)"
+            , dx = "Displacement (deg)"
+            , P = "Proportion of responses with carrier"
+            )
+
+colscale <- function(...) {
+  list( scale_color_gradientn(..., colours=c(low="#0088FF", mid="#444444", high="#FFAA00"))
+       , scale_fill_gradientn(..., colours=c(low="#0088FF", mid="#444444", high="#FFAA00")) )
+}
+
 pretty.numeric.factor <- function(f, digits=3, ...) {
   ##... args passed on to format...
   if (is.ordered(f) || is.numeric(f)) {
@@ -126,26 +139,38 @@ process <- function(trials, output, ...) {
   series.plot <- function(df, series.var, facet.var) {
     ex <- substitute(series.var)
     facex <- substitute(facet.var)
+
+    title = if (length(unique(df[[deparse(facex)]])) > 1) {
+      sprintf(  "Subject %s. Colors denotes %s, subplots ordered by %s."
+              , toupper(unique(df$subject)), tolower(labels[[deparse(ex)]])
+              , tolower(labels[[deparse(facex)]]) )
+    } else {
+       sprintf(  "Subject %s. Colors denote %s, with constant %s %s."
+               , toupper(unique(df$subject)), deparse(ex)
+               , tolower(labels[[deparse(facex)]]), tolower(unique(df[[deparse(facex)]])))
+    }
+
     eval(substitute(
-                    (ggplot(df)
-                     + aes(dx, P, ymin = fit-se.fit, ymax = fit+se.fit
-                           , color=ex
-                           , fill=ex
-                           , group=ex)
-                     + geom_point(aes(size=n))
-                     + scale_area()
-                     + geom_line(aes(y = fit))
-                     + geom_ribbon(alpha=0.25, color=0)
-                     + geom_vline(x = 0, alpha=0.3)
-                     + scale_color_discrete(name=deparse(quote(ex)),breaks=sort(unique(df$ex)))
-                     + scale_fill_discrete(name=deparse(quote(ex)), breaks=sort(unique(df$ex)))
-                     + scale_y_discrete(breaks=c(0,0.5,1))
-                     + facet_grid(facex ~ subject, labeller=function(y,x)format(x, digits=3))
-                     + opts(title=sprintf("Subject %s, comparing %s across constant %ss.\nRow label is %s",
-                            toupper(unique(df$subject)), deparse(quote(ex)),
-                            deparse(quote(facex)), deparse(quote(facex))))
-                     )
-                    , list(ex=ex, facex=facex)))
+           (ggplot(df)
+            + aes(dx, P, ymin = fit-se.fit, ymax = fit+se.fit
+                  , color=as.numeric(ex)
+                  , fill=as.numeric(ex)
+                  , group=ex)
+            + geom_point(aes(size=n))
+            + scale_area()
+            + geom_line(aes(y = fit))
+            + geom_ribbon(alpha=0.25, color=0)
+            + geom_vline(x = 0, alpha=0.3)
+            + geom_hline(y = 0.5, alpha=0.3)
+            + colscale(  name=labels[[deparse(quote(ex))]]
+                       , breaks=1:length(levels(df[[deparse(quote(ex))]]))
+                       , labels=levels(df[[deparse(quote(ex))]]))
+            + scale_y_continuous("Responses in direction of carrier", breaks=c(0,0.5,1))
+            + scale_x_continuous("Displacement (in direction of carrier)")
+            + facet_grid(facex ~ subject, labeller=function(y,x)format(x, digits=3))
+            + opts(title=title)
+            )
+           , list(ex=ex, facex=facex)))
   }
 
   ##Gimme a page for contrast and segment series for each subject.
@@ -278,5 +303,16 @@ process <- function(trials, output, ...) {
    ) -> repeatability
     print(repeatability)
   }
-  ##Now look for radius series?
+  
+  ##Save our objects in case we want to mess with graphs later...
+
+  filename <- replace_extension(summary(output)$description, "RData")
+  writeLines(filename, output)
+  save(file=filename, list=ls())
+}
+
+replace_extension <- function(filename, new_extension) {
+  sub(  "((.)\\.[^.]*|)$"
+      , paste("\\2.", new_extension, sep="")
+      , filename)
 }

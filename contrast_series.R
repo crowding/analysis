@@ -12,5 +12,5 @@ is.good.session <- function(desc) {
                               , all.equal("trial.extra.nTargets")
                               , isTRUE))
 
-  chain(desc, sapply(nrow), (contrast & .>2) | spacing | .==1, all)
+  valid <- chain(desc, sapply(nrow), (contrast & .>3) | spacing | .==1, all, . && any(contrast))
 }

@@ -201,6 +201,6 @@
 ##Here's to matlab making an illustration of the stimuli
 
 --command ./runmatlab illustrated_stimuli --input --invisible --match 'illustrated_stimuli.m'
---output --listing 'illustrated_stimuli\.out'
+--output --listing 'illustrated_stimuli.out'
 --invisible --phony illustrations
 

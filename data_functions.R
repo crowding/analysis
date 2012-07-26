@@ -43,6 +43,8 @@ psychometric_function <- function(  data, average_bias=TRUE, use_folded=TRUE, ab
                                   , sims=500
                                   , one_sided = use_folded && !has_both_signs(data$folded_displacement)) {
   cont <- list()
+
+  data$n <- nrow(data)
   
   #return slope, threshold, and quantiles of each from simulation
   if (use_folded) {
@@ -114,9 +116,9 @@ psychometric_function <- function(  data, average_bias=TRUE, use_folded=TRUE, ab
            , slope = fit$coefficients[[var]]
            , slope.sd = if(!is.na(fit$coefficients[[var]])) sqrt(vcov(fit)[[var,var]]) else NA
            , if (sims>0) slope.positive <- mean(sim[[2]] - sim[[1]] > 0) else c()
+           , n = nrow(data)
            )
        )
-
 }
 
 replace_extension <- function(filename, new_extension) {

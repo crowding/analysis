@@ -63,8 +63,38 @@ text(x(1)+0.3, y(end) - 0.2, '100 ms', 'HorizontalAlignment', 'Left', 'VerticalA
 [path, name, ext] = fileparts(outfile);
 fig1_file = fullfile(path,[name '.eps']);
 fprintf(fh, '%s\n', fig1_file);
-
 print('-depsc',fig1_file)
+
+close(f);
+
+%just plot a lone splash here...
+stim.trial_motion_process_n = 0;
+f = figure();
+set(f, 'Position', [100 768 384 384]);
+[im, x, y] = mkstim(stim);
+imagesc(x, y, im, [-1 1]); axis off; axis square;
+colormap(gray(256));
+
+fig2_file = fullfile(path,[name '_single.eps']);
+fprintf(fh, '%s\n', fig2_file);
+print('-depsc',fig2_file)
+
+close(f)
+
+    function [im, xs, ts] = direction(trial)
+        leftward = linspace(-1,1,5);
+        rightward = linspace(1,-1,5);
+        x = linspace(-10,10,5);
+        components = cellfun(@component, leftward, rightward, x, 'UniformOutput', 0);
+        function c = component()
+            c = CauchyPatch...
+                ( 'size', [trial.trial_extra_wavelengthScalar*r trial.trial_extra_widthScalar*r trial.trial_extra_durationScalar*trial.trial_extra_dt]...
+                , 'order', trial.trial_motion_process_order ...
+                , 'velocity', trial.trial_extra_wavelengthScalar*r*trial.trial_extra_tf ...
+                , 'phase', 0 ...
+                );
+        end
+    end
 
     function [im, xs, ts] = mkstim(trial)
         r = trial.trial_extra_r;
@@ -104,6 +134,8 @@ print('-depsc',fig1_file)
                 contrast = 0.5;
                 s2.primitive.primitive.velocity = -s.primitive.primitive.velocity;
             otherwise
+                %numeric...
+                error('figure me out')
                 contrast = NaN;
         end
         

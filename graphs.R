@@ -30,7 +30,7 @@ do.process <- function(infile, outfile, ...) {
     proc.env <- new.env(parent=.GlobalEnv)
     eval(substitute(eval(parse(proc)), list(proc=proc)), envir=proc.env)
     p <- proc.env$process
-    do.call(p, c(as.list(data.env), infile, output, pdf.file))
+    do.call(p, c(as.list(data.env), list(infile, output=output, pdf.file)))
   }
 }
 

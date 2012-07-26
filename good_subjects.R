@@ -1,0 +1,38 @@
+good_subjects <- c("pbm", "jb", "nj", "ml", "ns", "je")
+
+#here's how to rename columns for the CSV files....
+renaming <- c(
+  trial_motion_process_radius   = "eccentricity",
+  trial_extra_side              = "drop",
+  trial_extra_nVisibleTargets   = "drop",
+  trial_extra_tf                = "drop",
+  trial_extra_wavelengthScalar  = "drop",
+  trial_extra_dt                = "drop",
+  trial_extra_widthScalar       = "drop",
+  trial_extra_durationScalar    = "drop",
+  trial_motion_process_order    = "drop",
+  trial_motion_process_n        = "drop",
+  folded_localDirectionContrast = "folded_direction_content",
+  folded_content_with           = "drop",
+  folded_content_against        = "drop",
+  target_spacing                = "target_spacing",
+  subject                       = "subject",
+  xint                          = "pse",
+  `xint.10%`                    = "drop",
+  `xint.25%`                    = "pse_25",
+  `xint.50%`                    = "drop",
+  `xint.75%`                    = "pse_75",
+  `xint.90%`                    = "drop",
+  `threshold.10%`               = "drop",
+  `threshold.25%`               = "threshold_25",
+  `threshold.50%`               = "drop",
+  `threshold.75%`               = "threshold_75",
+  `threshold.90%`               = "drop",
+  threshold                     = "threshold",
+  yint                          = "bias",
+  yint.sd                       = "bias_sem",
+  slope                         = "sensitivity",
+  slope.sd                      = "sensitivity_sem",
+  V1                            = "drop",
+  n                             = "n_trials"
+  )
