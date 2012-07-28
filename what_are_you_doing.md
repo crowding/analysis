@@ -193,11 +193,22 @@ of but it's in German (same problem as Wertheimer I suppose.) Also
 pointed to the book A Natural History of Vision (Wade, 1998) which was
 MIT press but isn't on CogNet. Not so worth tracking down.
 
-Playing with Git a bit, going to try going git-svn on my analysis
-scripts, and Git for my psychophysics scripts. I would like to exploit
-Git to pare down a "distribution" of my motion demo and perhals a
-separate distribution of my psychophysics library.
+Anyway the Spering and Gegenfurtner article is weird because the
+target ad field start out having hte same motion alwyas, then are
+purturbed. And I'm not ure whether the perceptual judgement of speed
+is based on contrast, or on retinal movement (interestingly, it's not
+based on eye velocity.)
 
-Messed up my dotfile Git repo today, so I should get it back from Time Machine
-(and set up a server to push to.)
+Playing with Git a bit, going to try going git-svn to work locally on
+my analysis scripts and psychophysics repository. I would like to
+exploit Git to pare down a "distribution" of my motion demo and
+perhals a separate distribution of my psychophysics library.
+
+Disabled antialiasing in Emacs.
+
+Messed up my dotfile Git repo today, so I should get it back from Time
+Machine (and set up a server to push to.) (
+
+----------------------------------------------------------------------
+Sat Jul 28 11:05:07 PDT 2012
 
