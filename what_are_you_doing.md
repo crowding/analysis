@@ -178,5 +178,26 @@ need to check how often "monster effect" really happens
 
 
 
+----------------------------------------------------------------------
+Fri Jul 27 00:21:52 PDT 2012
 
+well well. what have I done?
+
+got a new iPad.
+
+Have been looking at how to get ipad reading workflow working.
+
+Started reading Spering and Gegenfurtner article on induced motion and
+pursuit. This pointed me at Duncker (1929) which I tried to get a hold
+of but it's in German (same problem as Wertheimer I suppose.) Also
+pointed to the book A Natural History of Vision (Wade, 1998) which was
+MIT press but isn't on CogNet. Not so worth tracking down.
+
+Playing with Git a bit, going to try going git-svn on my analysis
+scripts, and Git for my psychophysics scripts. I would like to exploit
+Git to pare down a "distribution" of my motion demo and perhals a
+separate distribution of my psychophysics library.
+
+Messed up my dotfile Git repo today, so I should get it back from Time Machine
+(and set up a server to push to.)
 
