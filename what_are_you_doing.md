@@ -212,3 +212,9 @@ Machine (and set up a server to push to.) (
 ----------------------------------------------------------------------
 Sat Jul 28 11:05:07 PDT 2012
 
+fixed dotfile repo.
+
+Migrating my analysis working directory over to svn-git. Spent ages
+trying to work out the right unix incantations to also transfer the
+untracked files. ( https://gist.github.com/dd92eabc247a0e4f7807 )
+
