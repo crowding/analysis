@@ -22,7 +22,7 @@ $(shell touch -t $$(date -v-30M +%C%y%m%d%H%M.%S) datafiles/filelist.txt.DONE)
 
 datafiles/filelist.txt: datafiles/filelist.txt.DONE
 	mkdir -p datafiles
-	svn ls 'svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
+	svn ls 'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
 
 #some data files get excluded (because they were empty or malformed, usually)
 unexcluded.txt: exclusions.txt datafiles/filelist.txt

@@ -11,7 +11,7 @@
 #we pull only direction or adjustment files for now.
 --command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*)
                                 svn export 
-                                'svn+ssh://peterm@herbie.shadlen.org/home/peterm/svn/eyetracking/data/{0}' 
+                                'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data/{0}' 
 --output --mkdir --intermediate datafiles/{0}
 
 ##The translator script
