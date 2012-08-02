@@ -218,3 +218,29 @@ Migrating my analysis working directory over to svn-git. Spent ages
 trying to work out the right unix incantations to also transfer the
 untracked files. ( https://gist.github.com/dd92eabc247a0e4f7807 )
 
+----------------------------------------------------------------------
+Wed Aug  1 15:27:00 PDT 2012
+
+Talked to ione about draft figure captions. talked to ione and geoff
+about modeling (it's pretty simple, I'm just flabbergasted by the
+whole process of getting here.
+
+Started writing an introduction/tutorial about Git.
+
+Trying to debug some weird path issues. chmod is not working and bash
+tab-completion is putting slashes at the end of filenames that don't
+correspond to directories. Suspect Enthought Python 64bit package but
+need to narrow down what's in the path from it.
+
+Spent a few hours writing a stupid shell script that didn't work.
+
+Then found out it was about the ~ in my path. Bash expands ~ but which
+does not. Derp!
+
+Now the task is to make my makefile work again.
+
+Looks like something was hardcoded to my old directory! Good catch! It was the matlab dependencies script. I then need to recode it to use relative directories.
+
+Also, include "dependencies" in this project, it seems.
+
+Also, fuck! Go ahead and delete the "unused" files. After I fix the build.
