@@ -8,17 +8,19 @@ suppressPackageStartupMessages({
 })
 
 renamings <- c(
- trial_motion_process_radius   = "eccentricity",
- folded_localDirectionContrast = "folded_direction_content",
- abs_localDirectionContrast    = "abs_direction_content",
- folded_displacement           = "folded_displacement",
- abs_displacement              = "abs_displacement",
- target_spacing                = "target_spacing",
- trial_extra_nTargets          = "target_number",
- subject                       = "subject",
- abs_response                  = "abs_response_cw",
- folded_response               = "folded_response_cw",
- responseInWindow              = "drop"
+trial_motion_process_radius   = "eccentricity",
+folded_localDirectionContrast = "folded_direction_content",
+abs_localDirectionContrast    = "abs_direction_content",
+folded_displacement           = "folded_displacement",
+abs_displacement              = "abs_displacement",
+target_spacing                = "target_spacing",
+trial_extra_nTargets          = "target_number",
+subject                       = "subject",
+abs_response                  = "drop",
+folded_response               = "drop",
+folded_response_with_carrier  = "folded_response_with_carrier",
+abs_response_cw               = "abs_response_cw",
+responseInWindow              = "drop"
 )
 
 main <- function(flist, dbfile, outfile) {
@@ -26,7 +28,7 @@ main <- function(flist, dbfile, outfile) {
   trials <- pull.from.sqlite(dbfile, data.frame(loaded_from = files))
   trials <- mutate(trials
                    , abs_response_cw = abs_response > 0
-                   , folded_response_cw = folded_response > 0)
+                   , folded_response_with_carrier= folded_response > 0)
   trials <- subset(trials
                    , responseInWindow==TRUE
                    , select=names(renamings[names(renamings) %in% names(trials)
