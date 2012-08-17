@@ -1,20 +1,25 @@
-clear all
-close all
-filename1='spacing_series_calculations.csv';
-filename2='contrast_series_calculations.csv';
-[ num1, txt1, data1]=xlsread(filename1, 'A2:Q192');
-[ num2, txt2, data2]=xlsread(filename2, 'A2:Q97');
+function analysePeter(varargin)
 
-data=cat(1, data1, data2);
-num=cat(1, num1, num2);
-txt=cat(1, txt1, txt2(:, 1:5));
+if nargin < 0
+    filenames = {
+          'spacing_series_calculations.csv' ...
+        , 'contrast_series_calculations.csv', ...
+        };
+else
+    filenames = varargin;
+end
 
-% data=data2;
-% num=num2;
-% txt=txt2;
+function csvread(filename)
+    %jebus xrist, they don't give you a csv to struct????
+    names = csvread(filename, 
+    [num, text, data] = 
 
+[num, text, data] = cellfun(@xlsread, filenames, 2
 
-%
+data=cat(1, data{:});
+num=cat(1, num{:});
+txt=cat(1, txt{:});
+
 sublist= unique(txt(:, 5));
 dirlist=unique(num(:, 3));
 spacinglist=unique(num(:, 4));

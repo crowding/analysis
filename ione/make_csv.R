@@ -34,7 +34,7 @@ main <- function(flist, dbfile, outfile) {
                    , select=names(renamings[names(renamings) %in% names(trials)
                                            & renamings != "drop"]))
   trials <- rename(trials, renamings[names(renamings) %in% colnames(trials)])
-  write.csv(trials, outfile)
+  write.csv(trials, outfile, row.names=FALSE)
 }
 
 if ("--slave" %in% commandArgs()) {
