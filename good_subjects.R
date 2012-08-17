@@ -34,5 +34,7 @@ renaming <- c(
   slope                         = "sensitivity",
   slope.sd                      = "sensitivity_sem",
   V1                            = "drop",
-  n                             = "n_trials"
+  n                             = "n_trials",
+  cw.bias                       = "cw_bias",
+  cw.bias.sem                   = "cw_bias_sem"
   )

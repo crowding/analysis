@@ -81,7 +81,7 @@ columns.to.pull <- c("trial.motion.process.radius",
                      "maxResponseTime",
                      "loaded.from",
                      "runs.i",
-                     "trials.i",
+                     "trial.i",
                      "subject"
                      )
 

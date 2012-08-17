@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
         source("graphics_functions.R")
         source("data_functions.R")
         source("good_subjects.R")
+        source("helper_functions.R")
 })
 
 main <- function(flist, dbfile, outfile) {
@@ -19,12 +20,14 @@ main <- function(flist, dbfile, outfile) {
   ##let's just plot things to verify our calculations
   #diagnostic_pdf_file <- replace_extension(outfile, diag, 'pdf')
   #pdf(diagnostic_pdf_file, onefile=TRUE)
-  quartz()
   #writeLines(diag_pdf_file, fout)
-  quartzwindow <- dev.cur()
-  on.exit(dev.off(quartzwindow), add=TRUE)
+  if (!names(dev.cur()) %in% c("quartz", "X11", "windows")) {
+    quartz()
+    quartzwindow <- dev.cur()
+    ##on.exit(dev.off(quartzwindow), add=TRUE)
+  }
   
-  threshes <- measure_thresholds(trials, per_session=FALSE,  sims=500, plot=TRUE)
+  threshes <- measure_thresholds(trials, per_session=FALSE,  sims=500, plot=FALSE)
 
   ##we'll put out an Rdata file and a .pdf file and a .csv file for Ione.
   fout <- file(outfile, 'w')
@@ -145,7 +148,4 @@ make_figure <- function(threshes, pdf_file) {
   #We can also do fitting per session.
 }
 
-if ("--slave" %in% commandArgs()) {
-  args <- commandArgs(trailingOnly=TRUE)
-  do.call("main", as.list(args))
-}
+run_as_command()

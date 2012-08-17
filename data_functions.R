@@ -11,7 +11,7 @@ exclude.cols <-  c(  "abs_displacement", "folded_displacement"
                    , "visibilityCondition"
                    , "folded_response", "abs_response", "trial_extra_nTargets"
                    , "responseInWindow", "responseTime", "maxResponseTime"
-                   , "loaded_from", "runs_i")
+                   , "loaded_from", "runs_i", "trial_i")
 
 measure_thresholds <- function(  trials
                                , per_session=FALSE
@@ -42,7 +42,7 @@ has_both_signs <- function(x) diff(range(sign(x))) == 2
 psychometric_function <-
   function(  data, average_bias=TRUE, use_folded=TRUE, abs_bias=TRUE
            , sims=500
-           , one_sided = use_folded && !has_both_signs(data$folded_displacement)
+           , one_sided = use_folded && !has_both_signs(data$abs_localDirectionContrast)
            , plot=FALSE) {
   cont <- list()
 
@@ -69,10 +69,14 @@ psychometric_function <-
   }
 
   if (one_sided) {
-    ##In folded data, we have to assume symmetry; the function must go through 0.
+    ##In folded data without any motion direction content, we have to
+    ##assume symmetry; the "folded" function must go through 0. abs_bias takes 
     formula <- update(formula, . ~ . - 1)
+  }
 
-  } else if (average_bias & (n_sessions <- length(unique(data$loaded_from))) > 1) {
+  n_sessions <- length(unique(data$loaded_from))
+  
+  if (average_bias && n_sessions > 1) {
     ##we allow the bias to vary by session, and measure the average
     ##bias by specifying the contrast in sum form.  Note that I
     ##could make this more parsimonious by letting there only be one
@@ -89,12 +93,16 @@ psychometric_function <-
              )
   
   ##note this will find a bunch of intercepts (arg 2) if you want...
+  ##Note also that we are finding the intercepts for the aceraged data,
   cases <- data[1,,drop=FALSE]
+  cases['not_folded'] <- 0;
+
   X <- find.intercept.glm(  fit, cases
                                    , var
                                    , response = c(.5, .75)
                                    , result.type="list"
                                    , sims=sims
+                                   , average.over=if (n_sessions > 1) "loaded_from" else c()
                                    )
 
   ##And we cons up all the measurements we want for this psychometric function.
@@ -119,7 +127,6 @@ psychometric_function <-
                                     , NA)
                  )
              }
-           
            , slope = fit$coefficients[[var]]
            , slope.sd = if (!is.na(fit$coefficients[[var]])) {
                sqrt(vcov(fit)[[var,var]])
@@ -128,12 +135,22 @@ psychometric_function <-
                c(slope.positive = mean(sim[[2]] - sim[[1]] > 0))
              } else c()
            , n = nrow(data)
+           , if ( abs_bias ) {
+             c(  cw.bias = fit$coefficients[["not_folded"]]
+               , cw.bias.sem =
+                   ifelse(is.na(fit$coefficients[["not_folded"]])
+                          , NA, sqrt(vcov(fit)[["not_folded","not_folded"]])))
+             } else c()
            )
-       )
+  )
 
   ##generate a plot of the raw data, the curve fit, and the bias,
   ##threshold and slope.
   if(plot) do.call(pmetric_plot, as.list(environment()))
+
+  if ( with(as.list(measurements), sign(xint) != -sign(yint)*sign(slope)) ) {
+    stop("This slope, bias and x-intercept do not make sense!")
+  }
 
   measurements
 }

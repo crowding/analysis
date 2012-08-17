@@ -6,7 +6,8 @@ library(arm)
 find.intercept.glm <- function(model, cases, varname, response=0.5,
                                test.values=c(1,2),
                                response.name, slope.name="slope", coef=NULL,
-                               result.type= "data.frame", sims=0) {
+                               result.type= "data.frame", sims=0
+                               , average.over = c()) {
   ## Compute the slope and PSE for each condition that is listed in
   ## 'cases.'  I do this by computing the (pre-link) response for
   ## two test values for each condition (conditions listed in
@@ -24,12 +25,34 @@ find.intercept.glm <- function(model, cases, varname, response=0.5,
   
   yval <- model$family$linkfun(response)
 
+  if (length(average.over) > 0) {
+    #we'll construct a "marginalized case...?"
+    #it won't be weighted by the number of observations in each session.
+    #I'm not too sure about this.
+    margin.over <- lapply(average.over, function(x)levels(cases[[x]]))
+    names(margin.over) <- average.over
+    margin.grid <- do.call(expand.grid, margin.over)
+    not.average.over <- colnames(cases) %-% average.over
+    cases <- merge(subset(cases, select=not.average.over), margin.grid)
+  }
+  
   case1 <- cases
   case2 <- cases
   case1[,varname] <- test.values[[1]]
   case2[,varname] <- test.values[[2]]
-  link1 <- predict(model, newdata=case1, type="link")
-  link2 <- predict(model, newdata=case2, type="link")
+  case1$..link <- predict(model, newdata=case1, type="link")
+  case2$..link <- predict(model, newdata=case2, type="link")
+  if (length(average.over) > 0) {
+    avgcase1 <- ddply(case1, not.average.over, numcolwise(mean))
+    avgcase2 <- ddply(case2, not.average.over, numcolwise(mean))
+    link1 <- avgcase1$..link
+    link2 <- avgcase2$..link
+    cases <- avgcase1
+  } else {
+    link1 <- case1$..link
+    link2 <- case2$..link
+  }
+  cases$..link <- NULL
   slope <- (link2-link1)*(test.values[[2]]-test.values[[1]])
   xintercept <- test.values[[1]] - (link1-yval)/slope
     
@@ -56,9 +79,22 @@ find.intercept.glm <- function(model, cases, varname, response=0.5,
     X1 <- model.matrix(Terms, m1, contrasts.arg = model$contrasts)
     X2 <- model.matrix(Terms, m2, contrasts.arg = model$contrasts)        
 
+        
     link1 <- X1 %*% t(simulations@coef)
     link2 <- X2 %*% t(simulations@coef)
 
+    if (length(average.over) > 0) {
+      groups <- dlply(mutate(case1, ..row=1:nrow(case1)), not.average.over, `[[`, '..row')
+      #possible plyr bug? laply don't work here with plain 'groups',
+      #just with groups[1:end]. What's going on?
+      link1 <- laply(groups[1:length(groups)],
+                     function(x) colMeans(link1[x,,drop=FALSE])
+                     , .drop=FALSE)
+      link2 <- laply(groups[1:length(groups)],
+                     function(x) colMeans(link2[x,,drop=FALSE])
+                     , .drop=FALSE)
+    }
+    
     slope = (link2 - link1) / (test.values[[2]] - test.values[[1]])
     xintercept <- llply(yval, function(y) test.values[[1]] - (link1 - y)/slope)
 

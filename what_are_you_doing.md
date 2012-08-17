@@ -314,8 +314,9 @@ stack item: But first let's do ten or so steps on the Git Immersion website.
 stack item: push forward on either number/density data or
 motion-energy calculation.
 
-I think that preparing a publication quality FIgure 4 is higher priority
-priority than a Figures 1 or 2. I am just so frustrated that every time I sit down to try and work through what will be my thesis:
+I think that preparing a publication quality FIgure 4 is higher
+priority priority than a Figures 1 or 2. I am just so frustrated that
+every time I sit down to try and work through what will be my thesis:
 	* I recapitulate all of Figure 1 and 2 in a walkthrough
 	* the other person, after working through their stuckness, decides
       Figures 1 and 2 must have been all that I've done so far, and
@@ -328,7 +329,7 @@ illustration...
 First, I am going to try setting up my 25-minutely Growl notification
 and EMacs-buffer-maximization.
 
-Might as well make it a Git project...
+Might as well make it a Gist folder...
 
 And I have gotten it mostly working.
 
@@ -372,5 +373,61 @@ Now I've got myself stuck on how units are specified in ggplot. The
 pointrange and geom_point are plotting their points at different
 sizes.
 
-`with_arg` to the rescue! That made it much less tadious to compuse
+`with_arg` to the rescue! That made it much less tadious to compute
 pointrange type things.
+
+----------------------------------------------------------------------
+Fri Aug 10 04:06:33 PDT 2012
+
+I wish there was a way to easily indicate a range. A rect with open
+sides would do.
+
+Placing labels on my illustrative graph, need to guess which side to
+put the labels for best whitespace.
+
+Then work on why the intercept measurement is wrong. And the
+threshold, while I'm at it, since that is another intercept
+measurement.
+
+Then need to sketch out FIg. 2. Next plot is the "illustrative
+psychometric function." I want two, one for large spacing and one for
+small spacing.  And they will be plotted with un-flipped data.
+
+Let's animate this before packing on more labels.
+
+----------------------------------------------------------------------
+Sun Aug 12 23:42:54 PDT 2012
+
+Okay, looking at the first graph where the sign problem exists, I find
+there's a large coefficient for is_folded. That might be related to
+the problem.
+
+Let's add curves for the separate values if is_folded... Ah, yes, the
+"xint" is tracking only one of the folded values.
+
+So fix that, and add a new column to my CSV files. The x-intercept
+calculation will reflect an average between the two cases.
+
+Slight problem: why is "trials_i" getting pulled back from the db with
+extra quotes? Maybe because it isn't actually the right column
+name. Yup.
+
+Looks like I also need to check the intercepts for `loaded_from`. Once
+in the `data_functions.r` and another time in the
+`graphics_functions.R`.
+
+----------------------------------------------------------------------
+Mon Aug 13 15:38:50 PDT 2012
+
+Still having the problem where options("error") resets itself when I
+load my code. Annoying.  
+
+Let's think about setting up flymake or plyparse for R. Later.
+
+I'm working on the "averaging over multiple sessions" problem.  And
+being a perfectionist. How it will work is, when I average over
+something, I'll make predictions then average those predictions. Dunno
+how good a technique that is for intercepts, but intercepts are a
+fucked measurement anyway.
+
+I really need to write my essay for JP class though.
