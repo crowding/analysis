@@ -364,3 +364,13 @@ Had a silly idea about how to reduce the repitition in ggplot
 constructions. `with_arg` which i sketched in `helper_functions.R`.
 
 But I'm not sure it helps yet...
+
+Ah, it looks like I'm not getting the right intercept! Let me work on
+this graph some more and make it better.
+
+Now I've got myself stuck on how units are specified in ggplot. The
+pointrange and geom_point are plotting their points at different
+sizes.
+
+`with_arg` to the rescue! That made it much less tadious to compuse
+pointrange type things.

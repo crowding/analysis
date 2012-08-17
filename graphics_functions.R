@@ -67,7 +67,7 @@ pmetric_plot <- function(measurements, data, fit, output, sim,
           , geom_point(aes(y=p, size=n))
           , scale_area(  limits = c(0, max(30, max(rates$n)))
                        , to=c(0,10))
-          , with_arg(alpha=0.3, geom_hline(x=0), geom_vline(y=0))
+          , with_arg(alpha=0.3, geom_hline(y=0.5), geom_vline(x=0))
           , with_arg(  data=predictdata
                      , geom_line(aes(y=fit))
                      , with_arg(  linetype=3
@@ -76,14 +76,22 @@ pmetric_plot <- function(measurements, data, fit, output, sim,
           , with_arg(  data=measurements, colour="red"
                      , with_arg(size=5
                                 , geom_point(aes(x=0, y=bias_p))
-                                   , geom_point(aes(x=xint, y=0.5)))
+                                , geom_point(aes(x=xint, y=0.5)))
                      , geom_segment(aes(x=0,xend=0,
                                         y=bias_p_minus, yend=bias_p_plus))
                      , geom_segment(aes(y=0.5,yend=0.5,
-                                        x=xint.25., xend=xint.75.)))
+                                        x=xint.25., xend=xint.75.))
+                     # Did you know, the slope of the logit function
+                     # where it crosses the 50% level is about 1/4.
+                     # That actually works out in odds.
+                     , geom_segment(aes(  x=xint - 1/slope
+                                        , xend=xint + 1/slope
+                                        , y=0.25, yend=0.75)))
           )
    )
 
-   #how about the model predictions?
+  
+  
+  ##how about the model predictions?
 
 }
