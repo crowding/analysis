@@ -299,12 +299,67 @@ Tue Aug  7 15:04:32 PDT 2012
 
 Had to write an entire CSV parser to get [fucking CSV files into matlab.](http://abandonmatlab.wordpress.com/2012/08/07/matlab-cant-read-plain-text-data-out-of-a-wet-paper-bag/)
 
-Now that I can have that, I can reimplement Ione's script.
-Made it run under Makefile, then fixed it to use read_csv. Done.
+Now that I can have that, I can reimplement Ione's script.  Made it
+run under Makefile, then fixed it to use read_csv. Done.
 
-But first let's do ten or so steps on the Git Immersion website.
+Installed a Matlab mode for Emacs. No debugger support though, but
+syntax highlighting and indentation is nice.
 
-Also on agenda: push forward on either number/density data or
+Now I want to find out what is up with psychometric functions that
+have positive PSE but negative bias...? I think the best way to start
+is to plot these values on a graph for each function I fit.
+
+stack item: But first let's do ten or so steps on the Git Immersion website.
+
+stack item: push forward on either number/density data or
 motion-energy calculation.
 
-But first investigated a Matlab mode for Emacs.
+I think that preparing a publication quality FIgure 4 is higher priority
+priority than a Figures 1 or 2. I am just so frustrated that every time I sit down to try and work through what will be my thesis:
+	* I recapitulate all of Figure 1 and 2 in a walkthrough
+	* the other person, after working through their stuckness, decides
+      Figures 1 and 2 must have been all that I've done so far, and
+      proceeds planning my future on that basis
+	* we never even fucking talk about number/density or eye movements
+
+Though I guess I can work on Figure 2, particularly the measurement
+illustration...
+
+First, I am going to try setting up my 25-minutely Growl notification
+and EMacs-buffer-maximization.
+
+Might as well make it a Git project...
+
+And I have gotten it mostly working.
+
+Now starting in plotting each psychometric function fit. Plotted
+points, now plotting the fitted line. Have to consider what happens
+when using folded, unfolded, or whatnot data. todo: test this with
+average_bias data.
+
+----------------------------------------------------------------------
+Thu Aug  9 21:07:13 PDT 2012
+
+I have noticed that ESS autocompletion does not work well at all in
+browser() or debugger() situations.
+
+How do I do multiple layers with different datasets in ggplot? I want
+both horizontal and vertical geom\_pointranges on the same plot. Is
+there a way to do that? I think the easy way out is just plot a point
+and a line. Ah well.
+
+Also, my R is outdated, but whatever.
+
+I think about what to write for the final essay in JP's vision
+class. I think I will write about a summation-threshold experiment for
+visual motion with two cues. I'll have to think about the kinds of
+mechanisms that might motivate the experiment though. That I can also
+present as a 'crazy idea' later on (I have another crazy idea about
+channel mapping, etc.)
+
+Hold on, I don't necessarily want to plot pointranges, I might want to
+plot intervals.
+
+Had a silly idea about how to reduce the repitition in ggplot
+constructions. `with_arg` which i sketched in `helper_functions.R`.
+
