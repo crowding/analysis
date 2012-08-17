@@ -1,0 +1,209 @@
+##This file describes most of my processing toolchain. It is written in
+##a tiny domain-secific language for generating Makefiles, implemented
+##over in makemake.py. makemake.py will use these rules to generate a
+##larger makefile.
+
+#this subfile handles dependency calculation for R scripts.
+#You know, this means I have to add dependencies.makemake as a dep of makemake.
+#TODO: Dependencies of the makemake-file should be added automatically.
+@dependencies.makemake
+
+#we pull only direction or adjustment files for now.
+--command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*)
+                                svn export 
+                                'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data/{0}' 
+--output --mkdir --intermediate datafiles/{0}
+
+##The translator script
+--command               Rscript 
+                        translator.R #--input...
+--match --input         'datafiles/(.*)\.log(\.gz)?'
+--output                unpacked/{0}.RData
+--invisible --phony     unpacked
+
+--command               Rscript 
+--input                 eyemovements.R
+--match --input         unpacked/(.*Segment\.RData)
+--output --mkdir        eyemovements/{0}
+--invisible --phony     eyemovements
+
+--command           Rscript 
+--input             strip.R
+--match --input     unpacked/(.*\.RData)
+--output --mkdir    stripped/{0}
+--invisible --phony eyemovements
+
+#the common script is specific to direction experiments
+--command           RScript
+--input             common.R
+--input --invisible common.manipulations.R
+--match --input     'stripped/(.*ConcentricDirection.*\.RData)'
+--output --mkdir    common/{0}
+--invisible --phony common
+
+#And here's the common script for adjustment experiments.
+--command           	RScript
+--input             	adjustment_common.R
+--match     --input 	'unpacked/(.*Adjustment.*)\.RData'
+--output    --mkdir 	'common_adj/{0}'.RData
+--invisible --phony 	common
+
+# Create a database, and shove each file into it:
+--command                    "##" sqlite3 discrimination.sqlite
+--input                      discrimination_init.sql & touch
+--output --mkdir --match     discrimination.sqlite.INIT
+
+--command --once             RScript 
+--once --input               dbshove.R
+--invisible --input          discrimination.sqlite.INIT
+--once                       discrimination.sqlite 
+--input --match              common/(.*\.RData) 
+--once                       &&
+--once                       touch
+--output --once --mkdir      dbtickets/{0}.DONE
+
+--command --once             touch
+--output --once              discrimination.sqlite.DONE
+--input --match --invisible  'dbtickets/.*\.DONE'
+
+#and we shove adjustment trials into a second database.
+--command --once             RScript 
+--once                       dbshove.R #--input...
+--once                       adjustment.sqlite 
+--input --match --invisible  common_adj/(.*Adjustment.*\.RData) 
+--once                       '$?' 
+--once                       &&
+--once                       touch
+--output --once              adjustment.sqlite.DONE
+
+#these rules mainly create graphs. Note later rules stack onto earlier ones.
+#TODO: Makefiles need 
+--command --once          Rscript
+--input --once            graphs.R
+--match --input --once    common/(.*).RData
+--output --listing --once eachplots/{0}.out
+--invisible --phony       graphs
+
+--command --once          Rscript
+--input --once            graphs.R
+--match --input --once    common_adj/(.*Adjustment.*).RData
+--output --listing --once eachplots/{0}.out
+--invisible --phony       graphs
+
+#note that "listing" does not need to be said more than once (and is
+#only said at the beginning anyway) Maybe I want to give a warning on
+#incompatible flags for combined words though?
+--command
+--output --match   eachplots/.*Segment.*.out
+--input --once     performance.R
+
+--command
+--output --match   eachplots/.*CritDistance.*.out
+--input --once     performance.R
+
+--command
+--output --match    eachplots/.*Segment.*.out
+--input --once      segment.R
+--invisible --phony segment
+
+--command
+--output --match    eachplots/.*CritDistance.*.out
+--input --once      criticalDistance.R
+--invisible --phony criticalDistance
+
+--command
+--output --match    eachplots/.*Adjustment.*.out
+--input --once      hysteresis.R
+--invisible --phony hysteresis
+
+--command
+--output --match    eachplots/.*Adjustment.*.out
+--input --once      adjustment_squares.R
+--invisible --phony squares
+
+#and a target that targets everything...?
+#--command --invisible --phony everything --match --invisible --input .*
+
+#For convenience, let's munge the filenames so as to sort differently.
+--command ln %-s 
+--input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
+'../{0}-{1}-{2}.pdf'
+--output --mkdir 'eachplots/_bydate/{1}-{2}-{0}.pdf'
+--invisible --phony links
+
+--command ln %-s 
+--input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
+'../{0}-{1}-{2}.pdf'
+--output --mkdir 'eachplots/_byexp/{2}-{0}-{1}.pdf'
+--invisible --phony links
+
+--command ln %-s 
+--input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
+'../{0}-{1}-{2}.pdf'
+--output --mkdir 'eachplots/_bysubj/{0}-{1}-{2}.pdf'
+--invisible --phony links
+
+#Compute all file descriptions, shoving them into a database.
+#Rscript describe.R [descriptions.RData] [descriptions.list] [input-file] ...
+--command                            rm descriptions/descriptions.RData && touch
+--output --mkdir                     descriptions/descriptions.Rdata.INIT
+--input --match --invisible          describe.R
+
+--command                            Rscript
+--input                              describe.R 
+--input --invisible                  descriptions/descriptions.Rdata.INIT
+                                     descriptions/descriptions.RData
+--input --match                      common/(.*\.RData)
+                                     && touch 
+--output --mkdir                     descriptions/DONE/{0}.DONE
+
+--command
+--invisible --output                 descriptions/descriptions.RData
+--invisible --match --input          descriptions/DONE/.*.DONE
+
+#write individual descriptions out as text files.
+--command Rscript  --input writeDescriptions.R
+--input --match    'descriptions/descriptions\.RData'
+#TODO: this should say --output --listing but makemake isn't handling
+#multiple outputs correctly, generating a command for each output.
+#(should use a non-existing intermediate target?)
+--output           descriptions/descriptions.txt
+--phony            descriptions
+
+### Now, looking at the experiment descriptions, we can do things like
+### look through experiment sessions and pull some that are useful.
+### For example, let's pull all the sessions in which we varied the
+### spacing, otherwise leaving contrast constant.
+
+## TODO: after redoing the descriptions, i need to make a second time
+## before this runs. the Makefiles need to depend on files that are input "listing"
+
+# For various purposes, select from the descriptions files.
+--command Rscript 
+--input select_from_descriptions.R 
+--input --match '(.*)_series.R$'
+--input 'descriptions/descriptions.RData'
+--output --mkdir collections/{0}_series.list
+--phony --invisible series
+
+## Then run calculations using those selections.  
+##
+## TODO: this runs things twice because of the multiple output files
+## generated. Need to fix that in makemake
+--command                  Rscript 
+--input --match            (.*)_series_calculations.R$
+--input --listing          collections/{0}_series.list
+                           discrimination.sqlite 
+--input --invisible        discrimination.sqlite.DONE
+--output --mkdir --listing collections/{0}_series_calculations.out
+--invisible --phony collections
+
+##Export some CSV files for Ione
+@ione/Monkfile
+
+##Here's to matlab making an illustration of the stimuli
+
+--command ./runmatlab illustrated_stimuli --input --invisible --match 'illustrated_stimuli.m'
+--output --listing 'illustrated_stimuli.out'
+--invisible --phony illustrations
+
