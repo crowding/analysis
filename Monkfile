@@ -6,7 +6,7 @@
 #this subfile handles dependency calculation for R scripts.
 #You know, this means I have to add dependencies.makemake as a dep of makemake.
 #TODO: Dependencies of the makemake-file should be added automatically.
-@dependencies.makemake
+@dependencies.monk
 
 #we pull only direction or adjustment files for now.
 --command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*)
