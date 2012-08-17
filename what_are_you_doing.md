@@ -239,7 +239,9 @@ does not. Derp!
 
 Now the task is to make my makefile work again.
 
-Looks like something was hardcoded to my old directory! Good catch! It was the matlab dependencies script. I then need to recode it to use relative directories.
+Looks like something was hardcoded to my old directory! Good catch! It
+was the matlab dependencies script. I then need to recode it to use
+relative directories.
 
 Also, include "dependencies" in this project, it seems.
 
@@ -269,9 +271,19 @@ Decided to go ahead and let it rebuild the database. Except it didn't
 re-build the database? Fucking make, now it's showing actions in -n
 mode that it isn't performing in real mode!
 
-But it makes numdensity series calculations over and over again...
+Turn out that was due to some problem in my options(error). WHen
+non-interactive it should call exit().
+
+But it still makes numdensity series calculations over and over again,
+why?
 
 TODO: make Monk automatically handle dependencies of the Makefile
 (esp. when using @-includes in Monk)
 
-Prepared CSV export of individual trials. Next, rename "contrast" to something better.
+Prepared CSV export of individual trials. Next, rename "contrast" to
+something better.
+
+----------------------------------------------------------------------
+Fri Aug  3 15:34:56 PDT 2012
+
+
