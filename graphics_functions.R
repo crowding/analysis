@@ -60,35 +60,30 @@ pmetric_plot <- function(measurements, data, fit, output, sim,
 
   browser()
 
-  Reduce(f=`+`
-         , x=list(
-             ggplot(rates)
-             , theme_bw()
-             , opts(panel.grid.minor=theme_blank(), panel.grid.major=theme_blank())
-             , aes(x=displacement)
-             , geom_point(aes(y=p, size=n))
-             , scale_area(  limits = c(0, max(30, max(rates$n)))
-                          , to=c(0,10))
-             , geom_hline(y=0, alpha=0.3)
-             , geom_vline(x=0, alpha=0.3)
-             , geom_line(data = predictdata, aes(y=fit))
-             , geom_line(data = predictdata, aes(y=fit+se.fit), linetype=3)
-             , geom_line(data = predictdata, aes(y=fit-se.fit), linetype=3)
-             , geom_segment(  data=measurements
-                            , aes(x=0,xend=0, y=bias_p_minus, yend=bias_p_plus)
-                            , colour="red")
-             , geom_point(  data=measurements
-                          , aes(x=0, y=bias_p)
-                          , size=5, colour="red")
-             , geom_segment(  data=measurements
-                            , aes(y=0.5,yend=0.5, x=xint.25., xend=xint.75.)
-                            , colour="red")
-             , geom_point(  data=measurements
-                          , aes(x=xint, y=0.5)
-                          , size=5, colour="red")
-             )
-         )
+  (ggplot(rates)
+   + list(theme_bw()
+          , opts(panel.grid.minor=theme_blank(), panel.grid.major=theme_blank())
+          , aes(x=displacement)
+          , geom_point(aes(y=p, size=n))
+          , scale_area(  limits = c(0, max(30, max(rates$n)))
+                       , to=c(0,10))
+          , with_arg(alpha=0.3, geom_hline(x=0), geom_vline(y=0))
+          , with_arg(  data=predictdata
+                     , geom_line(aes(y=fit))
+                     , with_arg(  linetype=3
+                                , geom_line(aes(y=fit+se.fit))
+                                , geom_line(aes(y=fit-se.fit))))
+          , with_arg(  data=measurements, colour="red"
+                     , with_arg(size=5
+                                , geom_point(aes(x=0, y=bias_p))
+                                   , geom_point(aes(x=xint, y=0.5)))
+                     , geom_segment(aes(x=0,xend=0,
+                                        y=bias_p_minus, yend=bias_p_plus))
+                     , geom_segment(aes(y=0.5,yend=0.5,
+                                        x=xint.25., xend=xint.75.)))
+          )
+   )
 
-   #How about the model predictions?
+   #how about the model predictions?
 
 }
