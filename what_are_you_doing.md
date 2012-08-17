@@ -286,4 +286,25 @@ something better.
 ----------------------------------------------------------------------
 Fri Aug  3 15:34:56 PDT 2012
 
+Okay, now let's rename "contrast" to "content." Done.
 
+Now let's take a look at those CSV files and send them to Ione. Done.
+
+Now let's make Ione's plotting code run as part of the system.
+
+And let's see what's up with the pse/bias figures.
+
+----------------------------------------------------------------------
+Tue Aug  7 15:04:32 PDT 2012
+
+Had to write an entire CSV parser to get [fucking CSV files into matlab.](http://abandonmatlab.wordpress.com/2012/08/07/matlab-cant-read-plain-text-data-out-of-a-wet-paper-bag/)
+
+Now that I can have that, I can reimplement Ione's script.
+Made it run under Makefile, then fixed it to use read_csv. Done.
+
+But first let's do ten or so steps on the Git Immersion website.
+
+Also on agenda: push forward on either number/density data or
+motion-energy calculation.
+
+But first investigated a Matlab mode for Emacs.

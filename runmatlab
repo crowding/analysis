@@ -15,13 +15,15 @@ status=`mktemp -t matlab.status`
 #escape single quotes
 args=${@//\'/\'\'}
 
+echo "${args}"
+
 $(which matlab) -nodesktop -nosplash -maci <<EOF
 try
     cd('$(pwd)');
     eval('${args}');
 catch e
     system('echo 1 > $status');
-    fprintf(2,'%s',evalc('disp e'));
+    fprintf(2,'%s',evalc('disp(e)'));
     exit();
 end
 system('echo 0 > $status');

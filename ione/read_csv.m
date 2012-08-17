@@ -54,7 +54,7 @@ end
 
 
 if p.Results.skipLines > 0
-    textscan('%*s', p.Results.skip);
+    scan_with_position('%*s', 'Delimiter', p.Results.endofline, p.Results.skip);
 end
 
 if p.Results.header
