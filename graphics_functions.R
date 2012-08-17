@@ -1,3 +1,7 @@
+suppressPackageStartupMessages({
+  source("helper_functions.R")
+})
+
 with.caption <- function(plot, caption, gp=gpar(fontsize=8)) {
   wrap <- paste(strwrap(caption, width=80), collapse="\n")
   
@@ -9,4 +13,74 @@ with.caption <- function(plot, caption, gp=gpar(fontsize=8)) {
   subframe <- packGrob(subframe, text, height=grobHeight(text) + unit(4, "mm"));
   fr <- packGrob(fr, ggplotGrob(plot), side="top", width=1, force.width=TRUE)
   fr <- packGrob(fr, subframe, side="bottom")
+}
+
+pmetric_plot <- function(measurements, data, fit, output, sim,
+                         use_folded, average_bias, abs_bias, one_sided, ...) {
+  extra.vars <- list(...);
+
+  #first we do the basic scatterplot.
+  if(use_folded) {
+    rates <- ddply(data, .(folded_displacement), with
+                   , c(  displacement   = folded_displacement[1]
+                       , p              = mean(folded_response)
+                       , n              = length(folded_response)))
+  } else {
+    rates <- ddply(data, .(abs_displacement), with
+                   , c(  displacement   = abs_displacement[1]
+                       , p              = mean(abs_response)
+                       , n              = length(abs_response)))
+  }
+
+  #then we show the fitted line.
+  predictdata <- chain(  data.frame(displacement=seq(-0.75, 0.75, len=100))
+                       , mutate(  folded_displacement=displacement
+                                , abs_displacement=displacement
+                                , not_folded = 0
+                                )
+                       , cbind(., predict(fit, ., type="response", se.fit=TRUE))
+                       )
+                       
+  if (average_bias && length(unique(data$loaded_from)) > 1) {
+    browser()
+  }
+  
+  measurements <- as.data.frame(as.list(measurements))
+
+  #to plot the bias measurement use the transform from the fit
+  link <- fit$family$linkfun
+  linkinv <- fit$family$linkinv
+
+  measurements <- mutate(  measurements
+                         , bias_p = linkinv(yint)
+                         , bias_p_plus = linkinv(yint + yint.sd)
+                         , bias_p_minus = linkinv(yint - yint.sd))
+
+  browser()
+
+  (ggplot(rates)
+   + theme_bw()
+   + opts(panel.grid.minor=theme_blank(), panel.grid.major=theme_blank())
+   + aes(x=displacement)
+   + geom_point(aes(y=p, size=n))
+   + scale_area(limits = c(0, max(30, max(rates$n))), to=c(0,6))
+   + geom_hline(y=0, alpha=0.3)
+   + geom_vline(x=0, alpha=0.3)
+   + geom_line(data = predictdata, aes(y=fit))
+   + geom_line(data = predictdata, aes(y=fit+se.fit), linetype=3)
+   + geom_line(data = predictdata, aes(y=fit-se.fit), linetype=3)
+   + geom_pointrange(  data=measurements
+                     , aes(x=0, y=bias_p
+                           , ymin=bias_p_minus, ymax=bias_p_plus)
+                     , color="red", size=3)
+   + geom_segment(  data=measurements
+                  , aes(y=0.5,yend=0.5, x=xint.25., xend=xint.75.)
+                  , colour="red")
+   + geom_point(  data=measurements
+                , aes(x=xint, y=0.5)
+                , size=3, colour="red")
+   )
+
+   #how about the model predictions?
+
 }

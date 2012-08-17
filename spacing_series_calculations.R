@@ -15,8 +15,16 @@ main <- function(flist, dbfile, outfile) {
   files <- str_trim(readLines(flist))
   
   trials <- pull.from.sqlite(dbfile, data.frame(loaded.from=files))
- 
-  threshes <- measure_thresholds(trials, per_session=FALSE,  sims=500)
+
+  ##let's just plot things to verify our calculations
+  #diagnostic_pdf_file <- replace_extension(outfile, diag, 'pdf')
+  #pdf(diagnostic_pdf_file, onefile=TRUE)
+  quartz()
+  #writeLines(diag_pdf_file, fout)
+  quartzwindow <- dev.cur()
+  on.exit(dev.off(quartzwindow), add=TRUE)
+  
+  threshes <- measure_thresholds(trials, per_session=FALSE,  sims=500, plot=TRUE)
 
   ##we'll put out an Rdata file and a .pdf file and a .csv file for Ione.
   fout <- file(outfile, 'w')

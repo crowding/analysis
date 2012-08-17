@@ -8,7 +8,10 @@ main <- function(install.dir, ...) {
 
   if (length(setdiff(packages.i.need, packages.i.have)) > 0) {
     install.packages(setdiff(packages.i.need, packages.i.have),
-                     repos="http://cran.r-project.org/",
+                     repos = c(
+                       CRAN = "http://cran.r-project.org/",
+                       RForge="http://R-Forge.R-project.org/",
+                       omegahat="http://www.omegahat.org/R"),
                      lib=install.dir)
   }
 

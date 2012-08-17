@@ -1,5 +1,7 @@
 suppressPackageStartupMessages({
   source("modeling.manipulations.R")
+  source("helper_functions.R")
+  source("graphics_functions.R")
 })
 
 `%-%` <- setdiff
@@ -37,11 +39,11 @@ measure_thresholds <- function(  trials
 
 has_both_signs <- function(x) diff(range(sign(x))) == 2
 
-#TODO think about measuring absolute bias....
-
-psychometric_function <- function(  data, average_bias=TRUE, use_folded=TRUE, abs_bias=TRUE
-                                  , sims=500
-                                  , one_sided = use_folded && !has_both_signs(data$folded_displacement)) {
+psychometric_function <-
+  function(  data, average_bias=TRUE, use_folded=TRUE, abs_bias=TRUE
+           , sims=500
+           , one_sided = use_folded && !has_both_signs(data$folded_displacement)
+           , plot=FALSE) {
   cont <- list()
 
   data$n <- nrow(data)
@@ -54,9 +56,9 @@ psychometric_function <- function(  data, average_bias=TRUE, use_folded=TRUE, ab
     if (abs_bias) {
       ##Try to account for absolute(clockwise/counterclockwise)
       ##biases. This might improve the estimate we care about.
-
       ##I can't figure how to interpret intercepts or whatnot here.
-      data <- mutate(data, not_folded = ifelse(abs_displacement == folded_displacement, 0.5, -0.5))
+      data <- mutate(data, not_folded =
+                     ifelse(abs_displacement == folded_displacement, 0.5, -0.5))
       formula <- update(formula, . ~ . + not_folded)
       #cont$not_folded <- contr.sum
     }
@@ -66,9 +68,7 @@ psychometric_function <- function(  data, average_bias=TRUE, use_folded=TRUE, ab
     var <- "abs_displacement"
   }
 
-  
   if (one_sided) {
-    
     ##In folded data, we have to assume symmetry; the function must go through 0.
     formula <- update(formula, . ~ . - 1)
 
@@ -97,10 +97,17 @@ psychometric_function <- function(  data, average_bias=TRUE, use_folded=TRUE, ab
                                    , sims=sims
                                    )
 
-  with(  X
+  ##And we cons up all the measurements we want for this psychometric function.
+  measurements <- with( X
        , c(  xint = intercept[[1]]
-           , if (sims>0) c(xint = quantile(sim[[1]], c(0.1,0.25,0.50,0.75,0.9), na.rm=TRUE)) else c()
-           , if (sims>0) c(threshold = quantile(sim[[2]] - sim[[1]], c(0.1,0.25,0.50,0.75,0.9), na.rm=TRUE)) else c()
+           , if (sims>0) {
+               c(xint = quantile(sim[[1]], c(0.1,0.25,0.50,0.75,0.9), na.rm=TRUE))
+             } else c()
+           , if (sims>0) {
+               c(threshold = quantile(sim[[2]] - sim[[1]],
+                                      c(0.1,0.25,0.50,0.75,0.9),
+                                      na.rm=TRUE))
+             } else c()
            , threshold = intercept[[2]] - intercept[[1]]
            , if(one_sided) {
                c( yint=0, yint.sd=0
@@ -114,15 +121,20 @@ psychometric_function <- function(  data, average_bias=TRUE, use_folded=TRUE, ab
              }
            
            , slope = fit$coefficients[[var]]
-           , slope.sd = if(!is.na(fit$coefficients[[var]])) sqrt(vcov(fit)[[var,var]]) else NA
-           , if (sims>0) slope.positive <- mean(sim[[2]] - sim[[1]] > 0) else c()
+           , slope.sd = if (!is.na(fit$coefficients[[var]])) {
+               sqrt(vcov(fit)[[var,var]])
+             } else NA
+           , if (sims>0) {
+               c(slope.positive = mean(sim[[2]] - sim[[1]] > 0))
+             } else c()
            , n = nrow(data)
            )
        )
+
+  ##generate a plot of the raw data, the curve fit, and the bias,
+  ##threshold and slope.
+  if(plot) do.call(pmetric_plot, as.list(environment()))
+
+  measurements
 }
 
-replace_extension <- function(filename, new_extension) {
-  sub(  "((.)\\.[^.]*|)$"
-      , paste("\\2.", new_extension, sep="")
-      , filename)
-}

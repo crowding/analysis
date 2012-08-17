@@ -27,8 +27,19 @@ main <- function(flist, dbfile, outfile) {
   fout = file(outfile, 'w')
   on.exit(close(fout), add=TRUE)
 
-  threshes <- measure_thresholds(trials, per_session=FALSE, average_bias=TRUE, sims=500)
- 
+  ##let's just plot things to verify our calculations
+  #diagnostic_pdf_file <- replace_extension(outfile, diag, 'pdf')
+  #pdf(diagnostic_pdf_file, onefile=TRUE)
+  quartz()
+  #writeLines(diag_pdf_file, fout)
+  quartzwindow <- dev.cur()
+  on.exit(dev.off(quartzwindow), add=TRUE)
+  
+  threshes <- measure_thresholds(trials, per_session=FALSE,
+                                 average_bias=TRUE, sims=500, plot=TRUE)
+
+
+  
   pdf_file <- replace_extension(outfile, "pdf")
   writeLines(pdf_file, fout)
   pdf(pdf_file, onefile=TRUE)
