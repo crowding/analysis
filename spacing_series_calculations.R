@@ -35,7 +35,7 @@ main <- function(flist, dbfile, outfile) {
 
   csv_file <- replace_extension(outfile, "csv")
   writeLines(csv_file, fout)
-  write.csv(renamed, csv_file)
+  write.csv(renamed, csv_file, row.names=FALSE)
 }
 
 
