@@ -19,17 +19,19 @@ pmetric_plot <- function(measurements, data, fit, output, sim,
                          use_folded, average_bias, abs_bias, one_sided, ...) {
   extra.vars <- list(...);
 
-  #first we do the basic scatterplot.
+  data <- mutate(data, seq <- order(trials_i))
   if(use_folded) {
     rates <- ddply(data, .(folded_displacement), with
                    , c(  displacement   = folded_displacement[1]
                        , p              = mean(folded_response)
-                       , n              = length(folded_response)))
+                       , n              = length(folded_response)
+                       , seq            = mean(seq)))
   } else {
     rates <- ddply(data, .(abs_displacement), with
                    , c(  displacement   = abs_displacement[1]
                        , p              = mean(abs_response)
-                       , n              = length(abs_response)))
+                       , n              = length(abs_response)
+                       , seq            = mean(seq)))
   }
 
   #then we show the fitted line.
@@ -58,29 +60,35 @@ pmetric_plot <- function(measurements, data, fit, output, sim,
 
   browser()
 
-  (ggplot(rates)
-   + theme_bw()
-   + opts(panel.grid.minor=theme_blank(), panel.grid.major=theme_blank())
-   + aes(x=displacement)
-   + geom_point(aes(y=p, size=n))
-   + scale_area(limits = c(0, max(30, max(rates$n))), to=c(0,6))
-   + geom_hline(y=0, alpha=0.3)
-   + geom_vline(x=0, alpha=0.3)
-   + geom_line(data = predictdata, aes(y=fit))
-   + geom_line(data = predictdata, aes(y=fit+se.fit), linetype=3)
-   + geom_line(data = predictdata, aes(y=fit-se.fit), linetype=3)
-   + geom_pointrange(  data=measurements
-                     , aes(x=0, y=bias_p
-                           , ymin=bias_p_minus, ymax=bias_p_plus)
-                     , color="red", size=3)
-   + geom_segment(  data=measurements
-                  , aes(y=0.5,yend=0.5, x=xint.25., xend=xint.75.)
-                  , colour="red")
-   + geom_point(  data=measurements
-                , aes(x=xint, y=0.5)
-                , size=3, colour="red")
-   )
+  Reduce(f=`+`
+         , x=list(
+             ggplot(rates)
+             , theme_bw()
+             , opts(panel.grid.minor=theme_blank(), panel.grid.major=theme_blank())
+             , aes(x=displacement)
+             , geom_point(aes(y=p, size=n))
+             , scale_area(  limits = c(0, max(30, max(rates$n)))
+                          , to=c(0,10))
+             , geom_hline(y=0, alpha=0.3)
+             , geom_vline(x=0, alpha=0.3)
+             , geom_line(data = predictdata, aes(y=fit))
+             , geom_line(data = predictdata, aes(y=fit+se.fit), linetype=3)
+             , geom_line(data = predictdata, aes(y=fit-se.fit), linetype=3)
+             , geom_segment(  data=measurements
+                            , aes(x=0,xend=0, y=bias_p_minus, yend=bias_p_plus)
+                            , colour="red")
+             , geom_point(  data=measurements
+                          , aes(x=0, y=bias_p)
+                          , size=5, colour="red")
+             , geom_segment(  data=measurements
+                            , aes(y=0.5,yend=0.5, x=xint.25., xend=xint.75.)
+                            , colour="red")
+             , geom_point(  data=measurements
+                          , aes(x=xint, y=0.5)
+                          , size=5, colour="red")
+             )
+         )
 
-   #how about the model predictions?
+   #How about the model predictions?
 
 }
