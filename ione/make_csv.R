@@ -3,15 +3,35 @@
 
 suppressPackageStartupMessages({
   source("db_functions.R")
-  source("good_subjects.R")
   library(plyr)
+  library(stringr)
 })
 
+renamings <- c(
+ trial_motion_process_radius   = "eccentricity",
+ folded_localDirectionContrast = "folded_direction_content",
+ abs_localDirectionContrast    = "abs_direction_content",
+ folded_displacement           = "folded_displacement",
+ abs_displacement              = "abs_displacement",
+ target_spacing                = "target_spacing",
+ trial_extra_nTargets          = "target_number",
+ subject                       = "subject",
+ abs_response                  = "abs_response_cw",
+ folded_response               = "folded_response_cw",
+ responseInWindow              = "drop"
+)
+
 main <- function(flist, dbfile, outfile) {
-  files <- str_trim(reaLines(flist))
+  files <- str_trim(readLines(flist))
   trials <- pull.from.sqlite(dbfile, data.frame(loaded_from = files))
-  trials <- subset(trials, responseInWindow=TRUE)
-  trials <- rename(trials, renaming[names(renaming) %in% colnames(trials)])
+  trials <- mutate(trials
+                   , abs_response_cw = abs_response > 0
+                   , folded_response_cw = folded_response > 0)
+  trials <- subset(trials
+                   , responseInWindow==TRUE
+                   , select=names(renamings[names(renamings) %in% names(trials)
+                                           & renamings != "drop"]))
+  trials <- rename(trials, renamings[names(renamings) %in% colnames(trials)])
   write.csv(trials, outfile)
 }
 

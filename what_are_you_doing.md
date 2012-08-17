@@ -273,3 +273,5 @@ But it makes numdensity series calculations over and over again...
 
 TODO: make Monk automatically handle dependencies of the Makefile
 (esp. when using @-includes in Monk)
+
+Prepared CSV export of individual trials. Next, rename "contrast" to something better.
