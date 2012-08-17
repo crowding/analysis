@@ -133,8 +133,6 @@ make_figure <- function(threshes, pdf_file) {
 
   grid.newpage()
   grid.draw(fr2)
-
-
   
   #We can also do fitting per session.
 }

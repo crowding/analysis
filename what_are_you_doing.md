@@ -244,3 +244,16 @@ Looks like something was hardcoded to my old directory! Good catch! It was the m
 Also, include "dependencies" in this project, it seems.
 
 Also, fuck! Go ahead and delete the "unused" files. After I fix the build.
+
+----------------------------------------------------------------------
+Thu Aug  2 16:41:14 PDT 2012
+
+Now I will create Ione's data files. They will exclude the trials
+which don't make trials.
+
+Also, let's rename "makemake" to "monk" and its input "Monkfile" and
+its output "monkeyed" to make the typing easier.
+
+Gah, it's trying to remake every-damn-thing.
+
+Circular dependencies for all the matlab files, eh.

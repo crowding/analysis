@@ -1,0 +1,3 @@
+--command Rscript --input ione/make_csv.R
+--input --match 'collections/(.*)\/list'
+--output ione/{1}_trials.csv
