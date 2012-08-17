@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
         source("graphics_functions.R")
         source("data_functions.R")
         source("good_subjects.R")
+        source("helper_functions.R")
 })
 
 `%-%` <- setdiff
@@ -30,13 +31,13 @@ main <- function(flist, dbfile, outfile) {
   ##let's just plot things to verify our calculations
   #diagnostic_pdf_file <- replace_extension(outfile, diag, 'pdf')
   #pdf(diagnostic_pdf_file, onefile=TRUE)
-  quartz()
+  #quartz()
   #writeLines(diag_pdf_file, fout)
-  quartzwindow <- dev.cur()
-  on.exit(dev.off(quartzwindow), add=TRUE)
+  #quartzwindow <- dev.cur()
+  #on.exit(dev.off(quartzwindow), add=TRUE)
   
   threshes <- measure_thresholds(trials, per_session=FALSE,
-                                 average_bias=TRUE, sims=500, plot=TRUE)
+                                 average_bias=TRUE, sims=500, plot=FALSE)
 
 
   
@@ -131,7 +132,4 @@ plot.form <- function(data, ... ,
   eval(substitute.nq(expr, s))
 }
 
-if ("--slave" %in% commandArgs()) {
-  args <- commandArgs(trailingOnly=TRUE)
-  do.call("main", as.list(args))
-}
+run_as_command()

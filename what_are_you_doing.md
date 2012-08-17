@@ -422,7 +422,7 @@ Mon Aug 13 15:38:50 PDT 2012
 Still having the problem where options("error") resets itself when I
 load my code. Annoying.  
 
-Let's think about setting up flymake or plyparse for R. Later.
+Let's think about setting up flymake or flyparse for R. Later.
 
 I'm working on the "averaging over multiple sessions" problem.  And
 being a perfectionist. How it will work is, when I average over
@@ -431,3 +431,22 @@ how good a technique that is for intercepts, but intercepts are a
 fucked measurement anyway.
 
 I really need to write my essay for JP class though.
+
+Okay. I think I fixed intercept-finding for the multiple-sessions and
+bias cases.
+
+Need to think more about how to rebuild conditinal on a script's
+dependencies changing. This is currently completely disabled and I
+have to manually clean some things before they will rebuild.
+
+I notice that some of my super-high sensitivities look like bad
+fits. Because of the too-low asymptote? That's interesting.
+
+----------------------------------------------------------------------
+Tue Aug 14 16:28:13 PDT 2012
+
+Time to write for JP class.
+
+Also time to captions and make mockups of figures.
+
+----------------------------------------------------------------------
