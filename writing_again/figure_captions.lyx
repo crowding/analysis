@@ -3,6 +3,13 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+
+\usepackage{movie15}
+
+\usepackage{hyperref}
+\AtBeginDocument{\renewcommand{\ref}[1]{\mbox{\autoref{#1}}}}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -25,6 +32,7 @@
 \bibtex_command default
 \index_command default
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
 \use_geometry false
@@ -63,11 +71,11 @@
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Tabular
-<lyxtabular version="3" rows="1" columns="1">
+<lyxtabular version="3" rows="2" columns="1">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <row>
@@ -75,7 +83,44 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-MOVIE 1
+(A) 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includemovie[poster,repeat]{4in}{2in}{demo-single.mov}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+(B) 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includemovie[poster,repeat]{4in}{2in}{demo-multiple.mov}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -108,10 +153,16 @@ status open
 
 \end_inset
 
- Top row: Motion elements moving alone.
+ (A).
+ Motion elements moving alone.
  At left, the carrier motion is opposite the envelope motion.
  At right, the carrier motion is congruent with the envelope motion.
- 
+ (B) Five elements are placed around each circle instead of one; otherwise
+ the stimulus is identical to A.
+ When elements are placed in close proximity, there is an eccentricity-dependent
+ change in appearance.
+ The appearance of the wheel on the left (with opposing carrier and envelope
+ motions) will change depending on where the eyes fixate.
 \end_layout
 
 \end_inset
@@ -145,7 +196,14 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-(A) motion pulse
+(A) 
+\begin_inset Graphics
+	filename stimuli-motion-pulse.pdf
+	width 3in
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -154,7 +212,14 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-(B) motion elements
+(B) 
+\begin_inset Graphics
+	filename stimuli-motion-element.pdf
+	width 3in
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -165,7 +230,14 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-(C) direction content
+(C) 
+\begin_inset Graphics
+	filename stimuli-direction-content.pdf
+	width 6in
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -185,7 +257,14 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-(D) a circle of stimuli
+(D) 
+\begin_inset Graphics
+	filename stimuli-circle.pdf
+	width 4in
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -285,7 +364,7 @@ name "fig:stimuli-circle"
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Tabular
@@ -297,7 +376,19 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-MOVIE 2
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includemovie[poster,repeat]{4in}{4in}{sample-stimuli.mov}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -329,6 +420,7 @@ status open
 
  Example stimuli.
  For subjects, these stimuli were shown at 6.67 degrees eccentricity.
+ We show congruent, ingongruent, 
 \end_layout
 
 \end_inset
@@ -358,7 +450,14 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-(A) task sequence
+\begin_inset Graphics
+	filename measurements-task.pdf
+	width 3in
+	height 3in
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -374,20 +473,20 @@ status open
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-(B) example narrow
+(B) example data
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-(C) example wide
+
 \end_layout
 
 \end_inset
@@ -428,8 +527,15 @@ name "fig:measurements"
 \end_inset
 
 Task and example measurements.
- (A) Illustration of task.
- Subjects viewed motion stimula such as in 
+ (A)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:measurements-task"
+
+\end_inset
+
+ Illustration of task.
+ Subjects viewed motion stimuli such as in 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "movie:sample-stimuli"
@@ -441,15 +547,22 @@ reference "movie:sample-stimuli"
 status open
 
 \begin_layout Plain Layout
-actual numbers
+check on actual numbers
 \end_layout
 
 \end_inset
 
  500-900 ms from stimulus onset.
- (B) Example data from subject PBM, taken at narrow spacing.
- We measured the proportion of subjects responding clockwise" while varying
- the envelope displacement (horizontal axis) 
+ (B)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:measurements-narrow"
+
+\end_inset
+
+ Example data from subject FAKE.
+ We measured the proportion of subjects' responses clockwise, as a function
+ of the envelope displacement 
 \begin_inset Note Note
 status collapsed
 
@@ -459,18 +572,62 @@ how about a schematic showing slow and fast motion?
 
 \end_inset
 
- and the carrier direction content (colors.) The blue curve shows what happens
- when carrier motion is biased to the left, and the red curve shows what
- happens when carrier motion is biased to the right.
- Note that a leftward shift of the psychometric function indicates that
- the observer respond "clockwise" more often, so this observer sees more
- counterclockwise motion when clockwise content is added to the carrier
- (that is, there is repulsion.) (C) Example data taken at narrow target spacing.
+ for different conditions of carrier content.
+ Curves show best fits a logistic psychometric function 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+or a model fit as will be discussed later
+\end_layout
+
+\end_inset
+
+.
+ For the blue dots, carrier motion is biased to the left, and for the red
+ dots, carrier motion is biased to the right.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Note that a leftward shift of the psychometric function indicates that the
+ observer respond "clockwise" more often, so this observer sees more countercloc
+kwise motion when clockwise content is added to the carrier (that is, there
+ is repulsion.)
+\end_layout
+
+\end_inset
+
+ (C)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:measurements-wide"
+
+\end_inset
+
+ Example data taken at narrow target spacing.
  The slopes of the psychometric functions are shallower and the effect of
- carrier motion is stronger (and has reversed direction.) (D) To summarize
- each psuychometric function we characterize each psychometric function
- in terms of sensitivity and bias, here indicated on an example psychometric
- function.
+ carrier motion is stronger (and has reversed direction.) 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Probably, I only need one of B or C here.
+\end_layout
+
+\end_inset
+
+ (D)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:measurements-example"
+
+\end_inset
+
+ To summarize each psychometric function we characterize each psychometric
+ function in terms of sensitivity and bias, here indicated on an example
+ psychometric function.
 \end_layout
 
 \end_inset
@@ -625,7 +782,8 @@ name "fig:content"
  (B) The bias and sensitivity from example A are replotted, maintaining
  the same color coding.
  Dashed lines for wide spacing and solid lines for narrow.
- (C) Bias and threshold are plotted as a function of spacing for all subjects.
+ (C) Bias and threshold are plotted as a function of direction content for
+ all subjects.
  Curves indicate model fits.
  (D) Data for bias and spacing is averaged across subjects, with curves
  indicating model fits.
