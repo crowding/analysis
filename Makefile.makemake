@@ -198,6 +198,9 @@
 --output --mkdir --listing collections/{0}_series_calculations.out
 --invisible --phony collections
 
+##Export some CSV files for Ione
+##@ione/Monkfile
+
 ##Here's to matlab making an illustration of the stimuli
 
 --command ./runmatlab illustrated_stimuli --input --invisible --match 'illustrated_stimuli.m'
