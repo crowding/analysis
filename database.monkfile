@@ -1,0 +1,32 @@
+# How we deal with the database files.
+# Create a database, and shove each file into it:
+--command                    sqlite3 
+                             %-init
+--input                      discrimination_init.sql
+                             discrimination.sqlite 
+                             &&
+                             touch
+--output --mkdir --match     discrimination.sqlite.INIT
+
+--command --once             RScript 
+--once --input               dbshove.R
+--invisible --input          discrimination.sqlite.INIT
+--once                       discrimination.sqlite 
+--input --match              common/(.*\.RData) 
+--once                       &&
+--once                       touch
+--output --once --mkdir      dbtickets/{0}.DONE
+
+--command --once             touch
+--output --once              discrimination.sqlite.DONE
+--input --match --invisible  'dbtickets/.*\.DONE'
+
+#and we shove adjustment trials into a second database.
+--command --once             RScript 
+--once                       dbshove.R #--input...
+--once                       adjustment.sqlite 
+--input --match --invisible  common_adj/(.*Adjustment.*\.RData) 
+--once                       '$?' 
+--once                       &&
+--once                       touch
+--output --once              adjustment.sqlite.DONE

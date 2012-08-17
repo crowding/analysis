@@ -6,7 +6,7 @@
 #this subfile handles dependency calculation for R scripts.
 #You know, this means I have to add dependencies.makemake as a dep of makemake.
 #TODO: Dependencies of the makemake-file should be added automatically.
-@dependencies.monk
+@dependencies.monkfile
 
 #we pull only direction or adjustment files for now.
 --command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*)
@@ -48,33 +48,7 @@
 --output    --mkdir 	'common_adj/{0}'.RData
 --invisible --phony 	common
 
-# Create a database, and shove each file into it:
---command                    "##" sqlite3 discrimination.sqlite
---input                      discrimination_init.sql & touch
---output --mkdir --match     discrimination.sqlite.INIT
-
---command --once             RScript 
---once --input               dbshove.R
---invisible --input          discrimination.sqlite.INIT
---once                       discrimination.sqlite 
---input --match              common/(.*\.RData) 
---once                       &&
---once                       touch
---output --once --mkdir      dbtickets/{0}.DONE
-
---command --once             touch
---output --once              discrimination.sqlite.DONE
---input --match --invisible  'dbtickets/.*\.DONE'
-
-#and we shove adjustment trials into a second database.
---command --once             RScript 
---once                       dbshove.R #--input...
---once                       adjustment.sqlite 
---input --match --invisible  common_adj/(.*Adjustment.*\.RData) 
---once                       '$?' 
---once                       &&
---once                       touch
---output --once              adjustment.sqlite.DONE
+@database.monkfile
 
 #these rules mainly create graphs. Note later rules stack onto earlier ones.
 #TODO: Makefiles need 
@@ -206,4 +180,3 @@
 --command ./runmatlab illustrated_stimuli --input --invisible --match 'illustrated_stimuli.m'
 --output --listing 'illustrated_stimuli.out'
 --invisible --phony illustrations
-

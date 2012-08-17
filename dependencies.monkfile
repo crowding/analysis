@@ -2,7 +2,7 @@
 #TODO make it so that changes to "listing" files cause the makefile to be rebuilt?
 #need to think more about this case of dependency discovery.
 --command
---input --invisible --once            Rlibs/install.packages.DONE
+#--input --invisible --once            Rlibs/install.packages.DONE
 --input --invisible --once --listing 'dependencies/{0}.dep'
 --output --match --invisible --once  '(.*\.[Rr])$'
 --invisible --phony                  dependencies

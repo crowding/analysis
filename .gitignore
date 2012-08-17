@@ -15,7 +15,9 @@
 *.log
 *.map
 *.pygen
-#*
+\#*
+.\#*
+monk.makefile
 *~
 *.pyc
 *.o

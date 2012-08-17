@@ -1,3 +1,8 @@
---command Rscript --input ione/make_csv.R
---input --match 'collections/(.*)\/list'
---output ione/{1}_trials.csv
+--command            Rscript 
+--input              ione/make_csv.R
+--input --match      'collections/(.*)\/list'
+--output             ione/{1}_trials.csv
+
+--command
+--output --invisible --phony csv
+--input --invisible --match .*\.csv

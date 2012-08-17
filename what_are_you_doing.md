@@ -252,8 +252,21 @@ Now I will create Ione's data files. They will exclude the trials
 which don't make trials.
 
 Also, let's rename "makemake" to "monk" and its input "Monkfile" and
-its output "monkeyed" to make the typing easier.
+its output "Monkfile.makefile" to make the typing easier.
 
 Gah, it's trying to remake every-damn-thing.
 
-Circular dependencies for all the matlab files, eh.
+Eliminate circular dependencies for all the matlab files. (good thing
+I normalized the relative paths...)
+
+But it also wants to re-import all the database files. What is
+marked new that isn't? Guess I should re-install "remake" and seem
+
+Should I make a Homebrew formula for it? Did, it was straightforward
+enough.
+
+Decided to go ahead and let it rebuild the database. Except it didn't
+re-build the database? Fucking make, now it's showing actions in -n
+mode that it isn't performing in real mode!
+
+But it makes numdensity series calculations over and over again...

@@ -33,10 +33,10 @@ scripts.txt: $(wildcard *.R) $(wildcard *.m)
 	echo *.R *.m > $@
 
 ##why the hell is this not getting regenerated on changes?
-monk: monk.py Monkfile unexcluded.txt scripts.txt dependencies.makemake
+monk.makefile: monk.py Monkfile dependencies.monkfile ione/Monkfile database.monkfile unexcluded.txt scripts.txt
 	./monk.py @Monkfile --files @unexcluded.txt @scripts.txt > $@
 
-include monk
+include monk.makefile
 
 .PRECIOUS: discrimination.sqlite adjustment.sqlite
 
@@ -44,4 +44,4 @@ discrimination.sqlite: discrimination.sqlite.DONE
 
 adjustment.sqlite: adjustment.sqlite.DONE
 
-all: Makefile.makemake.gen discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections illustrations
+all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections illustrations csv

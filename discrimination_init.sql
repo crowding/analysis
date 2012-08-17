@@ -21,3 +21,4 @@ CREATE TABLE IF NOT EXISTS triggers
 
 CREATE INDEX IF NOT EXISTS triggers_loaded_from on triggers (loaded_from);
 
+.exit
