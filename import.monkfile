@@ -1,0 +1,39 @@
+#we pull only direction or adjustment files for now.
+--command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*)
+                                svn export 
+                                'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data/{0}' 
+--output --mkdir --intermediate datafiles/{0}
+
+##The translator script
+--command               Rscript 
+                        translator.R #--input...
+--match --input         'datafiles/(.*)\.log(\.gz)?'
+--output                unpacked/{0}.RData
+--invisible --phony     unpacked
+
+--command               Rscript 
+--input                 eyemovements.R
+--match --input         unpacked/(.*Segment\.RData)
+--output --mkdir        eyemovements/{0}
+--invisible --phony     eyemovements
+
+--command           Rscript 
+--input             strip.R
+--match --input     unpacked/(.*\.RData)
+--output --mkdir    stripped/{0}
+--invisible --phony eyemovements
+
+#the common script is specific to direction experiments
+--command           RScript
+--input             common.R
+--input --invisible common.manipulations.R
+--match --input     'stripped/(.*ConcentricDirection.*\.RData)'
+--output --mkdir    common/{0}
+--invisible --phony common
+
+#And here's the common script for adjustment experiments.
+--command           	RScript
+--input             	adjustment_common.R
+--match     --input 	'unpacked/(.*Adjustment.*)\.RData'
+--output    --mkdir 	'common_adj/{0}'.RData
+--invisible --phony 	common

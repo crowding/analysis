@@ -33,7 +33,7 @@ scripts.txt: $(wildcard *.R) $(wildcard *.m)
 	echo *.R *.m > $@
 
 ##why the hell is this not getting regenerated on changes?
-monk.makefile: monk.py Monkfile dependencies.monkfile ione/Monkfile database.monkfile unexcluded.txt scripts.txt
+monk.makefile: monk.py Monkfile dependencies.monkfile import.monkfile ione/Monkfile database.monkfile unexcluded.txt scripts.txt
 	./monk.py @Monkfile --files @unexcluded.txt @scripts.txt > $@
 
 include monk.makefile

@@ -270,3 +270,6 @@ re-build the database? Fucking make, now it's showing actions in -n
 mode that it isn't performing in real mode!
 
 But it makes numdensity series calculations over and over again...
+
+TODO: make Monk automatically handle dependencies of the Makefile
+(esp. when using @-includes in Monk)
