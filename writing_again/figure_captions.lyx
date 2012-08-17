@@ -183,7 +183,7 @@ status open
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Tabular
@@ -477,7 +477,13 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-(B) example data
+(B) 
+\begin_inset Graphics
+	filename measurements-example.pdf
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -497,7 +503,13 @@ status open
 \begin_inset Text
 
 \begin_layout Plain Layout
-(C) illustration of bias and sensitivity
+(C) 
+\begin_inset Graphics
+	filename measurements-measurements.pdf
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -621,7 +633,7 @@ Probably, I only need one of B or C here.
  (D)
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:measurements-example"
+name "fig:measurements-measurements"
 
 \end_inset
 
