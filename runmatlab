@@ -17,7 +17,10 @@ args=${@//\'/\'\'}
 
 echo "${args}"
 
-$(which matlab) -nodesktop -nosplash -maci <<EOF
+which matlab
+alias
+
+matlab -nodesktop -nosplash <<EOF
 try
     cd('$(pwd)');
     eval('${args}');

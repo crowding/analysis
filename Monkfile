@@ -136,8 +136,8 @@
 --output --mkdir --listing collections/{0}_series_calculations.out
 --invisible --phony collections
 
-##Export some CSV files for Ione and run her scripts.
-@ione/Monkfile
+##In this subdirectory, I work on modeling. 
+@modeling/Monkfile
 
 ##Here's to matlab making an illustration of the stimuli
 

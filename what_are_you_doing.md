@@ -492,7 +492,157 @@ limited, and doesn't export to omnigraffle even?
 Put everything relevant to JP class in its repo.
 
 Oh, right, time to finish setting up remote git repos.
-DId dotfiles on Pat.
+Made upstream for dotfiles on Pat.
 And ConcentricDirectionQuest (I'm also still pushing to SVN on that one)
-And psy424.
-I wonder if there is a goot way to push to my time machine (cross platform, w/o mounting?)
+And psy424, which was then removed from my disk.
+I wonder if there is a good way to push to my 
+time machine (cross platform, w/o mounting?) Git over AFP?
+
+----------------------------------------------------------------------
+Fri Aug 17 18:36:48 PDT 2012
+
+More graph sketching.
+
+Started writing email to mike & ione but wanted to sketch more graphs first.
+
+
+----------------------------------------------------------------------
+Mon Aug 20 21:51:14 PDT 2012
+
+Sent some sketches to mike and ione. met with ione. seemd to go pretty
+well. Going to play with models, but first let myself go through the
+git immersion course [http://gitimmersion.com]
+
+Have dispensation to play with models and fucking relax and get work
+done.
+
+----------------------------------------------------------------------
+Tue Aug 21 16:49:00 PDT 2012
+
+Finished Git immersion course.
+
+Thinking seriously about cranking open Seven Languages in Seven Days.
+
+First, going to look into setting up a Git web hosting deal, via
+'gitolite'
+
+Why is (pbm-remind-log-entry) not working after a reboot? Argh.
+
+----------------------------------------------------------------------
+Wed Aug 22 18:07:12 PDT 2012
+
+(pbm-remind-log-entry) still not working
+
+Looking at gitweb instructions.
+
+Got new monitor. And new keyboard and trackpad.
+
+Setting up gitweb is confusing. I retreated to trying to set it up on
+my local laptop.
+
+----------------------------------------------------------------------
+Thu Aug 23 09:20:42 PDT 2012
+
+Need to set up dotfiles, etc. Then the interweb. Trying to merge
+dotfiles between my two environments. Here we go.
+
+I can use git --cherry-pick to selectively merge commits between
+branches? (is there a better way?)
+
+Okay, now trying to merge the website repo.
+
+I might want to have a pre-commit and post-checkout stuff to track
+permissions, if I'm going to track dotfiles and web directories. I
+should check if there's already scripts for that.
+
+Got gitweb cgi to run on Shadlen lab. I suspect that my home directory
+is not visible from the web server at all. Running some CGI
+experiments to test.... actually it is visible, it's git that's
+missing. Totally different /usr/local.
+
+----------------------------------------------------------------------
+Fri Aug 24 19:06:23 PDT 2012
+
+I want jist to automatically list and checkout my gists for me. OR
+some command line tool that can list gists?
+
+Need to remind myself to give up in the git web interface, my
+requirements are too weird.
+
+Huh, rebooting emacs solved my reminder issue. Score one for today.
+
+Now I'm messing with emacs. I want a "remote open" functionality.
+
+Never mind that for now. I was editing the gitolite.rc, wasn't I?
+
+Ooh, git comes in colors now.
+
+Enabled creation and deletion under "classes". I think you can only
+create and delete under a subdirectory.
+
+Exporting a bunch of existing repos to Git. (Git's compression should
+take care of early stuff)
+
+Interesting problem: when I ssh from Pat to Pat supposedly using the
+Git key, my .bashrc is evaluated.
+
+Went ahead and migrated the rest of repos.
+
+TODO: want to filter out early "analysis" and "data" from the
+psychophysics code project. And probably fix up the external
+Psychtoolbox.
+
+As for gitweb, I think that the way to do it is to actually modify
+gitweb to use a git-shell instead of git directly. Ah, here's the
+problem: gitolite-shell only does authentication and pack sending and
+receiving. All the repo browsers use a lot more than git-shell
+provides. And git command itself isn't careful about security. I think
+this means I give up for now.
+
+Here's my next yak-shave project though: check all repos on my
+computer, see it they are out of date, see if things have been
+committed, and nag me via some appropriate channel (growl could work.)
+
+matlab-mode doesn't invoke the editor because matlab tries to "which
+emacsclient -n". Also, HTML links don't work, but I'm not sure what
+that has to do with anything.
+
+Now cleaning up Geoff's code in the process of reading it.  For
+example, shorten structure-catting, and fix tile.m so that it actually
+works on multiple monitors. Holy shit, I forgot how screwed the figure
+placement deal is in MATLAB, so I started a rant on the subject.
+
+Fixed Geoff's tile.m. Sort of.
+
+Fixing up MeilstrupBoyntonModel so that it makes sense.
+
+----------------------------------------------------------------------
+Sun Aug 26 13:38:16 PDT 2012
+
+Gee, this Geoff code has a lot of 12-years-ago-isms in it . MATLAB has
+improved a bit since then with struct field references and function
+handles, and those are easy to fix up.
+
+Try setting up KeePass across my devices. Dropbox seems more natural
+for this; since the keepass file is encrypted, there is no way for Git
+to do merging.
+
+I want to build this into the Makefile, now, and then translate it
+into R.
+
+Monk (my makefile generator) is giving a weird error. I want to add
+tracing to it but I can't fire up ipython from Emacs.
+
+As, the problem was that it was looking for ipython in the Emacs
+variable exec-path, rather than path. So another munge to init.
+
+Fixing up the makefile process.
+
+somehow writing a one'liner to answer the toast/stoat question???? At
+least I put it in gist.
+
+Fixing it up so it will run on other machines, whee. This takes a lot.
+
+Fixing up UnpackPeter so that it will work with more "series" types.
+
+Start a "R" branch.
