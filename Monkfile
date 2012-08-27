@@ -144,3 +144,13 @@
 --command ./runmatlab illustrated_stimuli --input --invisible --match 'illustrated_stimuli.m'
 --output --listing 'illustrated_stimuli.out'
 --invisible --phony figures
+
+#type "make csv" to refresh all these
+--command
+--output --invisible --phony csv
+--input --invisible --match .*\.csv$
+
+#type "make mat" to refresh all .mat files
+--command
+--output --invisible --phony mat
+--input --invisible --match .*\.mat$

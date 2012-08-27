@@ -44,4 +44,4 @@ discrimination.sqlite: discrimination.sqlite.DONE
 
 adjustment.sqlite: adjustment.sqlite.DONE
 
-all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections csv figures
+all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections csv mat figures

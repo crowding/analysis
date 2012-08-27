@@ -10,9 +10,11 @@ suppressPackageStartupMessages({
 })
 
 main <- function(flist, dbfile, outfile) {
-
   files <- str_trim(readLines(flist))
+  trials <- pull.from.sqlite(dbfile, data.frame(loaded_from=files))
 
-  trials <- pull.form.sqlite(dbfile, data.frame(loaded_from=files))
-
+  fout <- file(outfile, 'w')
+  on.exit(close(fout), add=TRUE)
 }
+
+run_as_command()
