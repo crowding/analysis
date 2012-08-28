@@ -645,4 +645,7 @@ Fixing it up so it will run on other machines, whee. This takes a lot.
 
 Fixing up UnpackPeter so that it will work with more "series" types.
 
-Start a "R" branch.
+Made the build work.
+
+Had the thought that a file-content-based build system would alleviate
+a lot of my headaches around building.
