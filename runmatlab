@@ -22,11 +22,12 @@ alias
 
 matlab -nodesktop -nosplash <<EOF
 try
+    feature('HotLinks', 'off');
     cd('$(pwd)');
     eval('${args}');
 catch e
     system('echo 1 > $status');
-    fprintf(2,'%s',evalc('disp(e)'));
+    fprintf(2,'%s',evalc('getReport(e)'));
     exit();
 end
 system('echo 0 > $status');
