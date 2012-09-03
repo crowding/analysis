@@ -649,3 +649,123 @@ Made the build work.
 
 Had the thought that a file-content-based build system would alleviate
 a lot of my headaches around building.
+
+----------------------------------------------------------------------
+Monday.
+
+My auto-remind script wasn't working. I did work on modeling, setting
+up a drop box to share modeling code, cleaning up the code further,
+etc.
+
+----------------------------------------------------------------------
+Tuesday.
+
+Auto-remind script still isn't working.
+
+Want to write a "splat" for matlab to hlep with fitting (as Geoff's
+code is still weirdly dependent on argument order.)
+
+I managed to extricate the early repository and git info from
+There's probably some more stuff I can get rid of.
+
+Let's put notes about the data into a separate file.
+
+I started writing something like "splat" but then realized it was well
+nigh impossible.
+
+I'm looking at fit.m and how it is used. I think I get it now, the
+'freeList' pulls out of 'params' and the "fitting function" is
+expected to take arguments of the form (params, datacolumn,
+datacolumn, datacolumn, datacolumn) the backwards of how I'd do it.
+
+So let's wrap up the positional arguments of the motion model in a
+struct, so that it's more amenable to changes in the future.
+
+Also let's get the appropriate fields into eccentrcity_series
+and numdensity_series.
+
+And let's get some plotting parameters going here. That is,
+plotting for each subject what's going on.
+
+----------------------------------------------------------------------
+Wed Aug 29 15:42:10 PDT 2012
+
+trying to set up long-lines mode. White-space mode is supposed to do
+that but hasn't, yet. got that working after a reboot of Emacs.
+
+Okay, got whitespace mode working appropriately.
+
+Now I want to fix my logging reminder. After a reboot I find that the
+logging reminder is not working.
+
+I still don't have a good command line Gist client. One that well let
+me list. Maybe an automatic sybchronization would do the trick.
+
+So, let me visualize what's going on with Geoff's model.
+
+And work on an R, translation, and work on a dataset translation.
+
+First pull out the full fitted parameters for all the parameters that
+were fit.
+
+Then have a function to illustrate that model.
+
+I think what is really needed is a function to illustrate the model
+deviance, as well as way to capture the variance of the model fit.
+
+God I hate Matlab. Un
+
+----------------------------------------------------------------------
+Thu Aug 30 20:14:58 PDT 2012
+
+somehow started altering getversion to get info from git.
+
+Try ing to compute residuals, again, via creating an approximation to
+ddply.
+
+Wrote a ddply implementation. Now making it into a graph.
+
+Ate lunch. Poking through flymake.el.
+
+Looking at this pandas example. Probably going to translate to R.
+
+Debugging my multiple output groupfun. cellfun responds "dataset tyep
+is not currently implemented" when run on a cell array of datasets,
+wtf?
+
+Computing residuals. Now I need to finish making the plot, and maybe
+make it not split over so many arguments.
+
+Wired up my old speakers and wired airport express to them.
+
+----------------------------------------------------------------------
+Sat Sep  1 10:55:25 PDT 2012
+
+The goal is to have a framework to compare models. Actually the goal
+is to compare models< and that wants a framework. I need to keep
+in my mind which are the real goals :)
+
+Fixing things to that the needed flip for modeling happens in
+unpack. That way residuals don't have to repicate the flip.
+
+Found a page with the regression diagnostics for binary data:
+http://data.princeton.edu/wws509/notes/c3s8.html
+
+Poking at Raspberry Pi website, with the ide if building a
+Super-Airport-Express, with jackd, etc. And two more of those little
+amplifiers, and a couple more USB audio cards.  Actually, come to
+think if it, RPi would give me a little Gnu/Linux box to mess with my
+Edgeport devices, wouldn't it. I've got an HDMI monitor already,
+too. So that's high on my list.
+
+Okay, so I want to calculate the chi-square-based deviance over a
+residual. That means somehow per-observation, for observations that
+change predicted mu. So the normal formula doesn't work.
+
+Someone on stats.stackoverflow.com
+[says](http://stats.stackexchange.com/questions/1432/what-do-the-residuals-in-a-logistic-regression-mean),
+"I find the binnedplot function in the R package arm gives a very
+helpful plot of residuals. It's described nicely on p.97-101 of Gelman
+and Hill 2007." Luckily I have this book. Ah yes, sum the per-point
+deviances across constatnt size bins.
+

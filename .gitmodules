@@ -1,3 +1,6 @@
 [submodule "modeling"]
 	path = modeling
 	url = LabGit:direction_discrimination_modeling
+[submodule "logfile-reader"]
+	path = logfile-reader
+	url = peterm@pat.shadlen.org:logfile-reader
