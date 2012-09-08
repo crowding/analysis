@@ -769,3 +769,73 @@ helpful plot of residuals. It's described nicely on p.97-101 of Gelman
 and Hill 2007." Luckily I have this book. Ah yes, sum the per-point
 deviances across constatnt size bins.
 
+----------------------------------------------------------------------
+Mon Sep  3 14:18:16 PDT 2012
+
+Yesterday, succeeded at a Pearson residual plot binned over dx.
+
+Today, making a model fit under all conditions; moving logfile export
+out of the home directory.
+
+Also should do a main data plot.
+
+Probably also doing a residual deviance plot.
+
+matlab can't find "edit" any more. It's not on its $PATH. Okay, guess
+I'll specify the full file. Where does MATLAB get its $PATH, anyway?
+
+Except I pulled up the "preferences" screen and /Users/peter/bin/edit
+was already the editor. I chose "apply" and it worked.?? Ah, it was
+getting set by my init.el.
+
+Opentoline works, clicking on links doesn't. Ah, need to remap that
+to mouse-1, it is mouse-2 for some reason.
+
+Now it clicks but it doesn't find the right files in the matlab path.
+
+opentoline gets function names rather than file names and probably
+won't work with partial paths.
+
+----------------------------------------------------------------------
+Wed Sep  5 15:41:47 PDT 2012
+
+Wrote a function to fit all models. Looks like some models do not fit
+well, so i should rewrite the model in terms of slope rather than
+sigma.
+
+Now I have to build some accumarray shit to count cases for plotting,
+because groupfun is interminably slow for that purpose, spending all
+sorts of time in dataset.subsref. In R I can fit and plot the whole
+shebang WITH BOOTSTRAPPING faster than this nonsense.
+
+FUCK MATLAB
+
+FUCK MATLAB
+
+FUCK MATLAB
+
+MATLAB HOLDS BACK SCIENCE BY YEARS
+
+Ahem.
+
+
+----------------------------------------------------------------------
+Thu Sep  6 15:31:27 PDT 2012
+
+God, trying to recreate lattice plot from scratch, Have I mentioned
+Fuck MATLAB lately?
+
+Now making predictions.
+
+FINALLY got the model predictions plotted on the graph. Some of the
+predictions are pretty bad, need to rehash the model to fit in terms
+of "slope" rather than "sigma".
+
+So with all fits in hand, let's look at diagnostics.
+
+----------------------------------------------------------------------
+Fri Sep  7 23:22:32 PDT 2012
+
+Some of the models fit a shift in slopes when they should be fitting a
+change in sigma. Other models do the opposite. Should rehash them in
+terms of a slope (i.e. turn them into a pure GLM model.)

@@ -15,11 +15,6 @@ status=`mktemp -t matlab.status`
 #escape single quotes
 args=${@//\'/\'\'}
 
-echo "${args}"
-
-which matlab
-alias
-
 matlab -nodesktop -nosplash <<EOF
 try
     feature('HotLinks', 'off');
