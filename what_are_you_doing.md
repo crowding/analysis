@@ -810,14 +810,10 @@ shebang WITH BOOTSTRAPPING faster than this nonsense.
 
 FUCK MATLAB
 
-FUCK MATLAB
-
-FUCK MATLAB
-
 MATLAB HOLDS BACK SCIENCE BY YEARS
 
-Ahem.
-
+Ahem. SO I spent a bunch of time solving specifically the problem of
+counting yesses and noes per stimulus condition. FML.
 
 ----------------------------------------------------------------------
 Thu Sep  6 15:31:27 PDT 2012
@@ -839,3 +835,87 @@ Fri Sep  7 23:22:32 PDT 2012
 Some of the models fit a shift in slopes when they should be fitting a
 change in sigma. Other models do the opposite. Should rehash them in
 terms of a slope (i.e. turn them into a pure GLM model.)
+
+Met with Mike, showed some of hte curve fits.
+
+----------------------------------------------------------------------
+Sat Sep  8 11:37:03 PDT 2012
+
+Switched to R branch to catch up. Got import working, but didn't do
+much else.
+
+----------------------------------------------------------------------
+Sun Sep  9 12:35:34 PDT 2012
+
+Gonna get more R code working.
+
+First switched to Matlab branch to make it build and make the figure
+plots. Remembered that I have to do `'fullpath'` in
+`fullfile(fileparts(mfilename('fullpath')))` to get paths relative to
+the m-file.
+
+Fucking neighbor is running the table saw cutting up firewood all
+day. What the hell do they even do with firewood anyway.
+
+----------------------------------------------------------------------
+Mon Sep 10 11:09:10 PDT 2012
+
+I think what is needed is an object oriented approach. A 'fit' object
+should have a "fit" method that casts it around data, a 'predict'
+method that shows the fit to other data, and an initialValues method
+(used by the Fit method, so it needn't be another interface.)
+
+Took a time out to put my "auto-raising if long" prompt up on a gist.
+
+Neighbor still cutting up wood all day! What the hell.
+
+Doing this OOP development in a separate branch.
+
+Timeout to fix matlab.el so I can click on error references.
+
+This is going to improve things. Although now I need to select
+Predictions.
+
+Now looking up fogures for my "crazy idea" dealie.
+
+----------------------------------------------------------------------
+Fri Sep 14 18:16:24 PDT 2012
+
+Had this disabled for a time.
+
+Tues. was aggravated at meeting with Ione and being told to just accept Geoff's
+model without even thinking about or investigate it. I'm the one going
+to be writing a lot more words about this than Geoff is. If I can't
+intellectually engage with it I can't write about it.
+
+On Weds mostly fucked off.
+
+On Thurs. contributed a speed patch to plyr, which made me feel some
+good feelings for a bit.
+
+Friday I'm modeling, and having some success at it.
+
+----------------------------------------------------------------------
+Mon Sep 17 13:05:58 PDT 2012
+
+Now I'm going to get knitr working and update my methods section; also
+poke at modeling some more to get the bias term working.
+
+Poked at R environments, attributs on environmentsa are set by
+reference so no help there.
+
+Trying to craft an argument that my preferred way of looking at the
+problem and fitting the model is idempotent to the "cue combination"
+way of looking at it. And sketched until I found that there was no
+difference!
+
+Some success with modeling. Think there needs to be something other
+than a linear dependence on direction content. How about a log
+dependence? After all, we usually find that long-coherence is the best
+way to make responses to random dots look like a psychometric
+function.
+
+The problem with fitting JB appears to be something to do with
+adaptation to the direction content used in the session. There's also
+some wacky nonmonotonicity.
+
