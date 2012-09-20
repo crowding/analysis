@@ -919,3 +919,10 @@ The problem with fitting JB appears to be something to do with
 adaptation to the direction content used in the session. There's also
 some wacky nonmonotonicity.
 
+----------------------------------------------------------------------
+Tue Sep 18 16:12:07 PDT 2012
+
+Getting a handle on some nonmonotonicities in the data. The degree of
+induced motion is a nonmonotonic function of direction content?
+
+Trying to collect all my writing into repositories.
