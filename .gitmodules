@@ -4,3 +4,15 @@
 [submodule "logfile-reader"]
 	path = logfile-reader
 	url = peterm@pat.shadlen.org:logfile-reader
+[submodule "mothballed_writing"]
+	path = mothballed_writing
+	url = ../writing/mothballed_writing.git
+[submodule "previous_draft"]
+	path = previous_draft
+	url = ../writing/previous_draft.git
+[submodule "newer_draft"]
+	path = newer_draft
+	url = ../writing/newer_draft.git
+[submodule "ptools"]
+	path = ptools
+	url = ../code/ptools.git
