@@ -925,4 +925,350 @@ Tue Sep 18 16:12:07 PDT 2012
 Getting a handle on some nonmonotonicities in the data. The degree of
 induced motion is a nonmonotonic function of direction content?
 
-Trying to collect all my writing into repositories.
+Trying to collect all my writing into repositories. So that I can look
+at it and copy-paste as necessary.
+
+----------------------------------------------------------------------
+Thu Sep 20 11:53:02 PDT 2012
+
+
+Did that. Now I have all my writing in a place.
+
+Writing tests about a short function-creation-function and putative
+'dm_ply' functions for plyr.
+
+Jerkbrain decided that what the world needs is a TVTropes page about
+the 1988 computer game "The Colony." What the hell, jerkbrain?
+
+(I mean, even if it's bullshit that DOOM was the TropeMaker for
+ASpaceMarineIsYou or that Wolfenstein3D was the TropeMaker for
+FirstPersonShooter, come on jerkbrain.)
+
+----------------------------------------------------------------------
+Fri Sep 21 16:03:19 PDT 2012
+
+Well, I wrote that Colony page.
+
+And I'm looking at polishing up my ptools package.
+
+And I'm reading about R package development using Hadley's docs.
+
+----------------------------------------------------------------------
+Sat Sep 22 18:09:18 PDT 2012
+
+doctools:document is giving me a fucking stack overflow error. Until
+it doesn't. > <
+
+now writing docs for my useful "indexing" function
+
+now writing docs for "chain." overall want to get "ptools" up on
+github in some kind of state.
+
+Now making fun() work. As I could have expected, I misremembered the
+argument default scoping rules.p()
+
+Now making the summarizer() thing work.
+
+----------------------------------------------------------------------
+Sun Sep 23 13:11:09 PDT 2012
+
+Now making tests for dbind(). I think it can work, but it'll have to
+work with the equals signs reversed.
+
+Cleaning the bathroom floor.
+
+Realized a refactoring of mutate/summarize would work better with
+dbind. So poking at dbind.
+
+Realized dbind wouldn't work because of the way `a(x=a, y=b) <- foo`
+gets transformed into `a(\`*tmp*\`, y=b, value=foo)` clobbering the
+name of the first argument. But using square brackets should work?
+Except you have to futz with the s3 system to get the calling frame.
+
+Bind bind bind. Need to make a test case pass, then write.
+
+Made several test cases pass! Switching out of this branch.
+
+Why don't I set up my methods section as its own document and see
+where that goes. I have good methods. Let's see if I can set up
+knitr for some of them.
+
+Cutnpasting some stuff into lyx. Feels good man.
+
+----------------------------------------------------------------------
+Mon Sep 24 16:32:10 PDT 2012
+
+Now reimplementing dbind to do what I really want it to do.
+
+Did that. Now my reward is writing.
+
+Where did my old introduction go? I guess it's in the mothballs and
+never made it to current draft?
+
+Poking through various files. Allegedly I was working on a
+number-density in a different file. Still need to grep revision
+history and time machine to see if that does it. I did pull some
+useful (or moldy) stuff up out of all my "junk" folders though.
+
+Ah, I think it was called "segment" and it would be in the
+previous\_draft folder.  Oh yes, organize the previous-draft folder by
+name and get all the .lyx files together. >\_<
+
+That just leaves the introduction dealie for me to sort out.
+
+Getting mutate running. Going to bed at 6 am.
+
+----------------------------------------------------------------------
+Tue Sep 25 15:24:20 PDT 2012
+
+Made a fix to issue #79 on hadley/plyr. FGM. but it's 9:30 already.
+
+My goals:
+* get the indroduction in order; (mostly done)
+* pull back whatever thing Ione sent to be about figure captions
+* write a methods section for the number/density section
+* maybe sketch figures for the number/density; get knitr working.
+* outline the modeling section. (mostly done)
+
+Got all the pieces of old writing I'll use (unless I pull something
+from my thesis proposal.) Now cleaning up the introduction.
+
+Cleaning up introduction, substantially rewrote some paragraphs.
+
+----------------------------------------------------------------------
+Wed Sep 26 08:33:26 PDT 2012
+
+writing. napping. alternating.
+
+working on a "description of the model" section.
+
+Thurs. non-met with Ione, then caught up on sleep.
+
+----------------------------------------------------------------------
+Fri Sep 28 11:44:45 PDT 2012
+
+First going to fix a plyr niggle with *aply.
+
+So I'm changing the behasvior of.... list_to_array. What behavior
+depends on that? Best answer is to break list_to_array ad see what
+test cases fail.
+
+And, god, I still need to work out navigating the test reporter... how
+the fuck do I find documentation for a class? ah, `str` is my friend.rev
+
+----------------------------------------------------------------------
+Sat Sep 29 23:20:06 PDT 2012
+
+Writing docs for my dm_ply experiment. Amusingly, -a.ply was already
+documented to return an array-list.
+
+Writing some other doc comments to use templates.
+
+And some tests.
+
+----------------------------------------------------------------------
+Sun Sep 30 14:14:55 PDT 2012
+
+Copied some dm_ply tests into my tests directory.
+
+Thinking about a strategy to accelerate ddply further -- instead of
+constructing data frames, do an argument-based callback to a "data
+frame accumulator". Then summarize() etc would optionally take a
+callback argument, which is called by argument. Thus, data goes from
+the input to the output data frame through promises; for your
+mutator() examples, data goes from the input data frame to the output
+with no allocations and only one copy if the column is not referenced
+in the mutator.
+
+The accumulator would be a reference object accessed by some callbacks
+-- I have the basic version done in my logfile reader already.
+
+The accumulator could be built by recompiling its own macro every time
+new columns were added.
+
+(the question is then how to check that everything has the right
+length, without incurring copies?)
+
+I wonder, is there a "generic dynamic binding" that pops variables
+into place for an environment? There ought to be, but isn't.
+
+messing with emacs. I want visible-mark-mode to show the marks as
+bars... tell me about overlays.
+
+Actually just giving up an visible-mark-mode (as some commands like an
+active region, like replace-in-region) I still would like something
+like visible multiple marks though, or multiple cursors.
+
+I installed this OS X vindow-mover and configured the keybindings to
+my liking. I should consider copying this keybinding scheme for my
+Emacs.
+
+Look at dm_ply implementation? or start getting knitr working?
+
+So should there be an "argeach?" Looks like no, the only issue is that
+the ... is not necessarily matched.
+
+Idea: need an "inherit-variables" metaprogramming function for
+R. Sketch it out in tests first.
+
+Gah, what the fuck keeps resetting options?
+
+----------------------------------------------------------------------
+Mon Oct  1 22:33:51 PDT 2012
+
+Dodn't meet with Ione. Scheduled for Thurs.
+
+Thinking about a list-comprehension macro for R. As well as a plain
+old macro system. Eventually, i will build an ersatz programming
+language out of this beast.
+
+Gettign knitr running. Wondering if it is possible to have previews in LyX.
+
+Think my first thing is to sketch the model figure. Three graphs, some
+boxes and lines...
+
+----------------------------------------------------------------------
+Tue Oct  2 13:53:58 PDT 2012
+
+Insight: If you have the intercept right but the slope wrong that should show up
+on a deviance residual.
+
+Also insight: what happens to the second derivative of a gaussian
+convolved against a comb?
+
+That might lead nowhere useful. Wrote it up as a note.
+
+Configured offlineimap to back up my gmail. Well, to run one. I'm not
+sure it it'll run automatically (esp. if I don't want to keep my
+passowrds in plaintext config files...)
+
+Different insight about the slope of hte sensitivity function : it's
+the normal sensitivity tempered by the probability for confusing a
+target signal for the source signal (perhaps twice.) So graph some
+summed, overlapping bell curves to see what's going on...
+
+Offlineimap crashes, and then the ssl fingerprint changes! fucking
+sysadminnery.
+
+Rather than list comprehensions, what if you just had chains of
+iterators-returning iterators? or FLWOR as in xquery?
+
+Spent way too long trying to make each column of a data frame into teh
+result of a function. Should have just called expand.grid beforehand.
+
+----------------------------------------------------------------------
+Wed Oct  3 20:35:30 PDT 2012
+
+Let's make some figures!
+
+Practicing with knitr. Big improvement over other Sweave
+packages. Things just work. Just wish there would be "instant-preview".
+
+----------------------------------------------------------------------
+Thu Oct  4 05:04:26 PDT 2012
+
+Trying to debug some knitr/LyX error. Ugh, I hate that catching an
+error automatically clobbers the stack trace. There has to be a better
+pattern for invoking try() that can preserve the stack trace. Like finally().
+
+Ione says:
+
+Set bullet points about "what are my conclusions. What do i think I
+know about these things that I didn't knwo before (one figure for each
+talking point." Look at bits we cut out of modeling materials for some
+of these points.
+
+Have an idea for how to make dbind work with parens again (which will
+make it easier to be a macro? because not abusing the class system?)
+Just give the first argument an unpronouncable name, and if it exists
+then it s positional. And.... turns out it doesn't work. Oh
+well. Because it calls strictly positionally, and doesn't give you the
+name you're trying to bind to.
+
+So how would I do a walk or substitute to find function invocations?
+Here's a wacky idea, what happens when I call substitute with an
+environment that's got active bindings?
+
+----------------------------------------------------------------------
+Fri Oct  5 16:21:47 PDT 2012
+
+No change of finding out what substitute() is trying to substitute.
+
+Wonder if there's another way? Maybe I can take all names and replace
+them with idempotent expression-capturing function, except for the
+macros.... Hmm, that idea might have legs. Except howdo I tell when a
+name is eval'ed as a function versus eval'ed as a .... oh! use two
+nested environments. Sneaky.
+
+This might actually be a cool strategy for code
+transformation... could implement macros in these terms rather than
+code-walking.
+
+----------------------------------------------------------------------
+Sun Oct  7 02:23:20 PDT 2012
+
+Rebased two patches onto Hadley's plyr.
+
+Have a new strategy for evaluating list arguments while skipping
+missing values. Related to my ideas on macros and
+code-walking. Possibly too clever by half. Although I think it would
+be much faster in C code.
+
+----------------------------------------------------------------------
+Mon Oct  8 11:17:49 PDT
+
+Maybe read some papers finally. Also work on introduction.
+
+Then work on a beamer document with graphs.
+
+Okay, work on the iPad reading workflow. Use dropbox as that seems to
+be the thing to do. And Andres wossface's scripts. Probably want to
+store all ebooks in there too. (fukka Calibre, that memory-hoging POS.)
+
+The other thing was to configure getmail, and to shave that yak I
+wanted to get my password out of the OS X keyring instead of storing
+plaintext in .getmailrc. Postpone.
+
+Okay, got some stuff to sync to Goodreader, that andres script is dumb
+tho. And it needs a javascript sorting/filtering/searching component.
+
+Think I will try to rewrite the model in R in the Lyx/beamer framework
+and get a presentation out of it.
+
+----------------------------------------------------------------------
+Wed Oct 10 16:19:31 PDT 2012
+
+Setting up a LyX beamer presentation. Spent a couple hours trying to
+get the "omniGraffle import" thing from the lyx wiki working. What a
+pile of shit that program is.
+
+But, knitr support. knitr is good.
+
+Okay, for today's yak I'm going to rearrange lyx's toolbars so they
+aren't so fucking long and wrapping-around all the time, and so that
+tag/cite are in more logical places.
+
+maybe I want to bless the logger-reminder with an install script.
+
+also, make it so that my ipad bcaks up to my time machine. Done. mow
+backing up. woot.
+
+I want to write "detangle" to un-tangle a tangled .R file back into
+the corresponding .Rnw file.
+
+I also want to tweak my reminder script so that it
+    1. doesn't interrupt me in the middle of my writing (set timer for
+       5 sec after kb idle)
+    2. Doesn't interrupt me in the middle of tv watching? (don't run
+       if mouse/keyboard idle. I thought it did this but maybe the
+       idle timeout needs to be shorter.)
+
+Also, make tabs convert to spaces globally except in Makefile.
+
+And the git reposiutory minder. None of my gist command line clients
+do a --list? And the emacs one doesn't do a clone?!
+
+OKAY LET'S MAKE A GRAPH
+
+I want to add the "session file" column to my data as it will help.
+
