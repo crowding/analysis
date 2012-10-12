@@ -3,6 +3,7 @@
 
 suppressPackageStartupMessages({
   source("db_functions.R")
+  source("helper_functions.R")
   library(plyr)
   library(stringr)
 })
@@ -14,13 +15,15 @@ abs_localDirectionContrast    = "abs_direction_content",
 folded_displacement           = "folded_displacement",
 abs_displacement              = "abs_displacement",
 target_spacing                = "target_spacing",
-trial_extra_nTargets          = "target_number",
+trial_extra_nTargets          = "target_number_all",
+trial_extre_nVisibleTargets   = "target_number_shown",
 subject                       = "subject",
 abs_response                  = "drop",
 folded_response               = "drop",
 folded_response_with_carrier  = "folded_response_with_carrier",
 abs_response_cw               = "abs_response_cw",
-responseInWindow              = "drop"
+responseInWindow              = "drop",
+loaded.from                   = "filename"
 )
 
 main <- function(flist, dbfile, outfile) {
@@ -37,7 +40,4 @@ main <- function(flist, dbfile, outfile) {
   write.csv(trials, outfile, row.names=FALSE)
 }
 
-if ("--slave" %in% commandArgs()) {
-  args <- commandArgs(trailingOnly=TRUE)
-  do.call("main", as.list(args))
-}
+run_as_command()

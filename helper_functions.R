@@ -68,7 +68,7 @@ with_arg <- function(..., .collect=list, .envir=parent.frame(), .override=FALSE)
 ##'
 ##' TODO: A help argument will be constructed according to the Roxygen
 ##' documentation for the function.
-##' 
+##'
 ##' @param func Which function to invoke. Defaults to whatever "main"
 ##' function is defined in the calling scope.
 ##' @param arguments The command line arguments to parse. By default, uses 
