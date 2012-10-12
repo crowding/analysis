@@ -1270,5 +1270,6 @@ do a --list? And the emacs one doesn't do a clone?!
 
 OKAY LET'S MAKE A GRAPH
 
-I want to add the "session file" column to my data as it will help.
+I want to add the "session file" column to my data as it will
+help. Which meant catching up my analysis repo.
 
