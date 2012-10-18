@@ -102,7 +102,7 @@ pull.from.db <- function(conn, condition, columns=columns.to.pull, table="trials
   table_text <- chain( table, make.db.names(conn,.), paste("\"", ., "\"", sep="") )
 
   joiner_name = "temp.joiner"
-  
+
   query <- sprintf("SELECT %s FROM %s NATURAL JOIN %s;", column_text, table_text, joiner_name)  
   with.db.transaction(conn, function() {
     dbGetQuery(conn, sprintf("DROP TABLE IF EXISTS %s;", joiner_name))

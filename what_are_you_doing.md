@@ -1273,3 +1273,27 @@ OKAY LET'S MAKE A GRAPH
 I want to add the "session file" column to my data as it will
 help. Which meant catching up my analysis repo.
 
+Oops, there was something in "chain" that I didn't unbreak.
+
+Not I tried to add a column but it didn't? Ah, I have to add it in
+db_functions .r as well. or just pass thie list of columns from main.csv.
+substituting what beeds to be substituted.
+
+----------------------------------------------------------------------
+Saturday
+
+Worked on graphs and tikz. THere is something I need to do with the
+legend. spacing, thought Gave up on presenting Monday. might present a
+weird idea (think about experiments to run?)
+
+----------------------------------------------------------------------
+Sun Oct 14 20:10:07 PDT 2012
+
+working on plots, plyr, templates, etc. making templates work.
+
+----------------------------------------------------------------------
+Mon Oct 15 12:21:25 PDT 2012
+
+Okay this reminder thing is out of control and keeps stealing my
+keyboard (now that it's done its job and made me notate more, it's
+overdoing its jov and making me notate less.
