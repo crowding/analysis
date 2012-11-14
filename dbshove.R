@@ -1,12 +1,12 @@
 #!/usr/bin/env Rscript
 suppressPackageStartupMessages({
   source("db_functions.R")
+  source("programming.R")
   library(ptools)
   library("plyr")
 })
 
 dbfile <- "database.sqlite"
-
 
 ## Shove each file into the SQLite database named in the first arg.
 ## do.process("database.sqlite", "common/pbm-2012-01-23__14-49-12-ConcentricDirectionDiscriminabilityCritDistance.RData")
@@ -24,7 +24,7 @@ do.process <- function(dbfile, ...) {
 
   with.db.connection(drv, dbfile, fn=function(conn) {
     l_ply(infiles, importFile, conn, print.filename)
-  })  
+  })
 }
 
 importFile <- function(filename, conn, print.filename) {
@@ -110,7 +110,7 @@ update.database.structure <- function(conn, env) {
   merged.structure <- merge.dataset.and.database.structures(conn, dataset.structure, database.structure)
 
   create.missing.tables(conn, merged.structure)
-  add.missing.fields(conn, merged.structure)  
+  add.missing.fields(conn, merged.structure)
 }
 
 insert.data <- function(conn, env) {
@@ -122,7 +122,7 @@ delete.existing.data <- function(conn, env) {
   ##drop records that led from this source file(s).
   tables <- dbListTables(conn)
   source.files <- unique(env$runs$loaded.from)
-  
+
   for (t in tables) {
     send.prepared.command(conn, sprintf("delete from \"%s\" where loaded_from in (?)", t), data.frame(file=source.files))
   }
@@ -143,7 +143,7 @@ offset.indices <- function(conn, env) {
   offset <- c()
   for (name in intersect(tables, make.db.names(conn, ls(env)))) {
     if (! "i" %in% colnames(env[[name]])) next
-    
+
     the.max <- dbGetQuery( conn, sprintf("SELECT max(i) from %s", name))[[1]]
     if (length(the.max) > 0 && all(!is.na(the.max))) {
       offset[[name]] <-
@@ -190,7 +190,7 @@ get.dataset.structure <- function(conn, env) {
   ##
   ##By convention, a column named"i" corresponds to a primary key column and "*.i" corresponds
   ##to an external key column.
-  
+
   chain(  data.frame(frame=ls(env), stringsAsFactors=FALSE)
         , mutate( table = make.db.names(conn, frame) )
         , adply(1, function(row)
@@ -234,7 +234,7 @@ merge.dataset.and.database.structures <- function(conn, dataset.structure, datab
                 , function(df) mutate(df, field=make.db.names(conn, as.character(column)))
                 )
         ) -> dataset.structure
-                                             
+
   mutate(database.structure
          , exists.in.database=TRUE | as.logical(field)) -> database.structure
 
@@ -252,16 +252,16 @@ merge.dataset.and.database.structures <- function(conn, dataset.structure, datab
           )
 
   columns.with.references <-
-    merge( columns.referencing, columns.referenced 
+    merge( columns.referencing, columns.referenced
          , by.x=c("frame.referenced", "column.referenced")
          , by.y=c("frame", "column")
          , all.x=TRUE
          )
-  
+
   merged <- chain(  columns.with.references
                   , merge(merged, all.y=T)
                   )
-  
+
   #compute SQL storage type
   chain(  merged
        , mutate(type=ifelse(is.key, "INTEGER", c(character="TEXT", numeric="REAL")[mode])
@@ -290,7 +290,7 @@ create.missing.tables <- function(conn, structure) {
                               , sep="", collapse = "")
                       , paste("CREATE INDEX IF NOT EXISTS \""
                               , unique(table), "_loaded_from\" on \""
-                              , unique(table), "\" (loaded_from)"  
+                              , unique(table), "\" (loaded_from)"
                               , sep="", collapse = "")))
         })) -> maketables
   for (s in c(maketables)){
@@ -298,7 +298,7 @@ create.missing.tables <- function(conn, structure) {
     send.command(conn, s)
   }
 }
-  
+
 add.missing.fields <- function(conn, structure) {
   chain(structure
         , rbind(  .[c(),,drop=TRUE]
@@ -322,5 +322,3 @@ if ("--slave" %in% commandArgs()) {
   args <- commandArgs(trailingOnly=TRUE)
   do.call("do.process", as.list(args))
 }
-
-  

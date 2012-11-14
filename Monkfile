@@ -15,7 +15,7 @@
 @database.monkfile
 
 #these rules mainly create graphs. Note later rules stack onto earlier ones.
-#TODO: Makefiles need 
+#TODO: Makefiles need
 --command --once          Rscript
 --input --once            graphs.R
 --match --input --once    common/(.*).RData
@@ -63,19 +63,19 @@
 #--command --invisible --phony everything --match --invisible --input .*
 
 #For convenience, let's munge the filenames so as to sort differently.
---command ln %-s 
+--command ln %-s
 --input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
 '../{0}-{1}-{2}.pdf'
 --output --mkdir 'eachplots/_bydate/{1}-{2}-{0}.pdf'
 --invisible --phony links
 
---command ln %-s 
+--command ln %-s
 --input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
 '../{0}-{1}-{2}.pdf'
 --output --mkdir 'eachplots/_byexp/{2}-{0}-{1}.pdf'
 --invisible --phony links
 
---command ln %-s 
+--command ln %-s
 --input --match --invisible 'eachplots/([a-zA-Z0-9]*)-(\d*-\d*-\d*__\d*-\d*-\d*)-([^/]*).pdf'
 '../{0}-{1}-{2}.pdf'
 --output --mkdir 'eachplots/_bysubj/{0}-{1}-{2}.pdf'
@@ -88,11 +88,11 @@
 --input --match --invisible          describe.R
 
 --command                            Rscript
---input                              describe.R 
+--input                              describe.R
 --input --invisible                  descriptions/descriptions.Rdata.INIT
                                      descriptions/descriptions.RData
 --input --match                      common/(.*\.RData)
-                                     && touch 
+                                     && touch
 --output --mkdir                     descriptions/DONE/{0}.DONE
 
 --command
@@ -117,26 +117,26 @@
 ## before this runs. the Makefiles need to depend on files that are input "listing"
 
 # For various purposes, select from the descriptions files.
---command Rscript 
---input select_from_descriptions.R 
+--command Rscript
+--input select_from_descriptions.R
 --input --match '(.*)_series.R$'
 --input 'descriptions/descriptions.RData'
 --output --mkdir collections/{0}_series.list
 --phony --invisible series
 
-## Then run calculations using those selections.  
+## Then run calculations using those selections.
 ##
 ## TODO: this runs things twice because of the multiple output files
 ## generated. Need to fix that in makemake
---command                  Rscript 
+--command                  Rscript
 --input --match            (.*)_series_calculations.R$
 --input --listing          collections/{0}_series.list
-                           discrimination.sqlite 
+                           discrimination.sqlite
 --input --invisible        discrimination.sqlite.DONE
 --output --mkdir --listing collections/{0}_series_calculations.out
 --invisible --phony collections
 
-##In this subdirectory, I work on modeling. 
+##In this subdirectory, I work on modeling.
 @modeling/Monkfile
 
 ##Here's to matlab making an illustration of the stimuli

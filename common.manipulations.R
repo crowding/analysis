@@ -42,7 +42,7 @@ what.varies <- function(runs) {
   zip <- function(l) { ##like python zip
     lapply(apply(do.call(rbind, l), 2, list), unlist, recursive=FALSE)
   }
-
+ 
   whatChanges <- function(randomizer) {
     whichParamsChange <- which(lapply(lapply(
       zip(randomizer$values),
@@ -51,7 +51,7 @@ what.varies <- function(runs) {
                                     randomizer$subs[whichQuestParamsChange],
                                     unlist), function(x) do.call(paste, as.list(c("trial", x, sep=""))))
   }
-  
+
   changing.conditions <-
     lapply(runs$beforeRun.trials.randomizers,
            function(x)whatChanges(x[[1]]))
@@ -92,9 +92,9 @@ common.manipulations <- function(envir=parent.env(environment())) {
 
     ##We only look at the concentric trials.
     trials <- subset(trials, trial.version__.function == "ConcentricTrial")
-    
+
     if (!is.null(trials$trial.occluders)) {
-      mutate(trials, 
+      mutate(trials,
              trial.extra.visibilityCondition =
                factor(ifelse(is.na(trial.useOccluders)
                              , "full"
@@ -109,14 +109,14 @@ common.manipulations <- function(envir=parent.env(environment())) {
     } else {
       trials$visibilityCondition <- factor("full", levels=c("left", "right", "full"))
     }
-    
+
     ##determine for each trial if the "correct" response was
     ##given. Somewhat irrelevant when we know about hte induced motion effect
     mutate(trials,
            correct=(result.response
                     ==( - trial.extra.globalDirection
                        - trial.extra.localDirection * !trial.extra.globalDirection))) -> trials
-    
+
     ##mark the motion condition in each trial based on whether local and
     ##global run the same direction.
     trials <- transform(trials,
@@ -136,7 +136,7 @@ common.manipulations <- function(envir=parent.env(environment())) {
 
     ##idk wth this happens?
     colnames(triggers)[colnames(triggers) == "next"] <- "next."
-    
+
     ##find the timestamp of motion onset (this is before the actual first
     ##element, as given by motionFirstElementDelay)
     t.motionBegun <- triggers[triggers$name == "ConcentricTrial/run/startMotion",
@@ -165,16 +165,32 @@ common.manipulations <- function(envir=parent.env(environment())) {
 
     if (!"trial.extra.useFlankers" %in% colnames(trials)) {
       trials$trial.extra.useFlankers <- NA
-      trials$trial.extra.flankerAngle <- list(c())
+      trials$trial.extra.flankerAngle <- list(c());
+      trials$trial.extra.flankerPhase <- list(c());
+      trials$trial.extra.flanker1Angle <- NA;
+      trials$trial.extra.flanker2Angle <- NA;
+      trials$trial.extra.flanker1Phase <- NA;
+      trials$trial.extra.flanker2Phase <- NA;
+    } else {
+        first <- function(x) if (length(x) >= 1) x[[1]] else NA
+        second <- function(x) if (length(x) >= 2) x[[2]] else NA
+        trials$trial.extra.flanker1Phase <-
+          vapply(trials$trial.extra.flankerPhase, first, 0)
+        trials$trial.extra.flanker2Phase <-
+          vapply(trials$trial.extra.flankerPhase, second, 0)
+        trials$trial.extra.flanker1Angle <-
+          vapply(trials$trial.extra.flankerAngle, first, 0)
+        trials$trial.extra.flanker2Angle <-
+          vapply(trials$trial.extra.flankerAngle, second, 0)
     }
-    
+
     direction.content <- with(trials,
                               mapply(  trial.motion.process.velocity
                                      , trial.motion.process.color
                                      , trial.extra.useFlankers
-                                     , trial.extra.flankerAngle
+                                     , trial.extra.flankerPhase
                                      , FUN=function(vel, col, fl, fa) {
-                                       
+
                                        ##Note that if the trials had
                                        ##flankers then the flankers
                                        ##were listed first...
@@ -210,7 +226,7 @@ common.manipulations <- function(envir=parent.env(environment())) {
                      , trial.extra.content.cw = direction.content[1,]
                      , trial.extra.content.ccw = direction.content[2,]
                      )
-                         
+
     ##assign a "direction contrast" to trials that were done before
     ##direction contrast was a real parameter Express contrast, displacement and response in
     ##common absolute directions (positive=CCW, negative=CW)
@@ -242,7 +258,7 @@ common.manipulations <- function(envir=parent.env(environment())) {
                         , trial.extra.content.cw, trial.extra.content.ccw)
              , folded.content.against =
                  ifelse(  abs.localDirectionContrast > 0
-                        , trial.extra.content.ccw, trial.extra.content.cw)             
+                        , trial.extra.content.ccw, trial.extra.content.cw)
              , folded.localDirectionContrast = ((folded.content.with - folded.content.against)
                                                 / (folded.content.with + folded.content.against))
              , folded.displacement =
@@ -285,8 +301,10 @@ common.manipulations <- function(envir=parent.env(environment())) {
     rm(t.responseTimestamp)
     rm(t.motionBegun)
     rm(direction.content)
-    
+
     if ("frame.skips" %in% ls()) rm(frame.skips)
+    if ("second" %in% ls()) rm(second)
+    if ("first" %in% ls()) rm(first)
   })
 }
 
@@ -294,10 +312,10 @@ common.manipulations.variations <- function(env) {
   with(env, {
       ##oops...
     trials <- within(trials, subject[subject=="dtdt"] <- "dt")
-  
+
     ## work out what we vere varying during these experiments...
     condition.columns <- what.varies(runs)
-    
+
     ##here we put special case handling of things.
     condition.exprs <- parse(text=condition.columns)
 
@@ -342,4 +360,3 @@ common.manipulations.displacement <- function(env=parent.env(environment())) {
              ) -> trials
   })
 }
-
