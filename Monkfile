@@ -136,6 +136,18 @@
 --output --mkdir --listing collections/{0}_series_calculations.out
 --invisible --phony collections
 
+## another thing we want to do is select unique stimuli from these
+## trials (the trials we have described and want to analyze.)
+
+--command Rscript collect_unique_stimuli.R
+discrimination.sqlite
+--output unique_stimuli.RData
+--input --invisible discrimination.sqlite.DONE
+--input --match collections/(.*)_series.list
+--invisible --phony unique
+
+
+
 ##In this subdirectory, I work on modeling.
 @modeling/Monkfile
 

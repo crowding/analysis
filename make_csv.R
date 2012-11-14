@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-#import files from 
+#import files from
 suppressPackageStartupMessages({
   source("db_functions.R")
   source("helper_functions.R")
