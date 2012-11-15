@@ -8,10 +8,10 @@
 #TODO: Dependencies of the makemake-file should be added automatically.
 @dependencies.monkfile
 
-#This file contains rile sfor importing the data and massaging it.
+#This file contains rules for importing the data and massaging it.
 @import.monkfile
 
-#Here's rules for puching our data into a database.
+#Here's rules for pushing our data into a database.
 @database.monkfile
 
 #these rules mainly create graphs. Note later rules stack onto earlier ones.
@@ -139,13 +139,19 @@
 ## another thing we want to do is select unique stimuli from these
 ## trials (the trials we have described and want to analyze.)
 
---command Rscript collect_unique_stimuli.R
-discrimination.sqlite
---output unique_stimuli.RData
---input --invisible discrimination.sqlite.DONE
+--command --once Rscript --once --input collect_unique_stimuli.R
+--once discrimination.sqlite
+--output --once unique_stimuli.RData
+--output --once unique_stimuli.mat
+--input --invisible --once discrimination.sqlite.DONE
 --input --match collections/(.*)_series.list
---invisible --phony unique
+--invisible --phony --once unique
 
+## and compute the motion energy of each unique stimulus.
+--command ./runmatlab motion_energy
+--input --invisible 'motion_energy.m'
+--input --match 'unique_stimuli\.mat'
+--output motion_energy.mat
 
 
 ##In this subdirectory, I work on modeling.

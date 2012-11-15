@@ -1,14 +1,14 @@
 function [n, cycles] = filtersize(ecc, sf)
-%return the filter spatial extent (number of cycles within 
-%two-sigma of the envelope) for a visual-system-matched filter at a given 
+%return the filter spatial extent (number of cycles within
+%two-sigma of the envelope) for a visual-system-matched filter at a given
 %eccentricity and spatial . Also convert the result
 %into the bandwidth parameter of a Cauchy filter function.
-    
+
 %here is data on the extent of spatial summation in as a function of
 %spatial frequency and eccentricity, from Banks, Sekuler and Anderson 1991.
 %This is for stationary gratings, but I believe the direction-selective
-%filters are similar in the direction alomg which the grating oscillates (I
-%can never remember whether they call that dimension "width" or what...) 
+%filters are similar in the direction along which the grating oscillates (I
+%can never remember whether they call that dimension "width" or what...)
 %(Anderson, Burr and Morrone 1991.)
 
 eccs = [0 2 5 10 20 40];
@@ -40,14 +40,14 @@ NaN  NaN  1.00 0.80 1.70 1.70 ;...
 2.05 3.99 NaN  NaN  NaN  NaN  ;...
 2.05 4.22 NaN  NaN  NaN  NaN  ];
 
-%now we need to translate these into cauchy bandwidth params. 
+%now we need to translate these into cauchy bandwidth params.
 %let's match the fwhm in terms of cycles. two approaches to think of,
-%matching bandwidth and matching fwhm. 
+%matching bandwidth and matching fwhm.
 
 %i'll try the bandwidth approach.
 
 %let's interpolate the number of "cycles" based on the logs of eccentricity
-%and spatial frequency. 
+%and spatial frequency.
 cycles = interp2(log(eccs), log(sfs), widths, log(ecc), log(sf));
 
 %now convert these Gaussian 2-sigma values into an equivalent Cauchy
@@ -65,7 +65,7 @@ sigma_f = 1/(cycles*pi/4);
 % scaling it to a peak spatial frequency of 1 radian/unit, we have....
 % cauchy ~ (n*f)^n * e^(-f*n)
 %
-% but also, 
+% but also,
 %
 % this is an instance of the Gamma density function,
 %
@@ -79,6 +79,8 @@ sigma_f = 1/(cycles*pi/4);
 % to 1. So this is correct.
 
 n = (1+sqrt(1+4*sigma_f^2))/(2*sigma_f^2);
+
+return;
 
 % uhhh, let's try and verify the above visually. look at that, they're a
 % lot different when n is small.
@@ -114,7 +116,7 @@ hold off;
 %right on, and the measurement technique in Banks et al was more of a "how
 %much stimulus so we need to soak up all the summation" (i.e. a liberal
 %estimate) rather than "how big is just the summation component (estimation
-%based on where the kink is in the graph... 
+%based on where the kink is in the graph...
 
 %the "envelope" here is cos(atan(x/n)).^n
 %let's just match half-width at half-maximum.

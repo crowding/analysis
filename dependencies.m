@@ -16,12 +16,13 @@ x = p.fun;
 x(strcmp(x, mfile)) = [];
 
 if (nargin >= 2)
-    require(openFile(outfile, 'w'), @(x)fprintf(x.fid,'%s\n',x));
+    require(openFile(outfile, 'w'), @(y)fprintf(y.fid,'%s\n',x{:}));
 end
 end
 
 function origStr = strrep_at_beginning(origStr, oldSubstr, newSubstr)
     matches = strncmp(origStr, oldSubstr, numel(oldSubstr));
-    origStr(matches) = regexprep(origStr(matches), sprintf('^.{%d}', numel(oldSubstr)), '');
+    origStr(matches) = regexprep(origStr(matches), ...
+                                 sprintf('^.{%d}', numel(oldSubstr)), '');
     origStr(matches) = strcat(newSubstr, origStr(matches));
 end
