@@ -16,3 +16,6 @@
 [submodule "ptools"]
 	path = ptools
 	url = ../code/ptools.git
+[submodule "monk"]
+	path = monk
+	url = git@github.com:crowding/monk.git
