@@ -1,0 +1,23 @@
+#we have some scripts for rendering movies with Matlab/Psychtoolbox
+
+--command                     runmatlab
+--invisible --input --match   (demo_.*).m$
+                              {0}
+--output --intermediate       {0}.avi
+--phony --invisible avi
+
+--command                     cp
+--input                       animation.settings.prototype
+--output --match              ".*\.settings$"
+
+--command         osascript
+--input           animation.applescript
+--output          {0}.mov
+--input --match   (.*).avi
+--input           {0}.settings
+                  && sleep 2 && touch {0}.mov
+--phony --invisible mov
+
+
+
+

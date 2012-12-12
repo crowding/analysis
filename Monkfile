@@ -14,6 +14,9 @@
 #Here's rules for pushing our data into a database.
 @database.monkfile
 
+#Here's rules for making quicktime movie demonstrations.
+@demos.monkfile
+
 #these rules mainly create graphs. Note later rules stack onto earlier ones.
 #TODO: Makefiles need
 --command --once          Rscript
@@ -153,12 +156,10 @@
 --input --match 'unique_stimuli\.mat'
 --output motion_energy.mat
 
-
 ##In this subdirectory, I work on modeling.
 @modeling/Monkfile
 
 ##Here's to matlab making an illustration of the stimuli
-
 --command ./runmatlab illustrated_stimuli --input --invisible --match 'illustrated_stimuli.m'
 --output --listing 'illustrated_stimuli.out'
 --invisible --phony figures
