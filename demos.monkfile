@@ -12,9 +12,10 @@
 
 --command         osascript
 --input           animation.applescript
---output          {0}.mov
 --input --match   '(.*)\.avi'
+--output          {0}.mov
 --input           {0}.settings
+                  `pwd`
                   && sleep 2 && touch {0}.mov && rm {0}.avi
 --phony --invisible mov
 
