@@ -22,21 +22,24 @@ $(shell touch -t $$(date -v-30M +%C%y%m%d%H%M.%S) datafiles/filelist.txt.DONE)
 
 datafiles/filelist.txt: datafiles/filelist.txt.DONE
 	mkdir -p datafiles
-	svn ls 'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
+#	svn ls 'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@#	svn ls 'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
 
 #some data files get excluded (because they were empty or malformed, usually)
 unexcluded.txt: exclusions.txt datafiles/filelist.txt
 	comm -2 -3 <(sort $(word 2,$^)) <(sort $<) > $@
 
-#We also match against script files.
-scripts.txt: $(wildcard *.R) $(wildcard *.m)
-	echo *.R *.m > $@
+#We also match anything that's checked into version control.
+FILES := $(filter-out $(MAKEFILE_LIST),$(shell git ls-tree --name-only HEAD .))
 
 ##why the hell is this not getting regenerated on changes?
 monk.makefile: monk/monk.py Monkfile dependencies.monkfile import.monkfile modeling/Monkfile database.monkfile unexcluded.txt scripts.txt
-	./monk/monk.py @Monkfile --files @unexcluded.txt @scripts.txt > $@ || rm $@
+	./monk/monk.py @Monkfile --files $(FILES) @unexcluded.txt  > $@ || rm $@
 
-include monk.makefile
+#make the subproject recursively (ugh)
+logfile-reader/readR.R: logfile-reader/logfile
+
+logfile-reader/logfile:
+	cd logfile-reader; $(MAKE) $(MFLAGS)
 
 .PRECIOUS: discrimination.sqlite adjustment.sqlite
 
@@ -44,4 +47,18 @@ discrimination.sqlite: discrimination.sqlite.DONE
 
 adjustment.sqlite: adjustment.sqlite.DONE
 
-all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections csv mat figures
+clean:
+	git clean -dfx
+
+ifneq (,$(wildcard monk.makefile))
+ 
+include monk.makefile
+all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections csv mat figures demos
+
+else
+
+$(MAKEFILE_LIST): monk.makefile
+
+endif
+
+all: $(MAKEFILE_LIST)

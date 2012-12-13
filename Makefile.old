@@ -164,25 +164,6 @@ ALL_TARGETS += sample_trace.mat
 #file (as its POSIX date doesn't get set right by Quicktime Player?)
 #and remove the intermediate avi.
 
-%.mov: %.avi %.settings #animation.scpt
-	osascript animation.scpt $(abspath $<) $(abspath $@) $(abspath $(basename $<).settings) 
-	sleep 2
-	touch $@
-
-#also, sometimes just running osascript changes the modification date on animation.scpt. >_<
-
-%.avi: %.m #should work out as an intermediate target?!
-	$(call MATLAB, $(basename $<) $@)
-
-animation.settings:
-	echo noop
-
-%.settings: animation.settings
-	cp $< $@
-
-.PRECIOUS: %.dep %.settings
-
-INTERMEDIATES += demo_counter.avi demo_single.avi demo_stimuli.avi demo_segment.avi demo_eyemovements.avi
 
 $(shell ./makegen.py \
 	--rule 'common/(.*).RData' 'eachplots/\1.out' performance.R \
@@ -195,18 +176,6 @@ $(shell ./makegen.py \
 	--rule 'unpacked/(.*Adjustment.*).RData' 'adjustment/\1.out' adjustment_raster.R \
 	$(ALL_TARGETS) > Makefile.pygen || echo 'missing separator...')
 
-include Makefile.pygen
-
-#list of movies to make.
-ALL_TARGETS += demo_counter.mov demo_single.mov demo_stimuli.mov demo_segment.mov demo_eyemovements.mov
-#ALL_TARGETS += demo_fixational.mov demo_kitaoka.mov
-
-.INTERMEDIATE: $(INTERMEDIATES)
-
-.PHONY: all
-
-force_look:
-	true
 
 all: $(filter %.pdf,$(ALL_TARGETS)) Segment.eyemovements.RData database.sqlite
 all: $(filter-out $(INTERMEDIATES),$(ALL_TARGETS))
