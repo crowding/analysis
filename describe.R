@@ -112,7 +112,7 @@ describe <- function(trials, runs, ...) {
 
 factor.data.frame <- function(data) {
   ##Search for "factors" in a data frame...
-  index <- colwise(function(X) match(X,X))(data)
+  index <- colwise(function(X) match(X,X))(data) 
 
   factors = list()
   #start with single column factorings, then go from there
