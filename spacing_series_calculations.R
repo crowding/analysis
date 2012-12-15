@@ -9,30 +9,39 @@ suppressPackageStartupMessages({
         source("data_functions.R")
         source("good_subjects.R")
         source("helper_functions.R")
+        source("programming.R")
 })
+
+keep.if <- function(df,expr) {
+  if (eval(substitute(expr), df, parent.frame())) {
+    df
+  } else {
+    df[numeric(0),,drop=FALSE]
+  }
+}
 
 main <- function(flist, dbfile, outfile) {
 
   files <- str_trim(readLines(flist))
-  
   trials <- pull.from.sqlite(dbfile, data.frame(loaded.from=files))
-
-  ##let's just plot things to verify our calculations
-  #diagnostic_pdf_file <- replace_extension(outfile, diag, 'pdf')
-  #pdf(diagnostic_pdf_file, onefile=TRUE)
-  #writeLines(diag_pdf_file, fout)
-  if (!names(dev.cur()) %in% c("quartz", "X11", "windows")) {
-    quartz()
-    quartzwindow <- dev.cur()
-    ##on.exit(dev.off(quartzwindow), add=TRUE)
-  }
-  
-  threshes <- measure_thresholds(trials, per_session=FALSE,  sims=500, plot=FALSE)
 
   ##we'll put out an Rdata file and a .pdf file and a .csv file for Ione.
   fout <- file(outfile, 'w')
   on.exit(close(fout), add=TRUE)
-
+  
+  ##let's just plot things to verify our calculations
+#  diagnostic_pdf_file <- replace_extension(outfile, 'pdf', '_diagnostic')
+#  pdf(diagnostic_pdf_file, onefile=TRUE)
+#  diag <- dev.cur()
+#  on.exit(dev.off(diag), add=TRUE)
+#  writeLines(diagnostic_pdf_file, outfile)
+#  if (!names(dev.cur()) %in% c("quartz", "X11", "windows")) {
+#    quartz()
+#    quartzwindow <- dev.cur()
+#    ##on.exit(dev.off(quartzwindow), add=TRUE)
+#  }
+  
+  threshes <- measure_thresholds(trials, per_session=FALSE,  sims=500, plot=FALSE)
   pdf_file <- replace_extension(outfile, "pdf")
   writeLines(pdf_file, fout)
   make_figure(threshes, pdf_file)
