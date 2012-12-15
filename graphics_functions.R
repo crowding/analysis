@@ -3,16 +3,22 @@ suppressPackageStartupMessages({
 })
 
 with.caption <- function(plot, caption, gp=gpar(fontsize=8)) {
-  wrap <- paste(strwrap(caption, width=80), collapse="\n")
-  
+  library(gtable)
+  library(grid)
+   
+  wrap <- paste(strwrap(caption, width=80), collapse="\n")  
   plotGrob <- editGrob(ggplotGrob(plot), name="plot")
   text <- textGrob(wrap, hjust=0, vjust=1, x=0, y=1, name="caption")
 
-  fr <- frameGrob(name="frame")
   subframe <- frameGrob(name="subframe")
   subframe <- packGrob(subframe, text, height=grobHeight(text) + unit(4, "mm"));
-  fr <- packGrob(fr, ggplotGrob(plot), side="top", width=1, force.width=TRUE)
-  fr <- packGrob(fr, subframe, side="bottom")
+
+  tab <- gtable( heights=unit.c(unit(c(1),"null"), grobHeight(subframe)) ,
+                 widths=unit(c(1), "null"))
+  tab <- gtable_add_grob(tab, plotGrob, 1, 1)
+  tab <- gtable_add_grob(tab, subframe, 2, 1)
+  
+  tab
 }
 
 pmetric_plot <- function(  measurements, data, fit, output, sim
@@ -81,8 +87,8 @@ pmetric_plot <- function(  measurements, data, fit, output, sim
           , opts(panel.grid.minor=theme_blank(), panel.grid.major=theme_blank())
           , aes(x=displacement)
           , geom_point(aes(y=p, size=n))
-          , scale_area(  limits = c(0, max(30, max(rates$n)))
-                       , to=c(0,10))
+          , scale_size_area(  limits = c(0, max(30, max(rates$n)))
+                       , max_size=10)
           , with_arg(  alpha=0.3, geom_hline(y=0.5), geom_vline(x=0) )
           , if (multisession) {
             with_arg( data=predictdata
@@ -105,7 +111,7 @@ pmetric_plot <- function(  measurements, data, fit, output, sim
                                                     , ymin=bias_p_minus
                                                     , ymax=bias_p_plus), width=0.025)
                                 , geom_errorbarh(aes(y=0.5, x = xint
-                                                     , xmin=xint.25.
+                                                      , xmin=xint.25.
                                                      , xmax=xint.75.),
                                                  height=0.025)
                                 )

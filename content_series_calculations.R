@@ -4,12 +4,14 @@ suppressPackageStartupMessages({
         library(ptools)
         library(stringr)
         library(psyphy)
+        library(grid)
         source("db_functions.R")
         source("graphics_functions.R")
         source("data_functions.R")
         source("good_subjects.R")
         source("helper_functions.R")
-})
+        source("programming.R")
+      })
 
 `%-%` <- setdiff
 `%plus%` <- get("%+%", envir=as.environment("package:ggplot2"))
@@ -25,7 +27,7 @@ main <- function(flist, dbfile, outfile) {
 
   trials <- pull.from.sqlite(dbfile, data.frame(loaded.from=files))
 
-  fout = file(outfile, 'w')
+  fout <- file(outfile, 'w')
   on.exit(close(fout), add=TRUE)
 
   ##let's just plot things to verify our calculations
@@ -35,11 +37,9 @@ main <- function(flist, dbfile, outfile) {
   #writeLines(diag_pdf_file, fout)
   #quartzwindow <- dev.cur()
   #on.exit(dev.off(quartzwindow), add=TRUE)
-  
+
   threshes <- measure_thresholds(trials, per_session=FALSE,
                                  average_bias=TRUE, sims=500, plot=FALSE)
-
-
   
   pdf_file <- replace_extension(outfile, "pdf")
   writeLines(pdf_file, fout)
@@ -85,7 +85,7 @@ make_figure <- function(threshes) {
   
   grid.newpage()
   grid.draw(with.caption(plota %plus% subset(threshes, subject %in% good_subjects), caption1))
-
+ 
   grid.newpage()
   grid.draw(with.caption(plotb %plus% subset(threshes, subject %in% good_subjects), caption2))
 }
@@ -129,7 +129,8 @@ plot.form <- function(data, ... ,
   subst <- as.list(substitute(list(...)))[-1]
   s[names(subst)] <- subst
 
-  eval(substitute.nq(expr, s))
+  eexpr <- substitute.nq(expr, s)
+  eval(eexpr, envir=environment())
 }
 
 run_as_command()

@@ -148,7 +148,9 @@ psychometric_function <-
   ##threshold and slope.
   if(plot) do.call(pmetric_plot, as.list(environment()))
 
-  if ( isTRUE(with(as.list(measurements), sign(xint) != -sign(yint)*sign(slope))) ) {
+  nasign <- function(x) ifelse(is.finite(x), sign(x), NA)
+  
+  if ( isTRUE(with(as.list(measurements), nasign(xint) != -nasign(yint)*nasign(slope))) )  {
     stop("This slope, bias and x-intercept do not make sense!")
   }
 
