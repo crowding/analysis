@@ -9,7 +9,9 @@ function this = demo_segment(outfile, varargin)
     fixation.setVisible(1)
     motion = e_.trials.base.motion;
     process = e_.trials.base.motion.process;
-    caption = Text('centered', 1, 'text', 'hello world', 'visible', 0, 'loc', [0 -1]);
+    caption = Text('centered', 1, 'text', 'hello world', ...
+                   'visible', 0, 'loc', [0 -1], ...
+                   'points', 36, 'font', 'Myriad Pro');
     e_.trials.base.extra.r = 10;
 
     %remove its blocking...
@@ -25,25 +27,46 @@ function this = demo_segment(outfile, varargin)
 
     r_ = e_.trials.randomizers(1);
 
-    %select nTargets/nVisibleTargets equal to these
-    select = [12 5; 21 5; 15 3; 15 6];
-
+    %select nTargets/nVisibleTargets equal to these why all this
+    %rigamarole? because the
+    %min_distance/max/distance/flanker-spacing is precomputed?
+    select = [12 3; 12 5; 21 5; 21 8];
     selectable = cell2mat([r_.values{:}]');
     [is,selected] = ismember(selectable(:,[1 2]), select, 'rows');
     is = find(is);
     [~,order] = sort(selected(is,:));
     values_ = r_.values(is(order));
 
+    %we'll just show the four things in order.
     e_.trials.replace(r_.subs,values_, 1, 1);
     %with only clockwise motion on the left side.
-    e_.trials.replace('extra.side',{'left'});
-    e_.trials.replace('extra.globalDirection', -1);
-    e_.trials.replace('extra.localDirection', 1);
+
+    %let's make the number nice and big.
+
+
+    %the other thing to choose is the displacement and the direction content.
+
+    %configure the experiment just to show our four stimuli. We use a
+    %local displacement of -0.2 and a direction content of 0.4
+    e_.trials.remove({'extra.globalDirection', 'extra.localDirection'});
+    e_.trials.base.extra.localDirection = -1;
+    e_.trials.base.extra.globalDirection = 1;
+    e_.trials.remove('extra.globalVScalar');
+    e_.trials.base.extra.globalVScalar = 0.2 / (20/3) / 0.1;
+    e_.trials.base.extra.directionContrast = .4;
+    e_.trials.remove('extra.side')
+    e_.trials.base.extra.side='left';
+
+    %what displacement and personalization to use? Look over it, but I pick...
 
     %and start the demo.
     persistent init__;
     this = autoobject();
-    playDemo(this, 'aviout', outfile, varargin{:});
+    if exist('outfile', 'var')
+        playDemo(this, 'aviout', outfile, varargin{:});
+    else
+        playDemo(this, varargin{:})
+    end
 
     function params = getParams()
         params = struct...
@@ -69,6 +92,8 @@ function this = demo_segment(outfile, varargin)
     function params = run(params)
         trigger = Trigger();
 
+        trialNumber = 0;
+
         main = mainLoop ...
             ( 'graphics', {fixation, motion, caption} ...
             , 'triggers', {trigger} ...
@@ -92,8 +117,9 @@ function this = demo_segment(outfile, varargin)
                 return
             end
 
+            trialNumber = trialNumber + 1;
             ext = x.getExtra();
-            caption.setText(sprintf('%d moving targets\n%.2ge spacing', ext.nVisibleTargets, 2*pi/ext.nTargets));
+            caption.setText(sprintf('%d', trialNumber));
             caption.setVisible(1);
             trigger.singleshot(atLeast('next', h.next + 3), @show);
         end
@@ -101,7 +127,9 @@ function this = demo_segment(outfile, varargin)
         function show(h)
             caption.setVisible(0);
             motion.setVisible(1, h.next);
-            trigger.singleshot(atLeast('next', h.next + process.getT() + (process.getN() + 1) * process.getDt() + 1), @next);
+            stopTime =  h.next + process.getT() + ...
+                (process.getN() + 1) * process.getDt() + 1;
+            trigger.singleshot(atLeast('next', stopTime), @next);
         end
 
         params = main.go(params);
