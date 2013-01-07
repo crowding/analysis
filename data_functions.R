@@ -32,7 +32,7 @@ measure_thresholds <- function(  trials
                          , "folded_content_with", "folded_content_against")
     used <- used %+% c("abs_displacement", "abs_response")
   }
-  
+
   ddply(trials, split, psychometric_function, .progress="text",
         use_folded=use_folded, ...)
 }
@@ -47,7 +47,7 @@ psychometric_function <-
   cont <- list()
 
   data$n <- nrow(data)
-  
+
   #return slope, threshold, and quantiles of each from simulation
   if (use_folded) {
     data <- mutate(data, folded_response = folded_response > 0)
@@ -70,12 +70,12 @@ psychometric_function <-
 
   if (one_sided) {
     ##In folded data without any motion direction content, we have to
-    ##assume symmetry; the "folded" function must go through 0. abs_bias takes 
+    ##assume symmetry; the "folded" function must go through 0. abs_bias takes
     formula <- update(formula, . ~ . - 1)
   }
 
   n_sessions <- length(unique(data$loaded_from))
-  
+
   if (average_bias && n_sessions > 1) {
     ##we allow the bias to vary by session, and measure the average
     ##bias by specifying the contrast in sum form.  Note that I
@@ -85,13 +85,13 @@ psychometric_function <-
     formula <- update(formula, . ~ . + loaded_from)
     cont$loaded_from <- "contr.sum"
   }
-   
+
   fit <- glm(  formula
              , binomial(link=logit.2asym(0.05, 0.05))
              , subset(data, as.logical(responseInWindow))
              , contrasts=if (length(cont) > 0) cont else NULL
              )
-  
+
   ##note this will find a bunch of intercepts (arg 2) if you want...
   ##Note also that we are finding the intercepts for the aceraged data,
   cases <- data[1,,drop=FALSE]
@@ -149,11 +149,12 @@ psychometric_function <-
   if(plot) do.call(pmetric_plot, as.list(environment()))
 
   nasign <- function(x) ifelse(is.finite(x), sign(x), NA)
-  
-  if ( isTRUE(with(as.list(measurements), nasign(xint) != -nasign(yint)*nasign(slope))) )  {
+
+  if ( isTRUE(with(as.list(measurements),
+                   ((nasign(xint) == nasign(yint)*nasign(slope))
+                    && (nasign(xint) != 0 && nasign(yint) != 0)))) )  {
     stop("This slope, bias and x-intercept do not make sense!")
   }
 
   measurements
 }
-

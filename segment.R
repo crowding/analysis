@@ -9,8 +9,8 @@ suppressPackageStartupMessages({
 
 process <- function(trials, output, ...) {
   theme_set(theme_bw())
-  theme_update(panel.grid.major = theme_blank(),
-               panel.grid.minor = theme_blank())
+  theme_update(panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank())
 
   relevant.cols <- c( response="folded.response", side="trial.extra.side"
                      , dx="folded.displacement", "subject"
@@ -58,16 +58,20 @@ process <- function(trials, output, ...) {
                    , dx="all"
                    )
        ) -> dx.folded.rates
-  
+
 
   for (dataset in list(dx.folded.rates, folded.rates, rates)) {
     graph <- (ggplot(dataset)
               + aes(spacing, p/n, ymin = conf.lower, ymax = conf.upper)
               + geom_line() + facet_wrap(~subject+side+dx+contrast) + geom_errorbar()
               + geom_point())
-    
-    print(graph + aes(x = spacing, color=factor(number)))
-    print(graph + aes(x = number, color=factor(spacing)))
+
+    print(graph
+          + aes(x = unclass(spacing), color=factor(number))
+          + labs(x="Spacing", color="Number of targets"))
+    print(graph
+          + aes(x = unclass(number), color=factor(spacing))
+          + labs(x="Number of targets", color="Spacing"))
   }
 
   ## now what about subjects where I tested more than one
@@ -85,5 +89,5 @@ process <- function(trials, output, ...) {
   ##         )
   ##      ) -> dx.plot
   ## print(dx.plot)
-  
+
 }

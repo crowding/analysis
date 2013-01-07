@@ -40,12 +40,12 @@ main <- function(flist, dbfile, outfile) {
 
   threshes <- measure_thresholds(trials, per_session=FALSE,
                                  average_bias=TRUE, sims=500, plot=FALSE)
-  
+
   pdf_file <- replace_extension(outfile, "pdf")
   writeLines(pdf_file, fout)
   pdf(pdf_file, onefile=TRUE)
   on.exit(dev.off(), add=TRUE)
-  
+
   make_figure(threshes)
 
   data_file <- replace_extension(outfile, "RData")
@@ -67,7 +67,7 @@ make_figure <- function(threshes) {
                     "interpreted as the frequency with which the observer ",
                     "answers \"clockwise\" to a stimulus with no envelope motion. ",
                     "Colors code different values of element spacing.")
-  
+
   print(plota <- (plot.form(data=threshes, ylim=c(-5, 10))))
 
   print(plotb <- (
@@ -82,10 +82,10 @@ make_figure <- function(threshes) {
                     , "values indicate the observers' responses having a more sensitive "
                     , "dependence on envelope motion. "
                     , "Colors code different values of element spacing.")
-  
+
   grid.newpage()
   grid.draw(with.caption(plota %plus% subset(threshes, subject %in% good_subjects), caption1))
- 
+
   grid.newpage()
   grid.draw(with.caption(plotb %plus% subset(threshes, subject %in% good_subjects), caption2))
 }
@@ -107,7 +107,7 @@ plot.form <- function(data, ... ,
                         , xlim = c(-0.1,1.1)
                         )
                       ) {
-  
+
   expr <- quote(  ggplot(data)
                 + aes( x=xvar, y=yvar, ymin=ymin, ymax=ymax, color=color, group=group)
                 + geom_hline(y=0, alpha=0.5)

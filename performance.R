@@ -2,6 +2,7 @@ suppressPackageStartupMessages({
   require(ggplot2)
   require(plyr)
   require(gridExtra)
+  require(ptools)
   source("programming.R")
 })
 
@@ -10,8 +11,8 @@ process <- function(trials, triggers, output, ...) {
 
 
   theme_set(theme_bw())
-  theme_update(panel.grid.major = theme_blank(),
-               panel.grid.minor = theme_blank())
+  theme_update(panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank())
 
   ##scan triggers for fixation breaks, etc.
   ddply(  triggers, "trials.i", summarize
@@ -24,7 +25,7 @@ process <- function(trials, triggers, output, ...) {
         , completed = started && !fixation.break && !early && !late
         ) -> disposition
 
-  pipe(trials
+  chain(trials
        , subset(select = c("i", "responseTime", "subject", "source.file"))
        , merge(disposition, by.x = "i", by.y = "trials.i")
        , ddply(c("subject", "source.file")
@@ -50,11 +51,11 @@ process <- function(trials, triggers, output, ...) {
        summary$source.file <- NULL
 
   grid.newpage()
-  
+
   summary.print <- colwise(function(x)format(x, nsmall=2))(summary)
   #whaaaat the hell, why doesn't it format????
   grid.table(summary.print
              , padding.v = unit(2,"mm"), padding.h = unit(2,"mm")
              , gp = gpar(fontsize=7)
-             )          
+             )
 }

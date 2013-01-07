@@ -35,7 +35,8 @@ describe <- function(trials, runs, ...) {
 
   #which variables are on quest/staircase? Replace those with "varied"
 
-  ignored <- c(  "trial.textFeedback.text"
+  ignored <- c(
+               "trial.textFeedback.text"
                , "trial.extra.localDirection", "trial.extra.globalDirection"
                , "trial.motion.process.color", "trial.motion.process.velocity"
                , "trial.parameterValues", "trial.extra.flankerAngle"
@@ -44,10 +45,11 @@ describe <- function(trials, runs, ...) {
                , "trial.extra.max_extent", "trial.extra.min_extent", "trial.extra.color"
                , "trial.awaitInput", "trial.desiredResponse", "trial.run.i", "trial.extra.phase"
                , "trial.extra.content.cw", "trial.extra.content.ccw"
+               , "trial.fixation.visible"
                )
   valued <- c(  "trial.extra.r", "motionCondition", "trial.extra.visibilityCondition"
               , "n.occluders", "folded.localDirectionContrast", "folded.content.with", "folded.content.against")
-  
+
   required <- chain(c(  "subject"
                         , "trial.extra.r"
                         , "folded.localDirectionContrast"
@@ -63,15 +65,15 @@ describe <- function(trials, runs, ...) {
                      , intersect(colnames(trials))
                      , setdiff(ignored)
                      )
-                  
+
   ord <- chain(  list(valued, required, grep("^trial.extra", permitted, value=TRUE), permitted)
                , Reduce(union, .)
                )
 
   staircased <- intersect(what.staircases(runs), colnames(trials))
-  
+
   kept <- union(grep("^trial.extra", permitted, value=TRUE), required)
-  
+
   deflated <- deflate.data.frame(  trials, order=ord, ignored=ignored)
 
   ##I care about things that vary over a few cases (parameters) but
@@ -112,7 +114,7 @@ describe <- function(trials, runs, ...) {
 
 factor.data.frame <- function(data) {
   ##Search for "factors" in a data frame...
-  index <- colwise(function(X) match(X,X))(data) 
+  index <- colwise(function(X) match(X,X))(data)
 
   factors = list()
   #start with single column factorings, then go from there
@@ -123,7 +125,7 @@ factor.data.frame <- function(data) {
       for (comb in alply(combn(colnames(index), atatime), 2)) {
         subsets <- dlply(index, comb, function(d) d[setdiff(sort(colnames(d)), comb)])
         if (isTRUE(all.equal(match(subsets, subsets), rep(1, length(subsets))))) {
-                                        #we found a factoring for each 
+                                        #we found a factoring for each
           factors <- c(factors, list(unique(index[comb])))
           foundAFactor <- TRUE
           index <- index[setdiff(colnames(index), comb)]
@@ -141,7 +143,7 @@ factor.data.frame <- function(data) {
          function(x) do.call(data.frame,
                              structure(lapply(colnames(x),
                                               function(col) data[x[[col]], col]),
-                                       names=colnames(x))))        
+                                       names=colnames(x))))
 }
 
 #Produce a sort of "fully condensed representation" of a data
@@ -163,7 +165,7 @@ deflate.data.frame <- function(data, order = colnames(data)
   #data$<<FIELDNAME>> == values<<FIELDNAME>>[data.matches<<FIELDNAME>>]
   values <- mapply(function(m, d) d[unique(m)], data.matches, data)
   data.matches <- colwise(function(x)as.numeric(factor(x)))(data.matches)
-  
+
   #collapse covarying columns, irrespective of lookup values.
   column.matches <- match(data.matches,data.matches)
   column.matches <- column.names[column.matches]

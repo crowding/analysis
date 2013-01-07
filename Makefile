@@ -53,7 +53,7 @@ clean:
 ifneq (,$(wildcard monk.makefile))
 
 include monk.makefile
-all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections csv mat figures demos modeling
+all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections csv mat figures mov modeling
 
 else
 

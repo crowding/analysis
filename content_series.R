@@ -1,5 +1,5 @@
 is.good.session <- function(desc) {
-  ##For the contrast series, nominate fiels that have at least 2
+  ##For the contrast series, nominate files that have at least 2
   ##elements in folded.localDirectionContrast, any number in in
   ##trial.extra.nTargets, and one element in everything else.
   contrast <- sapply(  desc
@@ -12,5 +12,13 @@ is.good.session <- function(desc) {
                               , all.equal("trial.extra.nTargets")
                               , isTRUE))
 
-  valid <- chain(desc, sapply(nrow), (contrast & .>3) | spacing | .==1, all, . && any(contrast))
+  #count sessions that at have least three contrasts, force two spacings and one element elsewhere.
+  #
+  lengths <- sapply(desc, nrow)
+  valid <- (
+    any(contrast)
+    && all(  (contrast & lengths >= 2)
+           | spacing
+           | lengths == 1 )
+    )
 }

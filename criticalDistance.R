@@ -2,6 +2,7 @@ suppressPackageStartupMessages({
   library(ggplot2)
   library(stringr)
   library(arm)
+  library(ptools)
   source("programming.R")
 })
 
@@ -44,10 +45,11 @@ data.with.fits <- function(model) {
 }
 
 process <- function(trials, output, ...) {
-  
+
   theme_set(theme_bw())
-  theme_update(panel.grid.major = theme_blank(),
-               panel.grid.minor = theme_blank())
+  theme_update(panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank()
+               )
 
   if (!"trial.extra.instruction" %in% colnames(trials)) {
     trials$trial.extra.instruction <- factor("none")
@@ -55,7 +57,7 @@ process <- function(trials, output, ...) {
 
   ##there might be more in the future.
   experiment.vars <- c("subject", "contrast", "radius", "spacing", "instruction")
-  
+
   ##fit logistic curves to all functions of displacement. Keep ONE
   ##copy of the fit in a special list-valued column
   mkfits <- function(df, groups=experiment.vars) {
@@ -66,7 +68,7 @@ process <- function(trials, output, ...) {
     }
     ddply(  df
           , groups
-          , mkpipe(  model.save <- glm(data = ., cbind(p,q) ~ dx, family=binomial(link=logit))
+          , mkchain(  model.save <- glm(data = ., cbind(p,q) ~ dx, family=binomial(link=logit))
                    , data.with.fits
                    , mutate(  model=c(list(model.save), vector("list", length(subject)-1))
                             , N = sum(p) + sum(q))
@@ -77,8 +79,8 @@ process <- function(trials, output, ...) {
                             )
                    ))
   }
-  
-  mkpipe(subset(responseInWindow, select=cols)
+
+  mkchain(subset(responseInWindow, select=cols)
          , structure(names=names(cols))
          , ddply(  ., names(.)[-1]
                  , summarize
@@ -98,7 +100,7 @@ process <- function(trials, output, ...) {
                  , is.radius.series = length(unique(radius)) >= 2
                  )
          ##make this mutate idempotent!
-         , mutate(  num.spacing = if (is.numeric(spacing)) spacing else num.spacing 
+         , mutate(  num.spacing = if (is.numeric(spacing)) spacing else num.spacing
                   , num.contrast = if (is.numeric(contrast)) contrast else num.contrast
                   , spacing = pretty.numeric.factor(num.spacing)
                   , contrast = pretty.numeric.factor(num.contrast)
@@ -126,7 +128,7 @@ process <- function(trials, output, ...) {
    + geom_point(aes(size=p+q))
    + geom_line(aes(y = fit))
    + geom_ribbon(alpha=0.25, color=0)
-   + scale_area()
+   + scale_size_area()
    ) -> wrap.plot
   print(wrap.plot + facet_wrap(~subject+contrast+radius))
   #that'll do for now. let me get my makefile running.
@@ -157,7 +159,7 @@ process <- function(trials, output, ...) {
                   , fill=as.numeric(ex)
                   , group=ex)
             + geom_point(aes(size=n))
-            + scale_area()
+            + scale_size_area()
             + geom_line(aes(y = fit))
             + geom_ribbon(alpha=0.25, color=0)
             + geom_vline(x = 0, alpha=0.3)
@@ -168,7 +170,7 @@ process <- function(trials, output, ...) {
             + scale_y_continuous("Responses in direction of carrier", breaks=c(0,0.5,1))
             + scale_x_continuous("Displacement (in direction of carrier)")
             + facet_grid(facex ~ subject, labeller=function(y,x)format(x, digits=3))
-            + opts(title=title)
+            + labs(title=title)
             )
            , list(ex=ex, facex=facex)))
   }
@@ -178,14 +180,14 @@ process <- function(trials, output, ...) {
         , "subject"
         , function(df) {
           if (any(df$is.contrast.series)) {
-            pipe(df
+            chain(df
                  , subset(is.contrast.series)
                  , series.plot(., contrast, spacing)
                  , print
                  )
           }
           if (any(df$is.spacing.series)) {
-            pipe(df
+            chain(df
                  , subset(is.spacing.series)
                  , series.plot(., spacing, contrast)
                  , print
@@ -214,7 +216,7 @@ process <- function(trials, output, ...) {
   ##
   ##Fit logits to every function that was duplicated on separate days.
   extract.coefs <- function(x, thresholds=c(0.20,0.50,0.80)) {
-    pipe(x
+    chain(x
          , subset(!vapply(model, is.null, logical(1)))
          , adply(., 1, function(r) {
            m <- r$model[[1]]
@@ -240,7 +242,7 @@ process <- function(trials, output, ...) {
 
   sortorder <- list("subject", "instruction", "contrast", "radius", "spacing")
 
-  pipe(  trials
+  chain(  trials
        , subset(responseInWindow, select = c(cols, "source.file"))
        , structure(names=c(names(cols), "source.file"))
        , mutate(  source.file=str_extract(source.file, '\\d\\d\\d\\d-\\d\\d-\\d\\d')
@@ -254,7 +256,7 @@ process <- function(trials, output, ...) {
               )
        ) -> replication.trials
   if (nrow(replication.trials) > 0) {
-    pipe(replication.trials
+    chain(replication.trials
        , mkfits( c(experiment.vars, "source.file") )
        , extract.coefs
        , mutate(  .
@@ -269,7 +271,7 @@ process <- function(trials, output, ...) {
               )
        ) -> repeatability
 
-  pipe(folded.rates
+  chain(folded.rates
        , extract.coefs
        , mutate(  .
                 , case=do.call(paste
@@ -298,12 +300,12 @@ process <- function(trials, output, ...) {
    + facet_grid(coef~., scales="free")
    + geom_errorbar(aes(ymin = q10.avg, ymax = q90.avg), color="red")
    + geom_point(alpha=0.3) #+ geom_point(aes(size=N.each))
-   + opts(axis.text.x=theme_text(angle=90, hjust=1),
-          title="Measurements of inverse slope (iqr) and threshold\ntaken over single days (gray) and combined (red)")
+   + theme(axis.text.x=theme_text(angle=90, hjust=1))
+   + labs(title="Measurements of inverse slope (iqr) and threshold\ntaken over single days (gray) and combined (red)")
    ) -> repeatability
     print(repeatability)
   }
-  
+
   ##Save our objects in case we want to mess with graphs later...
 
   filename <- replace_extension(summary(output)$description, "RData")
