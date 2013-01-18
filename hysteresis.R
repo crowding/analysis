@@ -19,8 +19,8 @@ process <- function(showings, endings, trials, runs, ...) {
   ##Symbols or each step up and each step down.
 
   theme_set(theme_bw())
-  theme_update(panel.grid.major = theme_blank(),
-               panel.grid.minor = theme_blank())
+  theme_update(panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank())
 
   ## x <- rbind.fill(plot.trials, showings, endings, turns)
 
@@ -57,15 +57,15 @@ process <- function(showings, endings, trials, runs, ...) {
                 , by="trials.i", suffixes = c(".start", ".end")))
    + aes(x = value.start, y = value.end)
    + facet_wrap(~ adjusting.start, scales="free")
-   + opts(aspect_ratio=1)
+   + theme(aspect.ratio=1)
    + geom_abline(color="gray", slope=1, intercept=0)
    + coord_equal()
    + geom_point()
    + geom_jitter()
    )
-  
+
  ##Hokay, let's select the ones where the sign flips or doesn't.
-                                                              
+
  ##Something is wrong with the globalVScalar adjustment??? Half of
  ##them flip sign in the last adjustment. Hmm. It's because of the
  ##way I back out the extra-things

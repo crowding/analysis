@@ -49,7 +49,7 @@ pull.down <- function(x , y
 }
 
 process <- function(showings, endings, trials, runs, parameters, adjusting, ...) {
-  
+
   adjustments.used <- chain(adjusting
                             , pull.down(runs, cols.y = c(), cols.x="adjusting")
                             , .$adjusting, unique, as.character
@@ -92,7 +92,7 @@ process <- function(showings, endings, trials, runs, parameters, adjusting, ...)
     print(parameters.used)
     return()
   }
-  
+
   endings <- mutate(endings
                     , accepted = ifelse(type=="a", TRUE, ifelse(type=="r", FALSE, NA))
                     )
@@ -111,8 +111,8 @@ process <- function(showings, endings, trials, runs, parameters, adjusting, ...)
 
   ## now let's try to average these shits. Average over the adjustment that was taken atmo.
   ## endings <- ddply(endings
-  ##                 , c(adjustments.used, parameters.used, 
-                   
+  ##                 , c(adjustments.used, parameters.used,
+
   print(ggplot(grouped)
    + aes_string(x=as.character(adjustments.used[1]), y=as.character(adjustments.used[2]))
    + aes(color=accepted, shape=adjusting, size=N)
@@ -122,7 +122,7 @@ process <- function(showings, endings, trials, runs, parameters, adjusting, ...)
    + geom_point()
    + scale_color_manual("accepted", breaks=c(TRUE, FALSE), values = c("black", "red"))
    + faceter
-   + scale_area(limits=c(0,5), to=c(0,3), breaks=1:4)
+   + scale_size_area(limits=c(0,5), max_size=3, breaks=1:4)
    + scale_x_continuous(translation[as.character(adjustments.used[1])])
    + scale_y_continuous(translation[as.character(adjustments.used[2])])
    )
