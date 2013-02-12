@@ -48,10 +48,13 @@ expand <- function(trials) {
                & ( wavelengthScalar == 0.075 )
                & ( dt == .1 )
                & ( eccentricity - 20/3 < 0.01 )
+               & (abs(content_cw + content_ccw - 0.5) < 0.01)
                )) -> eligible
 
+  #we keep most columns with content because content is really
+  #content_cw plus content_ccw
   contents <- chain(eligible,
-                    .[!duplicated(.$abs_direction_content),],
+                    .[!duplicated(.[c("content_cw", "content_ccw")]),],
                     drop_columns(c("target_number_all", "abs_displacement")),
                     unique)
 
@@ -83,7 +86,8 @@ expand <- function(trials) {
 
   joint <- chain(trials,
                  merge(grid, all.x=TRUE, all.y=TRUE),
-                 mutate(grid=ifelse(is.na(grid), FALSE, grid)))
+                 mutate(grid=ifelse(is.na(grid), FALSE, grid)),
+                 mutate(grid=as.numeric(grid)))
 
   joint
 }
@@ -110,12 +114,12 @@ main <- function(dbfile="discrimination.sqlite",
 
   chain(data,
         drop_columns(phase_related_columns),
-        unique,
-        expand
+        expand,
+        unique
         ) -> data_without_phase
 
   save(data, data_without_phase, file=outfile)
-  writeMat(con=matfile, data=data, data_without_phase = data_without_phase)
+  writeMat(con = matfile, data = data, data_without_phase = data_without_phase)
 }
 
 run_as_command()

@@ -258,6 +258,7 @@ if (mkfig)
     xlabel('spatial freq. (cyc/deg)'); ylabel('temporal freq(Hz)');
     set(gca, 'YDir', 'normal');
     %show the FWHM of the various filters on top (contour plot?)
+    drawnow;
 end
 
 function out = plotfwhm(s,t)

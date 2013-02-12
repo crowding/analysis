@@ -5,6 +5,7 @@ suppressPackageStartupMessages({
   library(plyr)
   library(stringr)
   library(ptools)
+  library(R.utils)
   library(R.matlab)
 })
 
@@ -32,23 +33,19 @@ renamings <- {
     trial_extra_tf                = "tf",
     trial_extra_wavelengthScalar  = "wavelengthScalar",
     trial_extra_widthScalar       = "widthScalar",
-    trial_i                       = "trial.order",
+    trial_i                       = "trial_order",
     trial_motion_process_n        = "n",
     trial_motion_process_order    = "order",
     trial_motion_process_radius   = "eccentricity"
     )}
 
 only_important_for_motion_energy <-
-  c("n", "order", "wavelengthScalar", "widthScalar", "durationScalar", "dt")
+  c("n", "order", "wavelengthScalar", "widthScalar", "durationScalar", "dt", "phase")
 
 rename_with_drop <- function(x, renamings) {
-  chain(x,
+  chain (x,
         drop_columns(names(renamings)[renamings == ""]),
         rename(renamings[renamings != ""]))
-}
-
-drop_columns <- function(data, drop) {
-  data[colnames(data)[!colnames(data) %in% drop]]
 }
 
 main <- function(flist="collections/spacing_series.list",
@@ -82,14 +79,17 @@ attach_motion_energy <- function(trials, motion_energy_file) {
 
   joined <- merge(trials, menergy, type="inner",
                   on = intersect(names(trials), names(menergy)))
-  if (any(aups <- duplicated(joined$left.check))) {
-    warning("Ambiguous motion-energy matches?")
-    joined <- joined[!dups]
+  if (any(dups <- duplicated(joined$left.check))) {
+    #getting a lot of duplicated matches, for
+    #some reason?
+    warning("Multiple motion-energy matches")
+    joined <- joined[!dups,]
   }
   if (any(missed <- is.na(joined$right.check))) {
-    warning("Motion energy information not found for all trials")
+    stop("Motion energy information not found for all trials")
   }
-  joined
+  drop_columns(joined, c("left.check", "right.check"))
 }
 
 run_as_command()
+
