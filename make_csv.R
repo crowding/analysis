@@ -13,11 +13,10 @@ renamings <- {
   c(
     abs_displacement              = "abs_displacement",
     abs_localDirectionContrast    = "abs_direction_content",
-    abs_response                  = "",
-    abs_response_cw               = "abs_response_cw",
+    abs_response                  = "abs_response_cw",
     folded_displacement           = "folded_displacement",
     folded_localDirectionContrast = "folded_direction_content",
-    folded_response               = "",
+    folded_response               = "folded_response_with_carrier",
     loaded_from                   = "filename",
     responseInWindow              = "",
     subject                       = "subject",
@@ -57,10 +56,12 @@ main <- function(flist="collections/spacing_series.list",
         str_trim,
         data.frame(loaded_from=.),
         pull.from.sqlite(dbfile = dbfile, columns = names(renamings)),
-        mutate(abs_response_cw = abs_response > 0,
-               folded_response_with_carrier = folded_response > 0),
         subset(responseInWindow == TRUE),
         rename_with_drop(renamings),
+        mutate(
+          target_number_shown = ifelse(
+            is.na(target_number_shown),
+            target_number_all, target_number_shown)),
         attach_motion_energy(motion_energy_file),
         drop_columns(only_important_for_motion_energy),
         write.csv(outfile, row.names=FALSE)
@@ -71,14 +72,19 @@ attach_motion_energy <- function(trials, motion_energy_file) {
   chain(motion_energy_file,
         readMat(fixNames=FALSE),
         .$data[,1,1],
-        as.data.frame
+        as.data.frame,
+        mutate(
+          target_number_shown = ifelse(
+            is.na(target_number_shown),
+            target_number_all, target_number_shown))
         ) -> menergy
 
   trials$left.check <- 1:nrow(trials)
   menergy$right.check <- 1:nrow(menergy)
 
   joined <- merge(trials, menergy, type="inner",
-                  on = intersect(names(trials), names(menergy)))
+                  by = intersect(names(trials), names(menergy)), all.x=TRUE
+                  )
   if (any(dups <- duplicated(joined$left.check))) {
     #getting a lot of duplicated matches, for
     #some reason?
@@ -92,4 +98,3 @@ attach_motion_energy <- function(trials, motion_energy_file) {
 }
 
 run_as_command()
-

@@ -173,3 +173,7 @@
 --command
 --output --invisible --phony mat
 --input --invisible --match .*\.mat$
+
+--command
+--output --invisible --phony pdf
+--input --invisible --match .*\.pdf$
