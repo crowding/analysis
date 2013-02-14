@@ -59,6 +59,8 @@ main <- function(flist="collections/spacing_series.list",
         subset(responseInWindow == TRUE),
         rename_with_drop(renamings),
         mutate(
+          abs_response_cw = abs_response_cw > 0,
+          folded_response_with_carrier = folded_response_with_carrier > 0,
           target_number_shown = ifelse(
             is.na(target_number_shown),
             target_number_all, target_number_shown)),

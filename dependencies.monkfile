@@ -8,9 +8,9 @@
 --invisible --phony                  dependencies
 
 ##here's how to compute dependencies for R script files
-##TODO this ought to be re-computed when the script file changes??? 
+##TODO this ought to be re-computed when the script file changes???
 ##How to do that without circularity??
---command                Rscript 
+--command                Rscript
                          locate_deps.R
                          {0}
 --output --mkdir         dependencies/{0}.pkg
