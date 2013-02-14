@@ -5,6 +5,8 @@
 ##Command line arguments: file.to.scan list.of.packages list.of.scripts
 library(methods)
 
+theDir = ""
+
 findlibs <- function(expr, ...) {
   ##Each submethod recursively scans for calls to library, require,
   ##and/or source and prints matches to the connections.
@@ -26,7 +28,7 @@ findlibs.call <- function(call, pkgConn, srcConn) {
     #it's a sourcing...
     if (!is.null(args$file) && (is.character(args$file))) {
       #it's a source file.
-      writeLines(as.character(args$file), srcConn)
+      writeLines(as.character(file.path(theDir, args$file)), srcConn)
     }
   } else {
     findlibs(as.list(call), pkgConn, srcConn)
@@ -44,12 +46,13 @@ findlibs.default <- function(x, pkgConn, srcConn) {
 }
 
 main <- function(rFile, pkgFile, srcFile) {
+  theDir <<- dirname(rFile)
   pkgConn <- file(pkgFile, 'w')
   on.exit(close(pkgConn), add=TRUE)
 
   srcConn <- file(srcFile, 'w')
   on.exit(close(srcConn), add=TRUE)
-  
+
   expr <- parse(rFile)
   invisible(findlibs(expr, pkgConn, srcConn))
 }
