@@ -42,7 +42,7 @@ if exist(outfile, 'file')
     old.target_number_shown(isnan(old.target_number_shown)) = -1;
     data.target_number_shown(isnan(data.target_number_shown)) = -1;
 
-    keep = join(data, old, 'MergeKeys', true);
+    keep = join(data, old, 'Type', 'Inner', 'MergeKeys', true);
     if size(keep, 1) > size(data, 1)
         error('wrong!');
     end
@@ -57,6 +57,9 @@ for i = 1:size(data, 1)
         printf('%d/%d\n', i-1, n);
     end
     row = data(i,:);
+    if (row.target_number_shown == -1)
+        row.target_number_shown = NaN;
+    end
     out = motion_energy_calc(row);
 
     %double check that my calculation is symmetric
