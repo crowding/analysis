@@ -65,18 +65,7 @@ expand <- function(trials) {
   #pick some displacment values...
   displacements <-
     chain(eligible,
-          ddply("abs_direction_content",
-                summarize,
-                range = diff(range(abs_displacement)),
-                count = length(unique(abs_displacement)),
-                spacing = min(diff(sort(unique(abs_displacement))))),
-          subset(spacing == max(spacing)),
-          subset(range == max(range)),
-          subset(count == max(count)),
-          .[1,],
-          match_df(eligible, .),
-          subset(select=c('abs_displacement'))
-        )
+          .["abs_displacement"], unique)
 
   #this gives us a 3d grid to calculate motion energy over...
   grid <- chain(contents,
