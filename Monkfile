@@ -156,8 +156,8 @@
 --input --match 'unique_stimuli\.mat'
 --output motion_energy.mat
 
-##In this subdirectory, I work on modeling.
-@modeling/Monkfile
+##In this subdirectory, I work on modeling and writing.
+@writing/Monkfile
 
 ##Here's to matlab making an illustration of the stimuli
 --command ./runmatlab illustrated_stimuli --input --invisible --match 'illustrated_stimuli.m'
