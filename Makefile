@@ -32,7 +32,7 @@ unexcluded.txt: exclusions.txt datafiles/filelist.txt
 FILES := $(filter-out $(MAKEFILE_LIST),$(shell git ls-tree --name-only HEAD .))
 
 ##why the hell is this not getting regenerated on changes?
-monk.makefile: monk/monk.py Monkfile dependencies.monkfile import.monkfile modeling/Monkfile database.monkfile unexcluded.txt scripts.txt
+monk.makefile: monk/monk.py Monkfile dependencies.monkfile import.monkfile writing/Monkfile database.monkfile unexcluded.txt scripts.txt
 	./monk/monk.py @Monkfile --files $(FILES) @unexcluded.txt  > $@ || rm $@
 
 #make the subproject recursively (ugh)
@@ -53,7 +53,7 @@ clean:
 ifneq (,$(wildcard monk.makefile))
 
 include monk.makefile
-all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections csv mat figures mov modeling pdf
+all:  discrimination.sqlite.DONE adjustment.sqlite.DONE graphs links descriptions series collections csv mat figures mov writing pdf
 
 else
 
