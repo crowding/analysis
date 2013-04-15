@@ -36,6 +36,7 @@ descriptions
 collections
 dbtickets
 auto
+tags
 *.tar.gz
 *.products
 *.out
