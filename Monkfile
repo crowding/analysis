@@ -157,7 +157,9 @@
 --output motion_energy.mat
 
 ##In this subdirectory, I work on modeling and writing.
-@writing/Monkfile
+# --pushdir writing
+# @writing/Monkfile
+# --popdir
 
 ##Here's to matlab making an illustration of the stimuli
 --command ./runmatlab illustrated_stimuli --input --invisible --match 'illustrated_stimuli.m'

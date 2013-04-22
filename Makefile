@@ -29,7 +29,7 @@ unexcluded.txt: exclusions.txt datafiles/filelist.txt
 	comm -2 -3 <(sort $(word 2,$^)) <(sort $<) > $@
 
 #We also match anything that's checked into version control.
-FILES := $(filter-out $(MAKEFILE_LIST),$(shell git ls-tree --name-only HEAD .))
+FILES := $(filter-out $(MAKEFILE_LIST),$(shell git ls-files --cached))
 
 ##why the hell is this not getting regenerated on changes?
 monk.makefile: monk/monk.py Monkfile dependencies.monkfile import.monkfile writing/Monkfile database.monkfile unexcluded.txt scripts.txt

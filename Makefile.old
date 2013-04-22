@@ -66,60 +66,6 @@ common: $(filter common/%.RData, $(ALL_TARGETS))
 #.sources file in the pools directory gives the source files for a
 #pool. Also pool all constant data into a big file.
 
-ifdef aggregation 
-ALL_TARGETS += pools/DX.sources
-pools/DX.sources: pools/DX.exclude $(filter unpacked/%DX.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-ALL_TARGETS += pools/TF.sources
-pools/TF.sources: pools/TF.exclude $(filter unpacked/%TF.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-ALL_TARGETS += pools/SF.sources
-pools/SF.sources: pools/SF.exclude $(filter unpacked/%SF.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-ALL_TARGETS += pools/Timing.sources
-pools/Timing.sources: pools/Timing.exclude $(filter unpacked/%Timing.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-ALL_TARGETS += pools/Dt_N.sources
-pools/Dt_N.sources: pools/Dt_N.exclude $(filter unpacked/%Dt_N.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-ALL_TARGETS += pools/Constant.sources
-pools/Constant.sources: pools/Constant.exclude $(filter unpacked/%Constant.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-ALL_TARGETS += pools/Occlusion.sources
-pools/Occlusion.sources: pools/Occlusion.exclude $(filter unpacked/%Occlusion.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-ALL_TARGETS += pools/Segment.sources
-pools/Segment.sources: pools/Segment.exclude $(filter common/%Segment.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-$(call TRANSFORM_ALL_LISTED,pools/Segment.sources,pools/Segment.RData,R,aggregate.R)
-
-ALL_TARGETS += pools/Discriminability.sources
-pools/Discriminability.sources: pools/Discriminability.exclude $(filter unpacked/%Discriminability.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-ALL_TARGETS += pools/Titrate.sources
-pools/Titrate.sources: pools/Titrate.exclude $(filter common/%Titrate.RData,$(ALL_TARGETS)) $(filter common/%Discriminability.RData,$(ALL_TARGETS)) $(filter common/%CritDistance.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-$(call TRANSFORM_ALL_LISTED,pools/Titrate.sources,pools/Titrate.RData,R,aggregate.R)
-
-ALL_TARGETS += pools/Strokes.sources
-pools/Strokes.sources: pools/Strokes.exclude $(filter common/%Strokes.RData,$(ALL_TARGETS))
-	comm -2 -3 <(for i in $(wordlist 2,$(words $^),$^); do echo $$i; done | sort) <(sort $<) > $@
-
-$(call TRANSFORM_ALL_LISTED,pools/Strokes.sources,pools/Strokes.RData,R,aggregate.R)
-
-#$(call AGGREGATE_EACH_WILDCARD_LISTED,pools/%.sources,pools/%.RData,R,aggregate.R)
-
-
 #aggregate all the eye movements from Segments sessions.
 ALL_TARGETS += Segment.eyemovements.sources
 Segment.eyemovements.sources: pools/Segment.sources

@@ -37,3 +37,24 @@
 --match     --input 	'unpacked/(.*Adjustment.*)\.RData'
 --output    --mkdir 	'common_adj/{0}'.RData
 --invisible --phony 	common
+
+#gather "sources"? Multimatch would be nice here.
+--command --once echo --once > --output --once pools/{0}.allsources 
+--input --match 'unpacked/.*(DX|TF|SF|Timing|Dt_N|Constant|Occlusion|Segment|Discriminability|Timing|Strokes)\.RData'
+--invisible --phony --once allsources
+
+#titrate experiments had a few names
+--command --once echo --once > --output --once pools/Titrate.allsources 
+--input --match 'unpacked/.*(Discriminability|Titrate|CritDistance)\.RData' 
+--invisible --phony --once allsources
+
+--command --input --invisible setdiff ./setdiff
+--input pools/{0}.allsources
+--input --match 'pools/(.*)\.exclude'
+> --output pools/{0}.sources
+--invisible --phony --once sources
+
+--command Rscript --input --match --listing 'pools/(.*)\.sources'
+--output pools/{0}.RData
+--phony --invisible pools
+

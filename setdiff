@@ -1,0 +1,2 @@
+#!/bin/bash
+comm -2 -3 <(sort $2 | uniq) <(sort $1 | uniq)
