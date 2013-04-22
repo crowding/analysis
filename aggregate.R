@@ -2,6 +2,7 @@
 suppressPackageStartupMessages({
   source("programming.R")
   library(gtools)
+  library(ptools)
 })
 
 aggregate <- function(...) {
@@ -47,15 +48,18 @@ aggregate <- function(...) {
   env.out <- new.env()
   for (i in Reduce(union, sapply(envs, ls))) {
     collection <- lapply(envs, `[[`, i)
+    collection <- collection[!vapply(collection, empty, 0)]
     collection <- collection[sapply(collection, function(x) length(x[[1]])) > 0]
-    env.out[[i]] <- do.call("mysmartbind", collection)
+    if(length(collection) > 0) {
+      env.out[[i]] <- do.call("mysmartbind", collection)
+    }
   }
   save(list=ls(env.out), file=outfile, envir=env.out)
   env.out
 }
 
 kill.list.cols <- function(df) {
-  pipe(  df
+  chain(  df
        , lapply(mode)
        , .[.=="list"]
        , names
@@ -74,13 +78,10 @@ load.discarding.eye.position <- function(infile) {
   e$trials$trial.eyeData <- NULL
 
   if (!"subject" %in% colnames(e$runs)) {
-    e$runs$subject <- unlist(lapply(e$runs$beforeRun.params,
-                                    function(x)
-                                    ifelse(length(dim(x))==3, x[['subject',1,1]], NA)),
-                             recursive=FALSE)
+    e$runs$subject <- e$runs$beforeRun.params.subject
   }
   if (! "source.file" %in% colnames(e$runs)) {
-    e$runs$source.file <- sapply(e$runs$beforeRun.params, function(x)x[['logfile',1,1]][[1]])
+    e$runs$source.file <- e$runs$beforeRun.params.logfile
   }
 
   ##fukka any column that's still in list mode.  

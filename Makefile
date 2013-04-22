@@ -62,3 +62,4 @@ $(MAKEFILE_LIST): monk.makefile
 endif
 
 all: $(MAKEFILE_LIST)
+

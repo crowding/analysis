@@ -7,7 +7,6 @@ virtualdatafiles/gb-2009-06-26__14-57-59-ConcentricDirectionQuestDX.log.gz
 virtualdatafiles/gb-2009-08-14__14-52-14-ConcentricDirectionQuestTiming.log.gz
 virtualdatafiles/gb-2009-08-14__14-54-52-ConcentricDirectionQuestTiming.log.gz
 virtualdatafiles/pm-2009-08-12__13-25-16-ConcentricDirectionQuestTiming.log.gz
-virtualdatafiles/pm-2009-08-12__13-27-38-ConcentricDirectionQuestTiming.log.gz
 virtualdatafiles/bs-2008-11-06__10-13-59-ConcentricDirection.log.gz
 virtualdatafiles/ev-2008-11-06__15-18-14-ConcentricDirection.log.gz
 virtualdatafiles/pbm-2008-10-17__18-00-36-ConcentricDirection.log.gz

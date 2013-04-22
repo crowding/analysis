@@ -1,7 +1,8 @@
-#we pull only direction or adjustment files for now.
+ #we pull only direction or adjustment files for now.
 --command --invisible --match   virtualdatafiles/(.*(ConcentricDirection|ConcentricAdjustment).*)
                                 svn export 
-                                'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data/{0}' 
+#                                'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data/{0}' 
+                                'file:///Volumes/homedir/svn/eyetracking/data/{0}' 
 --output --mkdir --intermediate datafiles/{0}
 
 ##The translator script
@@ -39,12 +40,14 @@
 --invisible --phony 	common
 
 #gather "sources"? Multimatch would be nice here.
---command --once echo --once > --output --once pools/{0}.allsources 
+--command --once printf --once "'%s\n'" --once > 
+--output --once pools/{0}.allsources
 --input --match 'unpacked/.*(DX|TF|SF|Timing|Dt_N|Constant|Occlusion|Segment|Discriminability|Timing|Strokes)\.RData'
 --invisible --phony --once allsources
 
 #titrate experiments had a few names
---command --once echo --once > --output --once pools/Titrate.allsources 
+--command --once printf --once "'%s\n'" --once > 
+--output --once pools/Titrate.allsources 
 --input --match 'unpacked/.*(Discriminability|Titrate|CritDistance)\.RData' 
 --invisible --phony --once allsources
 
@@ -54,7 +57,8 @@
 > --output pools/{0}.sources
 --invisible --phony --once sources
 
---command Rscript --input --match --listing 'pools/(.*)\.sources'
---output pools/{0}.RData
+--command Rscript --input aggregate.R --input --match --listing --invisible '(pools/(.*)\.sources)' 
+"$$(" cat {0} ")"
+--output pools/{1}.RData
 --phony --invisible pools
 
