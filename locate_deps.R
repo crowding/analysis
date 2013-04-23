@@ -1,4 +1,4 @@
-##this script attempts to determine, for an R script file, the
+ ##this script attempts to determine, for an R script file, the
 ##packages and other script files that is includes. It is done simply
 ##by scanning for "source", "library" and "require" statements.
 

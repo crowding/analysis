@@ -39,6 +39,8 @@
 --output    --mkdir 	'common_adj/{0}'.RData
 --invisible --phony 	common
 
+## all this stuff about "sources" is kind of old and busted but...
+
 #gather "sources"? Multimatch would be nice here.
 --command --once printf --once "'%s\n'" --once > 
 --output --once pools/{0}.allsources
@@ -61,4 +63,8 @@
 "$$(" cat {0} ")"
 --output pools/{1}.RData
 --phony --invisible pools
+
+--command sed -e s/common/eyemovements 
+< --input --match pools/Segment\.sources 
+< --output Segment.eyemovements.sources '$$(' --input --listing pools/Segment.sources Segment.eyemovements.sources
 

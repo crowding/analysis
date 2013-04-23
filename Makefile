@@ -1,6 +1,8 @@
 .DEFAULT_GOAL = all
 SHELL = /bin/bash
 
+.DELETE_ON_ERROR:
+
 #We depend on some R packages, so we set the library path in an environment vairable
 R_LIBS_USER := $(realpath .)/Rlibs:$(R_LIBS_USER)
 
