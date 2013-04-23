@@ -15,7 +15,7 @@ aggregate <- function(...) {
   } else {
     drop.triggers <- FALSE
   }
-  
+
   outfile <- infiles[[length(infiles)]]
   infiles <- infiles[-length(infiles)]
 
@@ -41,7 +41,7 @@ aggregate <- function(...) {
 
     run.offset <<- max(e$runs$i, run.offset)
     trial.offset <<- max(e$trials$i, trial.offset)
-    
+
     e
   })
 
@@ -84,7 +84,7 @@ load.discarding.eye.position <- function(infile) {
     e$runs$source.file <- e$runs$beforeRun.params.logfile
   }
 
-  ##fukka any column that's still in list mode.  
+  ##fukka any column that's still in list mode.
   e$runs <- kill.list.cols(e$runs)
   e$trials <- kill.list.cols(e$trials)
   e$triggers <- kill.list.cols(e$triggers)
@@ -96,17 +96,16 @@ load.discarding.eye.position <- function(infile) {
   if (!"source.file" %in% colnames(e$runs)) {
     stop("what the hell!")
   }
-
   e
 }
 
-mysmartbind <- function(...) 
+mysmartbind <- function(...)
 {
   ## smartbind from gtools, but lets vectors promote their datatypes if
   ## needed.
     verbose <- FALSE
     data <- list(...)
-    if (is.null(names(data))) 
+    if (is.null(names(data)))
         names(data) <- as.character(1:length(data))
     data <- lapply(data, function(x) {
       if (is.matrix(x) || is.data.frame(x)) x else data.frame(as.list(x))
@@ -119,20 +118,20 @@ mysmartbind <- function(...)
     } ))
     start <- 1
     for (block in data) {
-        if (verbose) 
+        if (verbose)
             print(block)
         end <- start + nrow(block) - 1
         for (col in colnames(block)) {
             if (!(col %in% names(retval))) {
-                if (verbose) 
-                  cat("Start:", start, "  End:", end, "  Column:", 
+                if (verbose)
+                  cat("Start:", start, "  End:", end, "  Column:",
                     col, "\n", sep = "")
-                if (class(block[, col]) == "factor") 
+                if (class(block[, col]) == "factor")
                   newclass <- "character"
                 else newclass <- mode(block[, col])
                 retval[[col]] <- as.vector(rep(NA, nrows), mode = newclass)
             }
-##            retval[[col]][start:end] <- as.vector(block[, col], 
+##            retval[[col]][start:end] <- as.vector(block[, col],
 ##                mode = class(retval[[col]]))
             retval[[col]][start:end] <- as.vector(block[, col])
           }

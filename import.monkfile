@@ -59,12 +59,16 @@
 > --output pools/{0}.sources
 --invisible --phony --once sources
 
---command Rscript --input aggregate.R --input --match --listing --invisible '(pools/(.*)\.sources)' 
+--command sed %-e 's/unpacked/common/' 
+--input --match 'pools/(.*)\.sources'
+> --output pools/{0}.csources
+
+--command Rscript --input aggregate.R --input --match --listing --invisible '(pools/(.*)\.csources)' 
 "$$(" cat {0} ")"
 --output pools/{1}.RData
 --phony --invisible pools
 
---command sed -e s/common/eyemovements 
-< --input --match pools/Segment\.sources 
-< --output Segment.eyemovements.sources '$$(' --input --listing pools/Segment.sources Segment.eyemovements.sources
+--command sed %-e s/common/eyemovements 
+--input --match pools/Segment\.csources 
+> --output Segment.eyemovements.sources '$$(' --input --listing pools/Segment.sources Segment.eyemovements.sources
 
