@@ -1,0 +1,38 @@
+#generate files that will go into the 'writing' submodule
+
+#gather up all .csv files except those already gathered.
+--command cp
+--input --match '.*(?<!writing)/([^/]*)\.csv$'
+--output 'writing/{0}.csv'
+
+#gather raw trial data and put them in CSV files
+--command            Rscript
+--input              make_csv.R
+--input --match      'collections/(.*)\.list'
+                     discrimination.sqlite
+--input --invisible  discrimination.sqlite.DONE
+--output             writing/{0}_trials.csv
+--input              motion_energy.mat
+
+#collect the motion energy data in another file (as it has a grid)
+--command            Rscript
+--input mat2csv.R
+--input --match (motion_energy)\.mat
+--output writing/{0}.csv
+
+#plot threshold values
+--command            --once ./runmatlab
+--input --invisible  writing/plotThresholds.m
+--once               "\"addpath('writing');\" plotThresholds"
+--input --match      'writing/.*_series_calculations.csv'
+--output --invisible writing/plotThresholds.fig
+
+#grab our motion energy demo movie
+--command cp
+--input --match (deltax\.mov)
+--output writing/energy/{0}
+
+# and our other demo movies
+--command cp
+--input --match (demo_(single|multiple|stimuli).mov)
+--output writing/{0}.mov

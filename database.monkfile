@@ -3,7 +3,7 @@
 --command                    sqlite3 
                              %-init
 --input                      discrimination_init.sql
-                             discrimination.sqlite 
+                             discrimination.sqlite .quit 
                              &&
                              touch
 --output --mkdir --match     discrimination.sqlite.INIT

@@ -92,7 +92,8 @@ pull.from.sqlite <- function(dbfile, ...) {
   })
 }
 
-pull.from.db <- function(conn, condition, columns=columns.to.pull, table="trials") {
+pull.from.db <- function(conn, condition, columns=columns.to.pull, table="trials",
+                         query = "SELECT %s FROM %s NATURAL JOIN %s;") {
   #construct a query for pulling the trials nominated by an inner join
   #with the privided data frame.
   column_text <- chain(  columns
@@ -103,7 +104,7 @@ pull.from.db <- function(conn, condition, columns=columns.to.pull, table="trials
 
   joiner_name = "temp.joiner"
 
-  query <- sprintf("SELECT %s FROM %s NATURAL JOIN %s;", column_text, table_text, joiner_name)  
+  query <- sprintf(query, column_text, table_text, joiner_name)
   with.db.transaction(conn, function() {
     dbGetQuery(conn, sprintf("DROP TABLE IF EXISTS %s;", joiner_name))
     dbGetQuery(conn, dbBuildTableDefinition(conn, joiner_name, condition, row.names=FALSE))

@@ -18,7 +18,3 @@
                   `pwd`
                   && sleep 2 && touch {0}.mov && rm {0}.avi
 --phony --invisible mov
-
-
-
-
