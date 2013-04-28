@@ -17,6 +17,8 @@
 #Here's rules for making quicktime movie demonstrations.
 @demos.monkfile
 
+@subproject.monkfile
+
 #these rules mainly create graphs. Note later rules stack onto earlier ones.
 #TODO: Makefiles need
 --command --once          Rscript

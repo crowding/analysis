@@ -36,3 +36,9 @@
 --command cp
 --input --match (demo_(single|multiple|stimuli).mov)
 --output writing/{0}.mov
+
+--command --once Rscript
+--input --once results.numbers.R
+--input --invisible --match collections/(.*).list
+--once discrimination.sqlite --input --invisible --once discrimination.sqlite.DONE
+--output --once writing/numbers.RData
