@@ -3,7 +3,7 @@
 	url = git@github.com:crowding/logfile-reader
 [submodule "newer_draft"]
 	path = writing
-	url = git@github/com:crowding/writing.git
+	url = git@github.com:crowding/writing.git
 [submodule "monk"]
 	path = monk
 	url = git@github.com:crowding/monk.git
