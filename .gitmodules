@@ -1,21 +1,9 @@
-[submodule "modeling"]
-	path = modeling
-	url = peterm@pat.shadlen.org:direction_discrimination_modeling
 [submodule "logfile-reader"]
 	path = logfile-reader
-	url = peterm@pat.shadlen.org:logfile-reader
-[submodule "mothballed_writing"]
-	path = mothballed_writing
-	url = peterm@pat.shadlen.org:writing/mothballed_writing.git
-[submodule "previous_draft"]
-	path = previous_draft
-	url = peterm@pat.shadlen.org:writing/previous_draft.git
+	url = git@github.com:crowding/logfile-reader
 [submodule "newer_draft"]
 	path = writing
-	url = peterm@pat.shadlen.org:writing/newer_draft
-[submodule "ptools"]
-	path = ptools
-	url = ../code/ptools.git
+	url = git@github/com:crowding/writing.git
 [submodule "monk"]
 	path = monk
 	url = git@github.com:crowding/monk.git
