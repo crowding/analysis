@@ -27,17 +27,11 @@
 
 #compute needed packages for R files, via tags
 --command --output --invisible --tagged --match '([^/]*\.[rR])$'
---input --invisible 'dependencies/{0}.pkginstall'
+--input --invisible 'Rlibs/dependencies/{0}.pkginstall'
 --invisible --phony --once dependencies
 
 ##And here's how to install requisite packages.
 --command Rscript install_packages.R
 Rlibs --input --match 'dependencies/(.*)\.pkg$'
---output --invisible --tagged dependencies/{0}.pkginstall
+--output --invisible --mkdir --tagged Rlibs/dependencies/{0}.pkginstall
 --invisible --phony --once dependencies
-
-##This marker needs to be backdated so as not to re-run everything on
-##account of packages?
---command            touch %-t 197001010000
---input --invisible  --match Rlibs/install\.packages\.INTERMEDIATE
---output --mkdir     Rlibs/install.packages.DONE

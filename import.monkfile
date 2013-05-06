@@ -7,7 +7,7 @@
 
 ##The translator script
 --command               Rscript 
-                        logfile-reader/readR.R #--input...
+--input                 logfile-reader/readR.R
 --match --input         'datafiles/(.*)\.log(\.gz)?'
 --output                unpacked/{0}.RData
 --invisible --phony     unpacked
