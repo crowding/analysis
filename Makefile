@@ -24,7 +24,8 @@ $(shell touch -t $$(date -v-30M +%C%y%m%d%H%M.%S) datafiles/filelist.txt.DONE)
 
 datafiles/filelist.txt: datafiles/filelist.txt.DONE
 	mkdir -p datafiles
-#	svn ls 'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@#	svn ls 'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
+	svn ls 'file:///Volumes/homedir/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
+#	svn ls 'svn+ssh://peterm@pat.shadlen.org/home/peterm/svn/eyetracking/data' | sed 's/^/virtualdatafiles\//;' > $@
 
 #some data files get excluded (because they were empty or malformed, usually)
 unexcluded.txt: exclusions.txt datafiles/filelist.txt
@@ -34,7 +35,7 @@ unexcluded.txt: exclusions.txt datafiles/filelist.txt
 FILES := $(filter-out $(MAKEFILE_LIST),$(shell git ls-files --cached))
 
 ##why the hell is this not getting regenerated on changes?
-monk.makefile: monk/monk.py Monkfile dependencies.monkfile import.monkfile writing/Monkfile database.monkfile unexcluded.txt scripts.txt
+monk.makefile: monk/monk.py Monkfile dependencies.monkfile import.monkfile writing/Monkfile database.monkfile unexcluded.txt
 	./monk/monk.py @Monkfile --files $(FILES) @unexcluded.txt  > $@ || rm $@
 
 #make the subproject recursively (ugh)
