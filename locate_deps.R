@@ -1,4 +1,4 @@
- ##this script attempts to determine, for an R script file, the
+##this script attempts to determine, for an R script file, the
 ##packages and other script files that is includes. It is done simply
 ##by scanning for "source", "library" and "require" statements.
 
@@ -17,36 +17,42 @@ findlibs.expression <- function(expr, pkgConn=stdout(), srcConn=stdout()) {
   findlibs(as.list(expr), pkgConn, srcConn)
 }
 
-findlibs.call <- function(call, pkgConn, srcConn) {
+findlibs.call <- function(call, pkgConn=stdout(), srcConn=stdout(), ...) {
   if (any(call[[1]] == c("library", "require"))) {
     args <- match.call(getFunction(as.character(call[[1]])), call)
     if (!is.null(args$package) && (is.character(args$package) || is.name(args$package))) {
       writeLines(as.character(args$package), pkgConn)
     }
-  } else if (any(call[[1]] == "source")) {
+  } else if (any(call[[1]] == c("source", "load"))) {
     args <- match.call(getFunction(as.character(call[[1]])), call)
     #it's a sourcing...
     if (!is.null(args$file) && (is.character(args$file))) {
       #it's a source file.
-      writeLines(as.character(file.path(theDir, args$file)), srcConn)
+      if (theDir != "") {
+        writeLines(as.character(file.path(theDir, args$file)), srcConn)
+      } else {
+        writeLines(as.character(args$file), srcConn)
+      }
     }
   } else {
     findlibs(as.list(call), pkgConn, srcConn)
   }
 }
 
-findlibs.list <- function(list, pkgConn, srcConn) {
+findlibs.list <- function(list, pkgConn=stdout(), srcConn=stdout()) {
   do.call(c, lapply(list, findlibs, pkgConn, srcConn))
 }
 
-findlibs.default <- function(x, pkgConn, srcConn) {
+findlibs.default <- function(x, pkgConn=stdout(), srcConn=stdout()) {
   if (is.call(x)) {
     findlibs.call(x, pkgConn, srcConn)
   } else NULL
 }
 
 main <- function(rFile, pkgFile, srcFile) {
-  theDir <<- dirname(rFile)
+  if (rFile != basename(rFile)) {
+    theDir <<- dirname(rFile)
+  }
   pkgConn <- file(pkgFile, 'w')
   on.exit(close(pkgConn), add=TRUE)
 
