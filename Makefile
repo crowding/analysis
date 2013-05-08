@@ -4,7 +4,7 @@ SHELL = /bin/bash
 .DELETE_ON_ERROR:
 
 #We depend on some R packages, so we set the library path in an environment vairable
-R_LIBS_USER := $(realpath .)/Rlibs:$(R_LIBS_USER)
+R_LIBS_USER := $(realpath .)/Rlibs:${R_LIBS_USER}
 
 #start by listing all of our data files out of SVN. I don't want it to
 #keep checking if I'm rapidly iterating, so only update it if it's a
