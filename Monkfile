@@ -1,12 +1,11 @@
 ##This file describes most of my processing toolchain. It is written in
 ##a tiny domain-secific language for generating Makefiles, implemented
-##over in makemake.py. makemake.py will use these rules to generate a
+##over in monk project. monk.py will use these rules to generate a
 ##larger makefile.
 
-#this subfile handles dependency calculation for R scripts.
-#You know, this means I have to add dependencies.makemake as a dep of makemake.
-#TODO: Dependencies of the makemake-file should be added automatically.
-@dependencies.monkfile
+#This file contains rules for automatically discovering dependencies
+#of script files.
+@monk/autodep/dependencies.monkfile
 
 #This file contains rules for importing the data and massaging it.
 @import.monkfile
