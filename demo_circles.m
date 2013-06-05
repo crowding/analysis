@@ -1,5 +1,9 @@
 function this = demo_circles(varargin)
 
+    if (nargin == 1 && ischar(varargin{1}))
+        varargin = [{'aviout'} varargin]
+    end
+
     c = CircleDemo ...
         ( 'interactive', 0 ...
         , 'stopafterloops', 4 ...
