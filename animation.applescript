@@ -7,7 +7,9 @@ on run (argv)
 	tell application "QuickTime Player 7"
 		activate
 		if (argv contains "--savesettings") then
-			save export settings for QuickTime movie to ((item 3 of argv) as POSIX file) with replacing
+			tell document 1
+				save export settings for QuickTime movie to ((item 3 of argv) as POSIX file) with replacing
+			end tell
 		else
 			close every document
 			set theDoc to open ((item 1 of argv) as POSIX file)
