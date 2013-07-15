@@ -34,7 +34,7 @@
 
 # and our other demo movies
 --command cp
---input --match (demo_(single|multiple|stimuli|wheels|carenv).mov)
+--input --match (demo_(single|multiple|stimuli|wheels|carenv).mov$)
 --output writing/{0}
 
 --command --once Rscript
