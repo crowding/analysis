@@ -1,6 +1,12 @@
-function this = demo_wide(outfile, varargin)
+function this = pardemo_circle(outfile, varargin)
     %render the looping demo for Movie 1 of the paper
     %(counterrotating wheels)
+
+    for i = 2:2:numel(varargin)
+        if ischar(varargin{i})
+            varargin{i} = str2num(varargin{i});
+        end
+    end
 
     %based on ConcentricDemo with the adjustabiilty ripped out.
     n = 6;
