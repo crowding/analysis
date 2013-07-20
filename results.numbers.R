@@ -11,6 +11,7 @@ dbfile <- "discrimination.sqlite"
 
 #answer questions about the trial set used in experiment 1
 main <- function(dbfile, outfile) {
+
   results.files <- chain(c("collections/content_series.list",
                            "collections/spacing_series.list"),
                          lapply(readLines),
@@ -47,7 +48,8 @@ main <- function(dbfile, outfile) {
           "trial_motion_process_width", "trial_extra_tf",
           "trial_motion_process_n",
           "trial_extra_content_ccw", "trial_extra_content_cw",
-          "subject"))
+          "subject", "trial_awaitInput", "trial_maxResponseLatency",
+          "trial_fixationSettle", "trial_motion_process_t"))
     numbers$dt <<- unique(df$trial_extra_dt)
     numbers$tf <<- unique(with(df, abs(trial_extra_tf)))
     numbers$sf <<- unique(1/df$trial_motion_process_wavelength)
@@ -55,8 +57,15 @@ main <- function(dbfile, outfile) {
     numbers$eccentricity <<- unique(df$trial_extra_r)
     #the underlying parameter is number of "steps"
     numbers$n <<- unique(df$trial_motion_process_n + 1)
-    numbers$content <<- unique(with(
-        df, table(trial_extra_content_ccw + trial_extra_content_cw)))
+    numbers$contrast <<- unique(with(
+        df, trial_extra_content_ccw + trial_extra_content_cw))
+    numbers$fixationToOnset <<- unique(with(
+        df, trial_fixationSettle + trial_motion_process_t))
+    numbers$onsetToInput <<- unique(with(
+        df, trial_awaitInput - trial_motion_process_t))
+    numbers$onsetToTimeout <<- unique(with(
+        df, trial_awaitInput - trial_motion_process_t + trial_maxResponseLatency))
+    
   })
 
 
