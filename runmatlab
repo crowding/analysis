@@ -27,6 +27,6 @@ catch e
 end
 system('echo 0 > $status');
 exit();
-EOF
+EOF || exit $?
 
 exit `cat $status`
