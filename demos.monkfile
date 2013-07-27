@@ -4,6 +4,20 @@
 --invisible --input --match   '(demo_.*).m$'
                               {0}
 --output --intermediate       {0}.avi
+
+--command                     ./runmatlab
+--invisible --input --match --invisible 'par(demo_circle).m$' par{0}
+--output --intermediate {0}_6.avi n 6
+
+--command                     ./runmatlab
+--invisible --input --match --invisible 'par(demo_circle).m$' par{0}
+--output --intermediate {0}_16.avi n 16
+
+--command                     ./runmatlab
+--invisible --input --match --invisible 'par(demo_circle).m$' par{0}
+--output --intermediate {0}_22.avi n 22
+
+--command --output --invisible --match '.*\.avi$'
 --phony --invisible avi
 
 --command                     cp
@@ -17,4 +31,6 @@
 --input           {0}.settings
                   `pwd`
                   && sleep 2 && touch {0}.mov && rm {0}.avi
---phony --invisible mov
+
+--command --output --match --invisible .*\.mov$
+--phony --invisible  mov
