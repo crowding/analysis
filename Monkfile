@@ -168,6 +168,10 @@
 --output --listing 'illustrated_stimuli.out'
 --invisible --phony figures
 
+--command ./runmatlab illustrated_stimuli2 --input --invisible --match 'illustrated_stimuli2.m'
+--output --listing 'illustrated_stimuli2.out'
+--invisible --phony figures
+
 #type "make csv" to refresh all these
 --command
 --output --invisible --phony csv
