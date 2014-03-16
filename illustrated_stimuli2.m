@@ -2,8 +2,11 @@ function illustrated_stimuli2(outfile)
 
 fh = fopen(outfile, 'w');
 
-f = figure(1); clf;
-set(f, 'Position', [100 768 384 384])
+f = figure(1);
+clf;
+set(f, 'Color', [0.5 0.5 0.5]);
+set(f, 'Position', [100 768 384 384]);
+set(f,'InvertHardCopy','off');
 
 %calculate some example stimuli in the 'congruent', 'incongruent', and
 %'counterphase' conditions.
@@ -31,8 +34,10 @@ stim.motionCondition{1,1} = 'carrier';
 imagesc(x, y, im, [-1 1]); axis square;
 set(gca, 'ytick', []);
 set(gca, 'xtick', []);
-xlabel x;
-ylabel t;
+% xlabel x;
+% ylabel t;
+% set(get(gca, 'xlabel'), 'Color', [1 1 1]);
+% set(get(gca, 'ylabel'), 'Color', [1 1 1]);
 %title('First-order');
 
 ax2 = subplot(1,2,2);
@@ -41,14 +46,16 @@ stim.motionCondition{1} = 'envelope';
 imagesc(x, y, im, [-1 1]); axis square;
 set(gca, 'ytick', []);
 set(gca, 'xtick', []);
-xlabel x;
-ylabel t;
+% xlabel x;
+% ylabel t;
+% set(get(gca, 'xlabel'), 'Color', [1 1 1]);
+% set(get(gca, 'ylabel'), 'Color', [1 1 1]);
 %title('Position-defined');
 
 [path, name, ext] = fileparts(outfile);
-fig1_file = fullfile(path,[name '.eps']);
+fig1_file = fullfile(path,[name '.png']);
 fprintf(fh, '%s\n', fig1_file);
-print('-depsc',fig1_file)
+print('-dpng','-r300',fig1_file);
 
 %close(f);
 
